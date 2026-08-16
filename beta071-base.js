@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BETA_LABEL = 'Beta v0.9.7';
+  const BETA_LABEL = window.JASPER_POKEDEX_VERSION;
   const STATE_KEY = 'b2w2_living_dex_saved_state';
   const isMobile = () => window.matchMedia('(max-width: 640px)').matches;
 

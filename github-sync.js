@@ -72,7 +72,7 @@
       if(Object.keys(remote.state).length===0&&Object.keys(local).length){remoteReady=true;await saveRemote();return;}
       suppressSave=true;localStorage.setItem(STATE_KEY,JSON.stringify(remote.state));suppressSave=false;remoteReady=true;
       status("Synced ✓","ok"); updateProgressBanner();
-      if(sessionStorage.getItem(RELOAD_KEY)!==remote.sha){sessionStorage.setItem(RELOAD_KEY,remote.sha);setTimeout(()=>location.reload(),50);}else sessionStorage.removeItem(RELOAD_KEY);
+      window.dispatchEvent(new CustomEvent('jasper:pokedex-state-synced', { detail: { sha: remote.sha } }));
     }catch(e){
       suppressSave=false;remoteReady=true;
       if(e.status===401){localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(SHA_KEY);setTokenUI(false);status("GitHub token is invalid or expired.","error");}

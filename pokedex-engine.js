@@ -1,11 +1,11 @@
 (() => {
   'use strict';
 
-  /* Beta v0.10.1 — data-driven Pokédex renderer.
+  /* release moniker — data-driven Pokédex renderer.
    * Pokedexes/<game> is the source of truth. The renderer never invents,
    * merges, prunes, or repairs Pokémon/forms in the DOM. */
 
-  const RELEASE = 'Beta v0.10.1';
+  const RELEASE = window.JASPER_POKEDEX_VERSION;
   const DEFAULT_GAME = 'White2';
   const RAW_ROOT = 'https://raw.githubusercontent.com/lingjasper/Jasper-Pokedex/main/Pokedexes/';
   const API_ROOT = 'https://api.github.com/repos/lingjasper/Jasper-Pokedex/contents/Pokedexes?ref=main';
@@ -272,6 +272,7 @@
     const state = readState(game);
     window.JASPER_ACTIVE_GAME = game;
     window.JASPER_POKEDEX = { game, pokemon, boxColumns: BOX_COLUMNS, boxRows: BOX_ROWS, boxSize: BOX_SIZE };
+    window.JASPER_POKEDEX_REFRESH = () => renderGame(window.JASPER_ACTIVE_GAME || game);
     setActiveTab(game);
     renderBoxes(pokemon, state);
     renderList(pokemon, state);
@@ -298,6 +299,8 @@
     await renderGame(requested);
   };
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
+  
+  window.addEventListener('jasper:pokedex-state-synced', () => { if (window.JASPER_POKEDEX_REFRESH) window.JASPER_POKEDEX_REFRESH().catch(console.error); });
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
   else boot();
 })();
