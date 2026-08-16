@@ -16,17 +16,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Verify save.json is unchanged from main
         shell: bash
         run: |
           set -euo pipefail
           git fetch origin main --depth=1
-          if git diff --quiet origin/main...HEAD -- save.json; then
+          if git show origin/main:save.json | cmp -s - save.json; then
             echo "save.json unchanged from main."
           else
             echo "save.json was modified on the stabilization branch."
-            git diff -- origin/main...HEAD -- save.json
             exit 1
           fi
 
