@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 
 const html = fs.readFileSync('index.html', 'utf8');
+const stabilization = fs.readFileSync('stabilization-v094.js', 'utf8');
 const save = fs.readFileSync('save.json', 'utf8');
 
 const cells = [...html.matchAll(/<div class="cell"(?=[^>]*\bdata-id=")([^>]*)>/g)]
@@ -22,6 +23,7 @@ const requiredForms = [
 ];
 for (const id of requiredForms) {
   assert.ok(ids.includes(id), `Missing required boxable form: ${id}`);
+  assert.ok(stabilization.includes(`id: '${id}'`), `Stabilization does not protect form: ${id}`);
 }
 
 for (const forbidden of ['Thundurus (Incarnate)', 'Thundurus (Therian)', 'Tornadus (Incarnate)', 'Tornadus (Therian)', 'Landorus (Incarnate)', 'Landorus (Therian)']) {
@@ -30,9 +32,12 @@ for (const forbidden of ['Thundurus (Incarnate)', 'Thundurus (Therian)', 'Tornad
 
 assert.ok(html.includes('<script src="stabilization-v094.js?v=0.9.4"></script>'), 'Stabilization layer is not loaded');
 assert.ok(html.indexOf('stabilization-v094.js') < html.indexOf('github-sync.js'), 'Stabilization must load before GitHub sync');
+assert.ok(stabilization.includes('margin-top: 4px !important'), 'The 4px name/checkmark refinement is missing');
+assert.ok(stabilization.includes('ensureProtectedForms'), 'Form parity guard is missing');
+assert.ok(stabilization.includes('Storage.prototype.setItem'), 'Shared localStorage synchronization hook is missing');
 
 const saveObject = JSON.parse(save);
 assert.equal(saveObject.version, 1, 'save.json version changed unexpectedly');
 assert.ok(saveObject.pokemon && typeof saveObject.pokemon === 'object', 'save.json pokemon state is missing');
 
-console.log(`PASS: ${nonEmptyCount} boxable entries, ${emptyCells} empty slots, protected forms present, save.json readable.`);
+console.log(`PASS: ${nonEmptyCount} boxable entries, ${emptyCells} empty slots, protected forms present, 4px spacing present, save.json readable.`);
