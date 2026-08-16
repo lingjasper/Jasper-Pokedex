@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-16T05:56:03.525Z",
+  "updatedAt": "2026-08-16T05:56:11.039Z",
   "pokemon": {
     "105": true,
     "111": true,
@@ -73,6 +73,7 @@
     "282": true,
     "288": true,
     "290": true,
+    "299": true,
     "004": false,
     "001": true,
     "300-Douse": false,
@@ -134,6 +135,7 @@
     "104-Blue": true,
     "159-Winter": false,
     "160-Winter": true,
-    "181-F": true
+    "181-F": true,
+    "300-NoDrive": true
   }
 }
