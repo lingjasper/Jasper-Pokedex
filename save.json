@@ -1,5 +1,21 @@
 {
   "version": 1,
-  "updatedAt": null,
-  "pokemon": {}
+  "updatedAt": "2026-08-16T03:09:04.139Z",
+  "pokemon": {
+    "004": false,
+    "001": false,
+    "300-Douse": false,
+    "003": false,
+    "002": false,
+    "008": false,
+    "014": false,
+    "009": false,
+    "007": false,
+    "015": false,
+    "000": false,
+    "091": false,
+    "010": false,
+    "016-M": false,
+    "016-F": false
+  }
 }
