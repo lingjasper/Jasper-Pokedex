@@ -1,21 +1,24 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-16T03:15:25.159Z",
+  "updatedAt": "2026-08-16T03:15:32.773Z",
   "pokemon": {
     "004": false,
     "001": true,
     "300-Douse": false,
     "003": true,
     "002": true,
-    "008": false,
-    "014": false,
-    "009": false,
+    "008": true,
+    "014": true,
+    "009": true,
     "007": false,
     "015": false,
     "000": false,
     "091": false,
-    "010": false,
+    "010": true,
     "016-M": false,
-    "016-F": false
+    "016-F": false,
+    "011": true,
+    "012": true,
+    "013": true
   }
 }
