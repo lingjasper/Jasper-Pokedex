@@ -4,12 +4,18 @@
   if (window.__JASPER_STABILIZATION_095__) return;
   window.__JASPER_STABILIZATION_095__ = true;
 
+  // Project-wide Living Dex policy:
+  // one slot represents one obtainable, boxable Pokémon specimen.
+  // Transformations and alternate battle/state appearances do not receive
+  // separate slots unless the game makes them separately obtainable and
+  // boxable as distinct specimens. This policy is intended to carry forward
+  // to every supported Pokémon game.
+  window.JASPER_LIVING_DEX_FORM_POLICY = 'one-slot-per-obtainable-boxable-specimen';
+
   const STATE_KEY = 'b2w2_living_dex_saved_state';
   const TOTAL_DEX = 300;
 
-  // B2W2 Living Dex policy: these are single boxable entries.
-  // Their alternate appearances are transformations of the same obtainable
-  // Pokémon and cannot coexist as separate legitimate box entries.
+  // B2W2 application of the project-wide form policy.
   const FORM_GROUPS = {
     '297': {
       ids: ['297', '297-Normal', '297-Black', '297-White'],
@@ -123,6 +129,13 @@
       }
     };
   }
+
+  const setBetaMoniker = () => {
+    const version = 'Beta v0.9.5';
+    const heading = document.querySelector('h1');
+    if (heading) heading.textContent = `Jasper's Pokedex — ${version}`;
+    document.title = `Jasper's Pokedex — ${version}`;
+  };
 
   const injectRefinementStyles = () => {
     if (document.getElementById('stabilization095Styles')) return;
@@ -265,6 +278,7 @@
   installFormGuard();
 
   const boot = () => {
+    setBetaMoniker();
     injectRefinementStyles();
     normalizeAllForms();
     installFormGuard();
