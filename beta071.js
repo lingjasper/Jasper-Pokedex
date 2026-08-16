@@ -1,8 +1,9 @@
 (() => {
   'use strict';
 
-  const BETA_LABEL = 'Beta v0.7.1';
+  const BETA_LABEL = 'Beta v0.7.2';
   const isMobile = () => window.matchMedia('(max-width: 640px)').matches;
+  let observerTimer = null;
 
   function updateBetaLabel() {
     const label = document.getElementById('pokedexBetaMoniker');
@@ -45,7 +46,10 @@
   }
 
   function updateBoxCounters() {
-    document.querySelectorAll('#boxContainer .pc-box').forEach(box => {
+    const container = document.getElementById('boxContainer');
+    if (!container) return;
+
+    container.querySelectorAll('.pc-box').forEach(box => {
       const title = box.querySelector('.box-title');
       if (!title) return;
 
@@ -60,10 +64,6 @@
       const pokemonCells = cells.filter(cell => !cell.classList.contains('empty'));
       const completed = pokemonCells.filter(cell => cell.classList.contains('completed')).length;
       const nextText = `${completed}/30`;
-
-      // Important: avoid rewriting the text when it has not changed.
-      // Rewriting textContent creates another childList mutation, which can
-      // otherwise cause the MutationObserver to call itself indefinitely.
       if (counter.textContent !== nextText) counter.textContent = nextText;
     });
   }
@@ -104,26 +104,41 @@
     document.head.appendChild(style);
   }
 
+  function scheduleBoxRefresh() {
+    if (observerTimer !== null) return;
+    observerTimer = window.setTimeout(() => {
+      observerTimer = null;
+      updateBoxCounters();
+    }, 50);
+  }
+
+  function installObservers() {
+    // Only observe the rendered box area. The previous implementation watched
+    // the entire document for every class mutation, which could repeatedly
+    // scan every box and monopolize the main thread during rendering.
+    const container = document.getElementById('boxContainer');
+    if (container) {
+      const observer = new MutationObserver(scheduleBoxRefresh);
+      observer.observe(container, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class']
+      });
+    }
+
+    window.addEventListener('resize', refresh, { passive: true });
+    window.addEventListener('scroll', () => {
+      const results = document.getElementById('searchResults');
+      if (isMobile() && results && results.style.display !== 'none') updateMobileSearchDropdown();
+    }, { passive: true });
+  }
+
   function refresh() {
     updateBetaLabel();
     updateMobileViewButtons();
     updateMobileSearchDropdown();
     updateBoxCounters();
-  }
-
-  function installObservers() {
-    const observer = new MutationObserver(() => {
-      updateBetaLabel();
-      updateBoxCounters();
-      updateMobileViewButtons();
-    });
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
-
-    window.addEventListener('resize', refresh);
-    window.addEventListener('scroll', () => {
-      const results = document.getElementById('searchResults');
-      if (isMobile() && results && results.style.display !== 'none') updateMobileSearchDropdown();
-    }, { passive: true });
   }
 
   function start() {
