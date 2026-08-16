@@ -2,7 +2,7 @@
   'use strict';
 
   const BASE = 'beta071-base.js';
-  const BETA_LABEL = 'Beta v0.8.4';
+  const BETA_LABEL = 'Beta v0.8.5';
   const TOKEN_KEY = 'jasper_pokedex_github_token';
   const SHA_KEY = 'jasper_pokedex_save_sha';
   const STATE_KEY = 'b2w2_living_dex_saved_state';
@@ -55,16 +55,15 @@
   const setTokenUI=active=>{const input=document.getElementById('githubTokenInput'),activate=document.getElementById('githubConnectBtn'),change=document.getElementById('githubChangeTokenBtn');if(!input)return;input.type='text';input.value=active?'****************':'';input.disabled=active;if(activate)activate.hidden=active;if(change)change.hidden=!active;};
   const updateBanner=()=>{const banner=document.getElementById('dexProgressBanner');if(!banner)return;const saved=state();const cells=[...document.querySelectorAll('#boxContainer .cell:not(.empty)')];const registered=Math.min(TOTAL_DEX,cells.filter(cell=>!!saved[cell.dataset.id]).length);const text=banner.querySelector('.dex-progress-text');if(text)text.textContent=`${registered} of ${TOTAL_DEX} Pokémon registered · ${TOTAL_DEX-registered} remaining · ${Math.round(registered/TOTAL_DEX*100)}% complete`;};
 
-  // The living regional dex contains only one base entry for each of these species.
-  // Remove legacy duplicate/form entries that may still exist in older markup.
+  // Remove only the additional forms. Keep the single base Pokédex entries for #297–#300.
   const removeLegacyDuplicateForms = () => {
-    const species = /^(Kyurem|Keldeo|Genesect)\s*(?:\(|-|–|—)/i;
+    const variant = /^(White Kyurem|Black Kyurem|Resolute Keldeo|Pirouette Meloetta|Shock Drive Genesect|Burn Drive Genesect|Chill Drive Genesect|Douse Drive Genesect)$/i;
     document.querySelectorAll('.cell[data-name], .list-row[data-name]').forEach(el => {
-      if (species.test((el.dataset.name || '').trim())) el.remove();
+      if (variant.test((el.dataset.name || '').trim())) el.remove();
     });
     document.querySelectorAll('.cell:not([data-name]), .list-row:not([data-name])').forEach(el => {
       const text=(el.textContent||'').replace(/\s+/g,' ').trim();
-      if (/^(Kyurem|Keldeo|Genesect)\s*(?:\(|-|–|—)/i.test(text)) el.remove();
+      if (variant.test(text)) el.remove();
     });
   };
 
@@ -103,7 +102,7 @@
     const cells=document.getElementById('boxContainer');if(cells&&!cells.dataset.beta083Observed){cells.dataset.beta083Observed='1';new MutationObserver(updateBanner).observe(cells,{subtree:true,attributes:true,attributeFilter:['class']});}
   };
 
-  const injectFixStyles=()=>{if(document.getElementById('beta084Styles'))return;const style=document.createElement('style');style.id='beta084Styles';style.textContent=`@media(min-width:641px){.desktop-sidebar-subheader{text-transform:none!important;letter-spacing:0!important;font-size:.82rem!important;font-weight:700!important}#desktopWorkspaceTop #githubSyncWrap{display:block!important;visibility:visible!important;opacity:1!important;z-index:2147483646!important;position:relative!important}#githubSyncPill{position:relative;z-index:2147483646!important}#githubSyncMenu{z-index:2147483647!important;position:fixed!important;max-height:calc(100vh - 24px);overflow-y:auto}.github-sync-icon.spinning{animation:githubSyncSpin 1s linear infinite}@keyframes githubSyncSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}#desktopWorkspace #dexProgressBanner{display:flex!important;visibility:visible!important;opacity:1!important;position:relative;z-index:100!important}.desktop-controls-separator{height:0;border-top:2px solid #cbd5e1!important;margin:0 0 16px;flex:0 0 auto;width:100%}}`;document.head.appendChild(style);};
+  const injectFixStyles=()=>{if(document.getElementById('beta085Styles'))return;const style=document.createElement('style');style.id='beta085Styles';style.textContent=`@media(min-width:641px){.desktop-sidebar-subheader{text-transform:none!important;letter-spacing:0!important;font-size:.82rem!important;font-weight:700!important}#desktopWorkspaceTop #githubSyncWrap{display:block!important;visibility:visible!important;opacity:1!important;z-index:2147483646!important;position:relative!important}#githubSyncPill{position:relative;z-index:2147483646!important}#githubSyncMenu{z-index:2147483647!important;position:fixed!important;max-height:calc(100vh - 24px);overflow-y:auto}.github-sync-icon.spinning{animation:githubSyncSpin 1s linear infinite}@keyframes githubSyncSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}#desktopWorkspace #dexProgressBanner{display:flex!important;visibility:visible!important;opacity:1!important;position:relative;z-index:100!important}.desktop-controls-separator{height:0;border-top:2px solid #cbd5e1!important;margin:0 0 16px;flex:0 0 auto;width:100%}#githubSyncNote{font-size:.65rem!important;line-height:1.3!important;margin-top:8px!important}.cell .dex-num{margin-right:4px}.cell .name{margin-top:6px!important}.cell .checkbox{margin-left:4px}}`;document.head.appendChild(style);};
   const repair=()=>{if(isMobile())return;injectFixStyles();installDesktopSyncUI();};
   const loadBase=()=>{const restoreObserver=installOneShotBodyObserverGuard();const script=document.createElement('script');script.src=BASE;script.onload=()=>{restoreObserver();setTimeout(repair,0);};script.onerror=()=>{restoreObserver();};document.head.appendChild(script);};
   loadBase();
