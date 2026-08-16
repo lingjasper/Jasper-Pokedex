@@ -1,0 +1,51 @@
+name: Beta v0.9.7 Moniker Fix
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix-moniker:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Update Beta v0.9.7 moniker and cache-bust versioned scripts
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          replacements = {
+              'beta071-base.js': [
+                  ("const BETA_LABEL = 'Beta v0.8';", "const BETA_LABEL = 'Beta v0.9.7';"),
+              ],
+              'beta071.js': [
+                  ("const BASE = 'beta071-base.js';", "const BASE = 'beta071-base.js?v=0.9.7';"),
+                  ("const BETA_LABEL = 'Beta v0.8.5';", "const BETA_LABEL = 'Beta v0.9.7';"),
+              ],
+              'index.html': [
+                  ('stabilization-v094.js?v=0.9.4', 'stabilization-v094.js?v=0.9.7'),
+                  ('beta071.js"></script>', 'beta071.js?v=0.9.7"></script>'),
+              ],
+          }
+          for name, pairs in replacements.items():
+              path = Path(name)
+              text = path.read_text()
+              original = text
+              for old, new in pairs:
+                  text = text.replace(old, new)
+              if text != original:
+                  path.write_text(text)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html beta071.js beta071-base.js
+          git diff --cached --quiet || git commit -m "Beta v0.9.7 — update website moniker"
+          git push
+      - name: Remove one-shot workflow
+        run: |
+          git rm .github/workflows/beta097-moniker-fix.yml
+          git commit -m "Remove Beta v0.9.7 one-shot moniker workflow"
+          git push
