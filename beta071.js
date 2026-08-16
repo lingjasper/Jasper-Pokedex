@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const BASE = 'beta071-base.js';
-  const BETA_LABEL = 'Beta v0.8.5';
+  const BASE = 'beta071-base.js?v=0.9.7';
+  const BETA_LABEL = 'Beta v0.9.7';
   const TOKEN_KEY = 'jasper_pokedex_github_token';
   const SHA_KEY = 'jasper_pokedex_save_sha';
   const STATE_KEY = 'b2w2_living_dex_saved_state';
