@@ -1,0 +1,50 @@
+name: Inject v0.9.4 Stabilization
+
+on:
+  push:
+    branches: ["beta-v0.9.4-stabilization"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inject:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out stabilization branch
+        uses: actions/checkout@v4
+
+      - name: Inject stabilization layer without rewriting index.html
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          marker = '<script src="stabilization-v094.js?v=0.9.4"></script>'
+
+          if marker in text:
+              print('v0.9.4 stabilization layer already enabled.')
+          else:
+              anchor = '<script src="github-sync.js"></script>'
+              if anchor not in text:
+                  raise SystemExit('Could not find github-sync.js script anchor in index.html')
+              text = text.replace(anchor, marker + '\n' + anchor, 1)
+              path.write_text(text, encoding='utf-8')
+              print('Injected v0.9.4 stabilization layer.')
+
+      - name: Commit injection only when needed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- index.html; then
+            echo "No index.html changes required."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Enable v0.9.4 stabilization layer [skip ci]'
+          git push
