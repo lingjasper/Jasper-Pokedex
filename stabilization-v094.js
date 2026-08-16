@@ -146,13 +146,18 @@
     });
   };
 
+  // Run once immediately because github-sync.js is loaded after this file and
+  // may prune forms before DOMContentLoaded. The observer restores them before
+  // the main List View builder runs.
+  ensureProtectedForms();
+  installParityGuard();
+  syncUI();
+
   const boot = () => {
     injectRefinementStyles();
     ensureProtectedForms();
     syncUI();
     installParityGuard();
-    ensureProtectedForms();
-    syncUI();
   };
 
   if (document.readyState === 'loading') {
