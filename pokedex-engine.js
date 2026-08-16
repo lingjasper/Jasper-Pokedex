@@ -1,10 +1,11 @@
 (() => {
   'use strict';
 
-  /* Beta v0.10 — data-driven Pokédex renderer.
+  /* Beta v0.10.1 — data-driven Pokédex renderer.
    * Pokedexes/<game> is the source of truth. The renderer never invents,
    * merges, prunes, or repairs Pokémon/forms in the DOM. */
 
+  const RELEASE = 'Beta v0.10.1';
   const DEFAULT_GAME = 'White2';
   const RAW_ROOT = 'https://raw.githubusercontent.com/lingjasper/Jasper-Pokedex/main/Pokedexes/';
   const API_ROOT = 'https://api.github.com/repos/lingjasper/Jasper-Pokedex/contents/Pokedexes?ref=main';
@@ -38,14 +39,14 @@
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   }[c]));
 
+  const normalize = value => String(value).toLocaleLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
   // Preserve the stable IDs used by the existing save data. The first entry
-  // for a Dex number is the base ID (e.g. 016); repeated entries use the
-  // source form label (e.g. 016-M, 104-Red, 159-Spring).
+  // for a Dex number is the base ID; repeated entries use the source form label.
   const formKey = form => form
     .replace(/[()]/g, '')
     .replace(/\s+Form$/i, '')
-    .replace(/\s+/g, '')
-    .replace(/^NoDrive$/i, 'NoDrive');
+    .replace(/\s+/g, '');
 
   const parseSource = text => {
     const rows = [];
@@ -91,6 +92,29 @@
   const displayName = game => game.replace(/([a-z])([A-Z])/g, '$1 $2') === 'White2'
     ? 'Pokémon White 2'
     : game.replace(/([a-z])([A-Z])/g, '$1 $2');
+
+  const installReleaseMoniker = () => {
+    document.querySelectorAll('#pokedexBetaMoniker, .desktop-sidebar-brand .beta').forEach(el => { el.textContent = RELEASE; });
+    document.title = `Jasper's Pokédex — ${RELEASE}`;
+  };
+
+  const installLayoutFixes = () => {
+    if (document.getElementById('v0101LayoutStyles')) return;
+    const style = document.createElement('style');
+    style.id = 'v0101LayoutStyles';
+    style.textContent = `
+      #boxContainer .grid .cell { justify-content:center !important; align-items:center !important; text-align:center !important; }
+      #boxContainer .grid .cell .dex-num,
+      #boxContainer .grid .cell .name,
+      #boxContainer .grid .cell .checkbox { margin-left:auto !important; margin-right:auto !important; }
+      #listContainer .list-row { justify-content:flex-start !important; }
+      #listContainer .list-row > .checkbox { order:-1 !important; margin:0 !important; }
+      #listContainer .list-row > .list-info { flex:1 1 auto; }
+      #searchResults .search-result-item { display:flex; align-items:center; justify-content:flex-start; }
+      #searchResults .search-result-item > .checkbox { order:-1; margin:0; }
+    `;
+    document.head.appendChild(style);
+  };
 
   const renderCell = (pokemon, state) => {
     const cell = document.createElement('div');
@@ -149,7 +173,8 @@
       row.dataset.id = item.id;
       row.dataset.num = item.num;
       row.dataset.name = item.name;
-      row.innerHTML = `<div class="list-info"><span class="dex-num">${escapeHTML(item.num)}</span><span class="name">${escapeHTML(item.baseName)}${item.form ? ` <span class="form">${escapeHTML(item.form)}</span>` : ''}</span></div><div class="checkbox"></div>`;
+      // Checkmark intentionally comes first: List View is left-aligned.
+      row.innerHTML = `<div class="checkbox"></div><div class="list-info"><span class="dex-num">${escapeHTML(item.num)}</span><span class="name">${escapeHTML(item.baseName)}${item.form ? ` <span class="form">${escapeHTML(item.form)}</span>` : ''}</span></div>`;
       container.appendChild(row);
     });
   };
@@ -161,6 +186,55 @@
     text.textContent = `${registered} of ${pokemon.length} Pokémon registered · ${pokemon.length - registered} remaining · ${Math.round(registered / Math.max(1, pokemon.length) * 100)}% complete`;
   };
 
+  const renderSearchResults = (query, pokemon, state) => {
+    const results = document.getElementById('searchResults');
+    if (!results) return;
+    const q = normalize(query.trim());
+    results.replaceChildren();
+    if (!q) { results.style.display = 'none'; return; }
+
+    const matches = pokemon.filter(item => normalize(item.name).includes(q) || item.num.includes(q)).slice(0, 30);
+    if (!matches.length) {
+      const empty = document.createElement('div');
+      empty.className = 'search-result-item';
+      empty.textContent = 'No Pokémon found';
+      results.appendChild(empty);
+    } else {
+      matches.forEach(item => {
+        const row = document.createElement('div');
+        row.className = `search-result-item${state[item.id] === true ? ' completed' : ''}`;
+        row.dataset.id = item.id;
+        row.innerHTML = `<div class="checkbox"></div><div class="list-info"><span class="dex-num">${escapeHTML(item.num)}</span><span class="name">${escapeHTML(item.baseName)}${item.form ? ` <span class="form">${escapeHTML(item.form)}</span>` : ''}</span></div><button type="button" class="jump-to-btn">Jump</button>`;
+        results.appendChild(row);
+      });
+    }
+    results.style.display = 'block';
+  };
+
+  const installSearch = (pokemon, game) => {
+    const input = document.getElementById('searchInput');
+    const results = document.getElementById('searchResults');
+    if (!input || !results) return;
+    input.oninput = () => renderSearchResults(input.value, pokemon, readState(game));
+    input.onfocus = () => { if (input.value.trim()) renderSearchResults(input.value, pokemon, readState(game)); };
+    results.onclick = event => {
+      const row = event.target.closest('.search-result-item[data-id]');
+      if (!row) return;
+      const id = row.dataset.id;
+      const target = document.querySelector(`#boxContainer [data-id="${CSS.escape(id)}"]`);
+      if (target) {
+        target.scrollIntoView({ behavior:'smooth', block:'center' });
+        target.classList.remove('jump-highlight');
+        void target.offsetWidth;
+        target.classList.add('jump-highlight');
+      }
+      results.style.display = 'none';
+    };
+    document.addEventListener('click', event => {
+      if (!event.target.closest('.search-wrapper')) results.style.display = 'none';
+    }, { passive:true });
+  };
+
   const bindClicks = (game, pokemon) => {
     const toggle = event => {
       const target = event.target.closest('[data-id]');
@@ -170,6 +244,7 @@
       writeState(game, state);
       document.querySelectorAll(`[data-id="${CSS.escape(target.dataset.id)}"]`).forEach(el => el.classList.toggle('completed', state[target.dataset.id] === true));
       updateProgress(pokemon, state);
+      renderSearchResults(document.getElementById('searchInput')?.value || '', pokemon, state);
     };
     const box = document.getElementById('boxContainer');
     const list = document.getElementById('listContainer');
@@ -201,11 +276,15 @@
     renderBoxes(pokemon, state);
     renderList(pokemon, state);
     bindClicks(game, pokemon);
+    installSearch(pokemon, game);
     updateProgress(pokemon, state);
-    document.title = `Jasper's Pokedex — ${displayName(game)}`;
+    installReleaseMoniker();
+    document.title = `Jasper's Pokédex — ${RELEASE} — ${displayName(game)}`;
   };
 
   const boot = async () => {
+    installLayoutFixes();
+    installReleaseMoniker();
     const games = await discoverGames();
     if (!games.length) return;
     updateTabs(games);
