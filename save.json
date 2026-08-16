@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-16T05:55:08.396Z",
+  "updatedAt": "2026-08-16T05:55:16.465Z",
   "pokemon": {
     "105": true,
     "111": true,
@@ -90,6 +90,7 @@
     "096": true,
     "095": true,
     "104-Blue": true,
-    "159-Winter": true
+    "159-Winter": false,
+    "160-Winter": true
   }
 }
