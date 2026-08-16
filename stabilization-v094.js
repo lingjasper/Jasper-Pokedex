@@ -9,32 +9,18 @@
 
   // These are intentionally separate, boxable forms in the current B2W2 Dex.
   // Legacy cleanup in github-sync.js may otherwise collapse them to one entry.
-  const KEEP_FORM_IDS = new Set([
-    '297-Normal', '297-Black', '297-White',
-    '298-Ordinary', '298-Resolute',
-    '300-NoDrive', '300-Burn', '300-Shock', '300-Chill', '300-Douse'
-  ]);
-
-  const nativeRemove = Element.prototype.remove;
-  const nativeRemoveChild = Node.prototype.removeChild;
-  const isProtectedForm = node =>
-    node instanceof Element && KEEP_FORM_IDS.has(node.getAttribute('data-id'));
-
-  // Only guard the initial page-construction pass. Do not permanently patch
-  // DOM prototypes; user-created/removed nodes must behave normally afterward.
-  Element.prototype.remove = function () {
-    if (isProtectedForm(this)) return;
-    return nativeRemove.call(this);
-  };
-  Node.prototype.removeChild = function (child) {
-    if (isProtectedForm(child)) return child;
-    return nativeRemoveChild.call(this, child);
-  };
-
-  const restoreNativeDOMMethods = () => {
-    Element.prototype.remove = nativeRemove;
-    Node.prototype.removeChild = nativeRemoveChild;
-  };
+  const PROTECTED_FORMS = [
+    { id: '297-Normal', num: '297', name: 'Kyurem (Normal)', form: '(Normal)' },
+    { id: '297-Black', num: '297', name: 'Kyurem (Black)', form: '(Black)' },
+    { id: '297-White', num: '297', name: 'Kyurem (White)', form: '(White)' },
+    { id: '298-Ordinary', num: '298', name: 'Keldeo (Ordinary)', form: '(Ordinary)' },
+    { id: '298-Resolute', num: '298', name: 'Keldeo (Resolute)', form: '(Resolute)' },
+    { id: '300-NoDrive', num: '300', name: 'Genesect (No Drive)', form: '(No Drive)' },
+    { id: '300-Burn', num: '300', name: 'Genesect (Burn)', form: '(Burn)' },
+    { id: '300-Shock', num: '300', name: 'Genesect (Shock)', form: '(Shock)' },
+    { id: '300-Chill', num: '300', name: 'Genesect (Chill)', form: '(Chill)' },
+    { id: '300-Douse', num: '300', name: 'Genesect (Douse)', form: '(Douse)' }
+  ];
 
   const readState = () => {
     try {
@@ -110,6 +96,37 @@
     document.head.appendChild(style);
   };
 
+  const ensureProtectedForms = () => {
+    const grids = [...document.querySelectorAll('#boxContainer .pc-box .grid')];
+    const grid = grids.find(candidate =>
+      candidate.closest('.pc-box')?.querySelector('.box-title')?.textContent.includes('Box 11')
+    ) || grids[grids.length - 1];
+    if (!grid) return;
+
+    const existing = new Set(
+      [...grid.querySelectorAll('.cell[data-id]')].map(cell => cell.dataset.id)
+    );
+
+    PROTECTED_FORMS.forEach(form => {
+      if (existing.has(form.id)) return;
+
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.id = form.id;
+      cell.dataset.num = form.num;
+      cell.dataset.name = form.name;
+      cell.innerHTML = `
+        <span class="dex-num">${form.num}</span>
+        <span class="name">${form.name.split(' (')[0]} <span class="form">${form.form}</span></span>
+        <div class="checkbox"></div>
+      `;
+
+      const firstEmpty = grid.querySelector('.cell.empty');
+      if (firstEmpty) grid.insertBefore(cell, firstEmpty);
+      else grid.appendChild(cell);
+    });
+  };
+
   const installParityGuard = () => {
     const box = document.getElementById('boxContainer');
     if (!box || box.dataset.stabilizationObserved) return;
@@ -117,6 +134,7 @@
     box.dataset.stabilizationObserved = '1';
 
     const observer = new MutationObserver(() => {
+      ensureProtectedForms();
       syncUI();
     });
 
@@ -130,12 +148,11 @@
 
   const boot = () => {
     injectRefinementStyles();
+    ensureProtectedForms();
     syncUI();
     installParityGuard();
-
-    // The legacy form-pruning pass runs during initial script setup. Keep the
-    // protection through DOMContentLoaded, then restore normal DOM behavior.
-    restoreNativeDOMMethods();
+    ensureProtectedForms();
+    syncUI();
   };
 
   if (document.readyState === 'loading') {
