@@ -1,14 +1,10 @@
 (() => {
   'use strict';
 
-  /*
-   * Beta v0.10 — data-driven Pokédex renderer.
-   *
-   * The file in Pokedexes/<game> is the source of truth. The renderer does
-   * not invent, merge, prune, or repair Pokémon/forms in the DOM.
-   */
+  /* Beta v0.10 — data-driven Pokédex renderer.
+   * Pokedexes/<game> is the source of truth. The renderer never invents,
+   * merges, prunes, or repairs Pokémon/forms in the DOM. */
 
-  const GAME_ROOT = 'Pokedexes';
   const DEFAULT_GAME = 'White2';
   const RAW_ROOT = 'https://raw.githubusercontent.com/lingjasper/Jasper-Pokedex/main/Pokedexes/';
   const API_ROOT = 'https://api.github.com/repos/lingjasper/Jasper-Pokedex/contents/Pokedexes?ref=main';
@@ -16,31 +12,59 @@
   const BOX_ROWS = 5;
   const BOX_SIZE = BOX_COLUMNS * BOX_ROWS;
   const STATE_PREFIX = 'jasper_pokedex_state_';
+  const LEGACY_WHITE2_STATE = 'b2w2_living_dex_saved_state';
 
   const stateKey = game => `${STATE_PREFIX}${game}`;
   const readState = game => {
-    try { return JSON.parse(localStorage.getItem(stateKey(game)) || '{}'); }
-    catch { return {}; }
+    try {
+      const current = JSON.parse(localStorage.getItem(stateKey(game)) || 'null');
+      if (current && typeof current === 'object') return current;
+      if (game === DEFAULT_GAME) {
+        const legacy = JSON.parse(localStorage.getItem(LEGACY_WHITE2_STATE) || 'null');
+        if (legacy && typeof legacy === 'object') {
+          localStorage.setItem(stateKey(game), JSON.stringify(legacy));
+          return legacy;
+        }
+      }
+    } catch {}
+    return {};
   };
-  const writeState = (game, state) => localStorage.setItem(stateKey(game), JSON.stringify(state));
+  const writeState = (game, state) => {
+    localStorage.setItem(stateKey(game), JSON.stringify(state));
+    if (game === DEFAULT_GAME) localStorage.setItem(LEGACY_WHITE2_STATE, JSON.stringify(state));
+  };
 
   const escapeHTML = value => String(value).replace(/[&<>"']/g, c => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   }[c]));
 
+  // Preserve the stable IDs used by the existing save data. The first entry
+  // for a Dex number is the base ID (e.g. 016); repeated entries use the
+  // source form label (e.g. 016-M, 104-Red, 159-Spring).
+  const formKey = form => form
+    .replace(/[()]/g, '')
+    .replace(/\s+Form$/i, '')
+    .replace(/\s+/g, '')
+    .replace(/^NoDrive$/i, 'NoDrive');
+
   const parseSource = text => {
     const rows = [];
+    const seenNumbers = new Set();
     for (const line of text.split(/\r?\n/)) {
       const match = line.match(/^\|\s*#?(\d+)\s*\|\s*(.*?)\s*\|\s*$/);
       if (!match) continue;
       const num = match[1].padStart(3, '0');
       const name = match[2].trim();
       if (!name || /^-+$/.test(name)) continue;
+
       const formMatch = name.match(/^(.*?)\s*(\([^)]*\))$/);
       const baseName = formMatch ? formMatch[1].trim() : name;
       const form = formMatch ? formMatch[2] : '';
-      const id = `${num}-${rows.length}`;
+      const key = form ? formKey(form) : '';
+      const id = seenNumbers.has(num) && key ? `${num}-${key}` : num;
+
       rows.push({ id, num, name, baseName, form });
+      seenNumbers.add(num);
     }
     return rows;
   };
@@ -64,15 +88,13 @@
     }
   };
 
-  const displayName = game => {
-    const spaced = game.replace(/([a-z])([A-Z])/g, '$1 $2');
-    return spaced === 'White2' ? 'Pokémon White 2' : spaced;
-  };
+  const displayName = game => game.replace(/([a-z])([A-Z])/g, '$1 $2') === 'White2'
+    ? 'Pokémon White 2'
+    : game.replace(/([a-z])([A-Z])/g, '$1 $2');
 
   const renderCell = (pokemon, state) => {
-    const completed = state[pokemon.id] === true;
     const cell = document.createElement('div');
-    cell.className = `cell${completed ? ' completed' : ''}`;
+    cell.className = `cell${state[pokemon.id] === true ? ' completed' : ''}`;
     cell.dataset.id = pokemon.id;
     cell.dataset.num = pokemon.num;
     cell.dataset.name = pokemon.name;
@@ -91,21 +113,15 @@
     const container = document.getElementById('boxContainer');
     if (!container) return;
     container.replaceChildren();
-
     const boxCount = Math.max(1, Math.ceil(pokemon.length / BOX_SIZE));
+
     for (let boxIndex = 0; boxIndex < boxCount; boxIndex++) {
-      const start = boxIndex * BOX_SIZE;
-      const items = pokemon.slice(start, start + BOX_SIZE);
+      const items = pokemon.slice(boxIndex * BOX_SIZE, (boxIndex + 1) * BOX_SIZE);
       const box = document.createElement('div');
       box.className = 'pc-box';
-
       const title = document.createElement('div');
       title.className = 'box-title';
-      const first = items[0]?.num;
-      const last = items[items.length - 1]?.num;
-      title.textContent = first === undefined
-        ? `Box ${boxIndex + 1}`
-        : `Box ${boxIndex + 1} — Dex #${first}–#${last}`;
+      title.textContent = `Box ${boxIndex + 1} — ${items.length ? `Dex #${items[0].num}–#${items[items.length - 1].num}` : 'Empty'}`;
 
       const wrapper = document.createElement('div');
       wrapper.className = 'grid-wrapper';
@@ -115,7 +131,7 @@
       grid.style.gridTemplateRows = `repeat(${BOX_ROWS}, minmax(58px, auto))`;
 
       items.forEach(item => grid.appendChild(renderCell(item, state)));
-      for (let i = items.length; i < BOX_SIZE; i++) grid.appendChild(renderEmpty());
+      while (grid.children.length < BOX_SIZE) grid.appendChild(renderEmpty());
 
       wrapper.appendChild(grid);
       box.append(title, wrapper);
@@ -155,7 +171,6 @@
       document.querySelectorAll(`[data-id="${CSS.escape(target.dataset.id)}"]`).forEach(el => el.classList.toggle('completed', state[target.dataset.id] === true));
       updateProgress(pokemon, state);
     };
-
     const box = document.getElementById('boxContainer');
     const list = document.getElementById('listContainer');
     if (box && !box.dataset.v010Bound) { box.dataset.v010Bound = '1'; box.addEventListener('click', toggle); }
@@ -180,6 +195,7 @@
   const renderGame = async game => {
     const pokemon = await loadGame(game);
     const state = readState(game);
+    window.JASPER_ACTIVE_GAME = game;
     window.JASPER_POKEDEX = { game, pokemon, boxColumns: BOX_COLUMNS, boxRows: BOX_ROWS, boxSize: BOX_SIZE };
     setActiveTab(game);
     renderBoxes(pokemon, state);
@@ -193,15 +209,13 @@
     const games = await discoverGames();
     if (!games.length) return;
     updateTabs(games);
-    const requested = window.JASPER_DEFAULT_GAME && games.includes(window.JASPER_DEFAULT_GAME)
-      ? window.JASPER_DEFAULT_GAME
-      : games.includes(DEFAULT_GAME) ? DEFAULT_GAME : games[0];
-
     document.querySelector('.tabs-container')?.addEventListener('click', event => {
       const button = event.target.closest('.tab-btn[data-game]');
       if (button) renderGame(button.dataset.game).catch(console.error);
     });
-
+    const requested = window.JASPER_DEFAULT_GAME && games.includes(window.JASPER_DEFAULT_GAME)
+      ? window.JASPER_DEFAULT_GAME
+      : games.includes(DEFAULT_GAME) ? DEFAULT_GAME : games[0];
     await renderGame(requested);
   };
 
