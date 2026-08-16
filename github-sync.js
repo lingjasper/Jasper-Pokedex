@@ -2,14 +2,15 @@
   const STATE_KEY = "b2w2_living_dex_saved_state";
   const TOKEN_KEY = "jasper_pokedex_github_token";
   const SHA_KEY = "jasper_pokedex_save_sha";
+  const RELOAD_KEY = "jasper_pokedex_remote_reload_sha";
   const API = "https://api.github.com/repos/lingjasper/Jasper-Pokedex";
   const SAVE = "/contents/save.json?ref=main";
-  let remoteReady = false, timer = null, busy = false;
+  let remoteReady = false, timer = null, busy = false, suppressSave = false;
 
   const originalSetItem = Storage.prototype.setItem;
   Storage.prototype.setItem = function(key, value) {
     originalSetItem.call(this, key, value);
-    if (this === localStorage && key === STATE_KEY && remoteReady) scheduleSave();
+    if (this === localStorage && key === STATE_KEY && remoteReady && !suppressSave) scheduleSave();
   };
   const token = () => localStorage.getItem(TOKEN_KEY) || "";
   const state = () => { try { return JSON.parse(localStorage.getItem(STATE_KEY) || "{}"); } catch { return {}; } };
@@ -38,14 +39,29 @@
   const scheduleSave=()=>{clearTimeout(timer);status("Unsaved changes…","busy");timer=setTimeout(saveRemote,1200);};
   const loadRemote = async () => {
     if(!token()){remoteReady=true;status("Local only — connect GitHub to sync.");return;}
-    status("Checking GitHub…","busy");
+    remoteReady=false; status("Checking GitHub…","busy");
     try{
       const remote=await getRemote(); localStorage.setItem(SHA_KEY,remote.sha);
       const local=state(), remoteKeys=Object.keys(remote.state), localKeys=Object.keys(local);
       if(remoteKeys.length===0&&localKeys.length){remoteReady=true;await saveRemote();return;}
-      localStorage.setItem(STATE_KEY,JSON.stringify(remote.state)); remoteReady=true;
-      status(`Synced ✓ (${remoteKeys.filter(k=>remote.state[k]).length} completed)`,"ok"); setTimeout(()=>location.reload(),50);
-    }catch(e){remoteReady=true;status(e.status===404?"save.json not found; your next change will create it.":e.status===401?"GitHub token is invalid or expired.":`Could not load GitHub save: ${e.message}`,e.status===401?"error":"normal");}
+      // Apply the downloaded save without triggering the autosave watcher.
+      suppressSave=true;
+      localStorage.setItem(STATE_KEY,JSON.stringify(remote.state));
+      suppressSave=false;
+      remoteReady=true;
+      status(`Synced ✓ (${remoteKeys.filter(k=>remote.state[k]).length} completed)`,"ok");
+      // The main Pokedex reads localStorage at startup. Reload once so its UI uses
+      // the downloaded save, but remember the SHA so this cannot become a reload loop.
+      if(sessionStorage.getItem(RELOAD_KEY)!==remote.sha){
+        sessionStorage.setItem(RELOAD_KEY,remote.sha);
+        setTimeout(()=>location.reload(),50);
+      }else{
+        sessionStorage.removeItem(RELOAD_KEY);
+      }
+    }catch(e){
+      suppressSave=false; remoteReady=true;
+      status(e.status===404?"save.json not found; your next change will create it.":e.status===401?"GitHub token is invalid or expired.":`Could not load GitHub save: ${e.message}`,e.status===401?"error":"normal");
+    }
   };
   const connect = async () => {
     const input=document.getElementById("githubTokenInput"), value=input.value.trim(); if(!value)return status("Paste your fine-grained GitHub token first.","error");
@@ -59,8 +75,8 @@
     const panel=document.createElement("details"); panel.id="githubSyncPanel"; panel.innerHTML=`<summary>GitHub Sync</summary><div id="githubSyncControls"><input id="githubTokenInput" type="password" autocomplete="off" placeholder="Fine-grained GitHub token"><button id="githubConnectBtn" type="button">Connect</button><button id="githubSyncBtn" type="button">Sync Now</button><button id="githubDisconnectBtn" type="button">Disconnect</button></div><div id="githubSyncStatus">Local only — connect GitHub to sync.</div><p id="githubSyncNote">Your token is stored only in this browser and is never committed to GitHub. Use a fine-grained token limited to this repository with Contents: Read and write.</p>`;
     const heading=document.querySelector("h1"); heading.parentNode.insertBefore(panel,heading.nextSibling);
     document.getElementById("githubConnectBtn").onclick=connect;
-    document.getElementById("githubSyncBtn").onclick=async()=>{if(!token())return status("Connect GitHub first.","error");try{const r=await getRemote();localStorage.setItem(SHA_KEY,r.sha);remoteReady=true;await saveRemote();}catch(e){status(`Sync failed: ${e.message}`,"error");}};
-    document.getElementById("githubDisconnectBtn").onclick=()=>{localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(SHA_KEY);remoteReady=false;status("GitHub sync disconnected.");};
+    document.getElementById("githubSyncBtn").onclick=async()=>{if(!token())return status("Connect GitHub first.","error");if(busy)return;try{const r=await getRemote();localStorage.setItem(SHA_KEY,r.sha);remoteReady=true;await saveRemote();}catch(e){status(`Sync failed: ${e.message}`,"error");}};
+    document.getElementById("githubDisconnectBtn").onclick=()=>{clearTimeout(timer);localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(SHA_KEY);sessionStorage.removeItem(RELOAD_KEY);remoteReady=false;status("GitHub sync disconnected.");};
   };
   document.addEventListener("DOMContentLoaded",()=>{injectUI();if(token())loadRemote();else remoteReady=true;});
 })();
