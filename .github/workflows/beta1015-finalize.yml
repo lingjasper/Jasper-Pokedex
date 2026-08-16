@@ -1,0 +1,42 @@
+name: Beta v0.10.1.5 finalize renderer ownership
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Make version and renderer ownership authoritative
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          version = Path('version.js')
+          version.write_text("(() => {\n  'use strict';\n  // SINGLE SOURCE OF TRUTH for the website release moniker.\n  window.JASPER_POKEDEX_VERSION = 'Beta v0.10.1.5';\n})();\n")
+
+          index = Path('index.html')
+          text = index.read_text()
+          # Retire legacy runtime owners. The data renderer + owner are authoritative.
+          text = re.sub(r'\s*<script[^>]+src=[\"\'][^\"\']*(?:github-sync|beta071|stabilization-v094|beta0102-fixes)[^\"\']*[\"\'][^>]*></script>', '', text, flags=re.I)
+          # Remove duplicate version/engine/owner script tags before reinserting one ordered set.
+          text = re.sub(r'\s*<script[^>]+src=[\"\'][^\"\']*(?:version\.js|pokedex-engine\.js|pokedex-owner\.js)[^\"\']*[\"\'][^>]*></script>', '', text, flags=re.I)
+          scripts = '  <script src="version.js?v=0.10.1.5"></script>\n  <script src="pokedex-engine.js?v=0.10.1.5"></script>\n  <script src="pokedex-owner.js?v=0.10.1.5"></script>\n'
+          text = text.replace('</body>', scripts + '</body>')
+          index.write_text(text)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html version.js
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Beta v0.10.1.5 — finalize renderer and sync ownership"
+          git push
+      - name: Remove finalization workflow
+        run: |
+          git rm .github/workflows/beta1015-finalize.yml
+          git commit -m "Beta v0.10.1.5 — remove one-shot finalization workflow"
+          git push
