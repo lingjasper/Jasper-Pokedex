@@ -5,9 +5,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   let supabase = null;
   let currentUser = null;
 
-  // Load the existing Supabase configuration and client.
+  // app.js lives in /js, so supabase.js is a sibling file.
   const configScript = document.createElement("script");
-  configScript.src = "supabase.js";
+  configScript.src = "js/supabase.js";
   configScript.onload = async () => {
     const config = window.SUPABASE_CONFIG;
     if (!config || config.url.startsWith("YOUR_") || config.anonKey.startsWith("YOUR_")) {
@@ -20,9 +20,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     clientScript.onload = async () => {
       try {
         supabase = window.supabase.createClient(config.url, config.anonKey);
-
-        // Reuse an existing session when available. Otherwise create an
-        // anonymous account so every browser gets its own cloud-saved dex.
         const { data: sessionData } = await supabase.auth.getSession();
         currentUser = sessionData.session?.user || null;
 
@@ -66,7 +63,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    // Restore the cloud state into the existing HTML-based Pokédex.
     const state = {};
     for (const row of data || []) state[row.pokemon_id] = row.completed;
     restoreState(state);
@@ -82,6 +78,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function restoreState(state) {
+    document.querySelectorAll(".cell[data-id]").forEach((cell) => {
+      cell.classList.remove("completed");
+    });
+
     Object.keys(state).forEach((id) => {
       if (!state[id]) return;
       const cell = document.querySelector(`.cell[data-id="${CSS.escape(id)}"]`);
@@ -90,15 +90,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function attachCellHandlers(saveHandler) {
-    document.querySelectorAll(".cell:not(.empty)").forEach((cell) => {
-      // Prevent duplicate handlers if initialization is ever retried.
+    document.querySelectorAll(".cell:not(.empty)[data-id]").forEach((cell) => {
       if (cell.dataset.progressHandlerAttached === "true") return;
       cell.dataset.progressHandlerAttached = "true";
 
       cell.addEventListener("click", async () => {
         const id = cell.getAttribute("data-id");
         const completed = cell.classList.toggle("completed");
-        await saveHandler(id, completed);
+        try {
+          await saveHandler(id, completed);
+        } catch (error) {
+          console.error("Could not save checkbox state:", error);
+          saveLocalState(id, completed);
+        }
       });
     });
   }
@@ -121,7 +125,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (error) {
       console.error("Could not save Supabase progress:", error);
-      // Keep localStorage as an offline fallback.
       saveLocalState(id, completed);
     }
   }
