@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   let supabase = null;
   let currentUser = null;
 
-  // Load Supabase configuration without breaking the existing local version.
+  // Load the existing Supabase configuration and client.
   const configScript = document.createElement("script");
   configScript.src = "supabase.js";
   configScript.onload = async () => {
@@ -18,10 +18,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     const clientScript = document.createElement("script");
     clientScript.src = SUPABASE_CDN;
     clientScript.onload = async () => {
-      supabase = window.supabase.createClient(config.url, config.anonKey);
-      const { data } = await supabase.auth.getUser();
-      currentUser = data.user || null;
-      await initializeProgress();
+      try {
+        supabase = window.supabase.createClient(config.url, config.anonKey);
+
+        // Reuse an existing session when available. Otherwise create an
+        // anonymous account so every browser gets its own cloud-saved dex.
+        const { data: sessionData } = await supabase.auth.getSession();
+        currentUser = sessionData.session?.user || null;
+
+        if (!currentUser) {
+          const { data, error } = await supabase.auth.signInAnonymously();
+          if (error) throw error;
+          currentUser = data.user;
+        }
+
+        await initializeProgress();
+      } catch (error) {
+        console.error("Supabase initialization failed:", error);
+        initializeLocalStorage();
+      }
     };
     clientScript.onerror = () => initializeLocalStorage();
     document.head.appendChild(clientScript);
@@ -51,6 +66,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    // Restore the cloud state into the existing HTML-based Pokédex.
     const state = {};
     for (const row of data || []) state[row.pokemon_id] = row.completed;
     restoreState(state);
@@ -75,6 +91,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function attachCellHandlers(saveHandler) {
     document.querySelectorAll(".cell:not(.empty)").forEach((cell) => {
+      // Prevent duplicate handlers if initialization is ever retried.
+      if (cell.dataset.progressHandlerAttached === "true") return;
+      cell.dataset.progressHandlerAttached = "true";
+
       cell.addEventListener("click", async () => {
         const id = cell.getAttribute("data-id");
         const completed = cell.classList.toggle("completed");
@@ -90,15 +110,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   async function saveSupabaseState(id, completed) {
-    const { error } = await supabase.from("pokemon_progress").upsert({
-      user_id: currentUser.id,
-      pokemon_id: id,
-      completed
-    });
+    const { error } = await supabase.from("pokemon_progress").upsert(
+      {
+        user_id: currentUser.id,
+        pokemon_id: id,
+        completed
+      },
+      { onConflict: "user_id,pokemon_id" }
+    );
 
     if (error) {
       console.error("Could not save Supabase progress:", error);
-      // Keep localStorage as a temporary offline fallback.
+      // Keep localStorage as an offline fallback.
       saveLocalState(id, completed);
     }
   }
