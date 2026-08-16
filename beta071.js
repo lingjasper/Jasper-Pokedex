@@ -6,15 +6,16 @@
 
   function updateBetaLabel() {
     const label = document.getElementById('pokedexBetaMoniker');
-    if (label) label.textContent = BETA_LABEL;
+    if (label && label.textContent !== BETA_LABEL) label.textContent = BETA_LABEL;
   }
 
   function updateMobileViewButtons() {
     const buttons = [document.getElementById('boxViewBtn'), document.getElementById('listViewBtn')].filter(Boolean);
     buttons.forEach(button => {
-      button.style.minWidth = isMobile() ? '80px' : '';
-      button.style.flexShrink = '0';
-      button.style.justifyContent = 'center';
+      const minWidth = isMobile() ? '80px' : '';
+      if (button.style.minWidth !== minWidth) button.style.minWidth = minWidth;
+      if (button.style.flexShrink !== '0') button.style.flexShrink = '0';
+      if (button.style.justifyContent !== 'center') button.style.justifyContent = 'center';
     });
   }
 
@@ -58,7 +59,12 @@
       const cells = [...box.querySelectorAll('.cell')];
       const pokemonCells = cells.filter(cell => !cell.classList.contains('empty'));
       const completed = pokemonCells.filter(cell => cell.classList.contains('completed')).length;
-      counter.textContent = `${completed}/30`;
+      const nextText = `${completed}/30`;
+
+      // Important: avoid rewriting the text when it has not changed.
+      // Rewriting textContent creates another childList mutation, which can
+      // otherwise cause the MutationObserver to call itself indefinitely.
+      if (counter.textContent !== nextText) counter.textContent = nextText;
     });
   }
 
