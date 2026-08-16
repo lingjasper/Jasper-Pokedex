@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "games": [
+    {
+      "id": "pokemon-white-2",
+      "name": "Pokemon White 2",
+      "enabled": true,
+      "dex": "pokemon-white-2"
+    },
+    {
+      "id": "pokemon-alpha-sapphire",
+      "name": "Pokemon Alpha Sapphire",
+      "enabled": false,
+      "dex": "pokemon-alpha-sapphire"
+    },
+    {
+      "id": "pokemon-sun",
+      "name": "Pokemon Sun",
+      "enabled": false,
+      "dex": "pokemon-sun"
+    }
+  ]
+}
