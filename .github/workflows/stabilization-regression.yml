@@ -1,0 +1,35 @@
+name: v0.9.4 Stabilization Regression
+
+on:
+  push:
+    branches: ["beta-v0.9.4-stabilization"]
+  pull_request:
+    branches: ["beta-v0.9.4-stabilization"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Verify save.json is unchanged from main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --depth=1
+          if git show origin/main:save.json | cmp -s - save.json; then
+            echo "save.json unchanged from main."
+          else
+            echo "save.json was modified on the stabilization branch."
+            exit 1
+          fi
+
+      - name: Run structural regression tests
+        run: node tests/stabilization-regression.mjs
