@@ -1,26 +1,40 @@
 (() => {
   'use strict';
 
-  if (window.__JASPER_STABILIZATION_094__) return;
-  window.__JASPER_STABILIZATION_094__ = true;
+  if (window.__JASPER_STABILIZATION_095__) return;
+  window.__JASPER_STABILIZATION_095__ = true;
+
+  // Project-wide Living Dex policy:
+  // one slot represents one obtainable, boxable Pokémon specimen.
+  // Transformations and alternate battle/state appearances do not receive
+  // separate slots unless the game makes them separately obtainable and
+  // boxable as distinct specimens. This policy is intended to carry forward
+  // to every supported Pokémon game.
+  window.JASPER_LIVING_DEX_FORM_POLICY = 'one-slot-per-obtainable-boxable-specimen';
 
   const STATE_KEY = 'b2w2_living_dex_saved_state';
   const TOTAL_DEX = 300;
 
-  // These are intentionally separate, boxable forms in the current B2W2 Dex.
-  // Legacy cleanup in github-sync.js may otherwise collapse them to one entry.
-  const PROTECTED_FORMS = [
-    { id: '297-Normal', num: '297', name: 'Kyurem (Normal)', form: '(Normal)' },
-    { id: '297-Black', num: '297', name: 'Kyurem (Black)', form: '(Black)' },
-    { id: '297-White', num: '297', name: 'Kyurem (White)', form: '(White)' },
-    { id: '298-Ordinary', num: '298', name: 'Keldeo (Ordinary)', form: '(Ordinary)' },
-    { id: '298-Resolute', num: '298', name: 'Keldeo (Resolute)', form: '(Resolute)' },
-    { id: '300-NoDrive', num: '300', name: 'Genesect (No Drive)', form: '(No Drive)' },
-    { id: '300-Burn', num: '300', name: 'Genesect (Burn)', form: '(Burn)' },
-    { id: '300-Shock', num: '300', name: 'Genesect (Shock)', form: '(Shock)' },
-    { id: '300-Chill', num: '300', name: 'Genesect (Chill)', form: '(Chill)' },
-    { id: '300-Douse', num: '300', name: 'Genesect (Douse)', form: '(Douse)' }
-  ];
+  // B2W2 application of the project-wide form policy.
+  const FORM_GROUPS = {
+    '297': {
+      ids: ['297', '297-Normal', '297-Black', '297-White'],
+      name: 'Kyurem'
+    },
+    '298': {
+      ids: ['298', '298-Ordinary', '298-Resolute'],
+      name: 'Keldeo'
+    },
+    '300': {
+      ids: ['300', '300-NoDrive', '300-Burn', '300-Shock', '300-Chill', '300-Douse'],
+      name: 'Genesect'
+    }
+  };
+
+  const aliasToCanonical = new Map();
+  Object.entries(FORM_GROUPS).forEach(([canonical, group]) => {
+    group.ids.forEach(id => aliasToCanonical.set(id, canonical));
+  });
 
   const readState = () => {
     try {
@@ -28,6 +42,30 @@
     } catch {
       return {};
     }
+  };
+
+  const writeState = state => {
+    localStorage.setItem(STATE_KEY, JSON.stringify(state));
+  };
+
+  const migrateFormState = () => {
+    const state = readState();
+    let changed = false;
+
+    Object.entries(FORM_GROUPS).forEach(([canonical, group]) => {
+      if (group.ids.some(id => id !== canonical && state[id] === true)) {
+        state[canonical] = true;
+      }
+
+      group.ids.forEach(id => {
+        if (id !== canonical && Object.prototype.hasOwnProperty.call(state, id)) {
+          delete state[id];
+          changed = true;
+        }
+      });
+    });
+
+    if (changed) writeState(state);
   };
 
   const updateProgress = () => {
@@ -62,8 +100,24 @@
     updateProgress();
   };
 
-  // github-sync.js also observes localStorage. Wrap it without taking control
-  // away from that sync layer, so Box/List/Search remain visually consistent.
+  const setCanonicalStatus = (id, completed) => {
+    const canonical = aliasToCanonical.get(id) || id;
+    const state = readState();
+    state[canonical] = completed;
+
+    const group = FORM_GROUPS[canonical];
+    if (group) {
+      group.ids.forEach(alias => {
+        if (alias !== canonical) delete state[alias];
+      });
+    }
+
+    writeState(state);
+    syncUI();
+  };
+
+  // Keep github-sync.js's localStorage synchronization intact while ensuring
+  // Box/List/Search repaint immediately after a local state change.
   const originalSetItem = Storage.prototype.setItem;
   if (!window.__JASPER_STABILIZATION_STORAGE_PATCH__) {
     window.__JASPER_STABILIZATION_STORAGE_PATCH__ = true;
@@ -76,18 +130,23 @@
     };
   }
 
+  const setBetaMoniker = () => {
+    const version = 'Beta v0.9.5';
+    const heading = document.querySelector('h1');
+    if (heading) heading.textContent = `Jasper's Pokedex — ${version}`;
+    document.title = `Jasper's Pokedex — ${version}`;
+  };
+
   const injectRefinementStyles = () => {
-    if (document.getElementById('stabilization094Styles')) return;
+    if (document.getElementById('stabilization095Styles')) return;
 
     const style = document.createElement('style');
-    style.id = 'stabilization094Styles';
+    style.id = 'stabilization095Styles';
     style.textContent = `
-      /* v0.9.4: consistent name → checkmark spacing on every viewport */
       #boxContainer .cell .checkbox {
         margin-top: 4px !important;
       }
 
-      /* Keep the list/search checkmark alignment consistent with Box View. */
       .list-row > .checkbox,
       .search-result-item > .checkbox {
         flex-shrink: 0;
@@ -96,68 +155,133 @@
     document.head.appendChild(style);
   };
 
-  const ensureProtectedForms = () => {
-    const grids = [...document.querySelectorAll('#boxContainer .pc-box .grid')];
-    const grid = grids.find(candidate =>
-      candidate.closest('.pc-box')?.querySelector('.box-title')?.textContent.includes('Box 11')
-    ) || grids[grids.length - 1];
-    if (!grid) return;
+  const canonicalizeCell = (cell, canonical, name) => {
+    cell.dataset.id = canonical;
+    cell.dataset.num = canonical;
+    cell.dataset.name = name;
+    cell.classList.remove('completed');
 
-    const existing = new Set(
-      [...grid.querySelectorAll('.cell[data-id]')].map(cell => cell.dataset.id)
-    );
+    const dex = cell.querySelector('.dex-num');
+    if (dex) dex.textContent = canonical;
 
-    PROTECTED_FORMS.forEach(form => {
-      if (existing.has(form.id)) return;
+    const nameEl = cell.querySelector('.name');
+    if (nameEl) nameEl.textContent = name;
+  };
 
-      const cell = document.createElement('div');
-      cell.className = 'cell';
-      cell.dataset.id = form.id;
-      cell.dataset.num = form.num;
-      cell.dataset.name = form.name;
-      cell.innerHTML = `
-        <span class="dex-num">${form.num}</span>
-        <span class="name">${form.name.split(' (')[0]} <span class="form">${form.form}</span></span>
-        <div class="checkbox"></div>
-      `;
+  const pruneAndNormalizeBoxForms = () => {
+    Object.entries(FORM_GROUPS).forEach(([canonical, group]) => {
+      const matches = [...document.querySelectorAll(
+        `#boxContainer .cell[data-id][data-num="${canonical}"]`
+      )].filter(cell => !cell.classList.contains('empty'));
 
-      const firstEmpty = grid.querySelector('.cell.empty');
-      if (firstEmpty) grid.insertBefore(cell, firstEmpty);
-      else grid.appendChild(cell);
+      const aliases = [...document.querySelectorAll(
+        `#boxContainer .cell[data-id]`
+      )].filter(cell => !cell.classList.contains('empty') && group.ids.includes(cell.dataset.id));
+
+      const candidates = [...new Set([...matches, ...aliases])];
+      if (!candidates.length) return;
+
+      const keeper = candidates.find(cell => cell.dataset.id === canonical) || candidates[0];
+      canonicalizeCell(keeper, canonical, group.name);
+
+      candidates.forEach(cell => {
+        if (cell !== keeper) cell.remove();
+      });
     });
   };
 
-  const installParityGuard = () => {
-    const box = document.getElementById('boxContainer');
-    if (!box || box.dataset.stabilizationObserved) return;
+  const normalizeListRows = () => {
+    Object.entries(FORM_GROUPS).forEach(([canonical, group]) => {
+      const rows = [...document.querySelectorAll('.list-row[data-id]')]
+        .filter(row => group.ids.includes(row.dataset.id));
 
-    box.dataset.stabilizationObserved = '1';
+      if (!rows.length) return;
+
+      const keeper = rows.find(row => row.dataset.id === canonical) || rows[0];
+      keeper.dataset.id = canonical;
+      keeper.dataset.canonicalFormCorrection = '1';
+
+      const num = keeper.querySelector('.dex-num');
+      if (num) num.textContent = `#${canonical}`;
+
+      const name = keeper.querySelector('.name');
+      if (name) name.textContent = group.name;
+
+      rows.forEach(row => {
+        if (row !== keeper) row.remove();
+      });
+    });
+  };
+
+  const normalizeSearchResults = () => {
+    Object.entries(FORM_GROUPS).forEach(([canonical, group]) => {
+      const items = [...document.querySelectorAll('.search-result-item[data-id]')]
+        .filter(item => group.ids.includes(item.dataset.id));
+
+      if (!items.length) return;
+
+      const keeper = items.find(item => item.dataset.id === canonical) || items[0];
+      keeper.dataset.id = canonical;
+      keeper.dataset.canonicalFormCorrection = '1';
+
+      const num = keeper.querySelector('.dex-num');
+      if (num) num.textContent = `#${canonical}`;
+
+      const name = keeper.querySelector('.name');
+      if (name) name.textContent = group.name;
+
+      items.forEach(item => {
+        if (item !== keeper) item.remove();
+      });
+    });
+  };
+
+  const normalizeAllForms = () => {
+    migrateFormState();
+    pruneAndNormalizeBoxForms();
+    normalizeListRows();
+    normalizeSearchResults();
+    syncUI();
+  };
+
+  // The original page builds List View from the raw HTML during DOMContentLoaded.
+  // This correction runs immediately afterward and also watches dynamically
+  // generated search results so alternate-form aliases can never reappear.
+  const installFormGuard = () => {
+    if (document.documentElement.dataset.stabilization095Guard) return;
+    document.documentElement.dataset.stabilization095Guard = '1';
 
     const observer = new MutationObserver(() => {
-      ensureProtectedForms();
-      syncUI();
+      normalizeAllForms();
     });
 
-    observer.observe(box, {
+    observer.observe(document.body, {
       childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['class']
+      subtree: true
     });
+
+    document.addEventListener('click', event => {
+      const target = event.target.closest('.list-row[data-canonical-form-correction], .search-result-item[data-canonical-form-correction]');
+      if (!target) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+
+      const id = target.dataset.id;
+      const state = readState();
+      setCanonicalStatus(id, state[id] !== true);
+    }, true);
   };
 
-  // Run once immediately because github-sync.js is loaded after this file and
-  // may prune forms before DOMContentLoaded. The observer restores them before
-  // the main List View builder runs.
-  ensureProtectedForms();
-  installParityGuard();
-  syncUI();
+  normalizeAllForms();
+  installFormGuard();
 
   const boot = () => {
+    setBetaMoniker();
     injectRefinementStyles();
-    ensureProtectedForms();
-    syncUI();
-    installParityGuard();
+    normalizeAllForms();
+    installFormGuard();
   };
 
   if (document.readyState === 'loading') {
