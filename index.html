@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>B2W2 Living Regional Dex</title>
+<title>Jasper's Pokedex</title>
 <style>
   * {
     box-sizing: border-box;
@@ -18,15 +18,141 @@
   h1 {
     text-align: center;
     color: #0f172a;
-    font-size: 1.5rem;
+    font-size: 1.75rem;
+    margin-bottom: 16px;
+  }
+
+  /* Game Tabs */
+  .tabs-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
     margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    background-color: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+  }
+  .tab-btn.disabled {
+    background-color: #e2e8f0;
+    color: #94a3b8;
+    border-color: #cbd5e1;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  /* Controls Section: Search & View Toggle */
+  .controls-container {
+    max-width: 900px;
+    margin: 0 auto 20px auto;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    position: relative;
+  }
+  .search-wrapper {
+    flex: 1;
+    position: relative;
+  }
+  .search-input {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus {
+    border-color: #2563eb;
+  }
+  
+  /* Dropdown Search Results */
+  .search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-top: 4px;
+    display: none;
+  }
+  .search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+  }
+  .search-result-item:last-child {
+    border-bottom: none;
+  }
+  .search-result-item:hover {
+    background-color: #f8fafc;
+  }
+
+  /* View Toggle Buttons */
+  .view-toggle {
+    display: flex;
+    background: #e2e8f0;
+    padding: 3px;
+    border-radius: 8px;
+  }
+  .toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    color: #475569;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .toggle-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+  .toggle-btn.active {
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  /* Core Layout Containers */
+  .main-content {
+    max-width: 900px;
+    margin: 0 auto;
   }
   .box-container {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    max-width: 900px;
-    margin: 0 auto;
   }
   .pc-box {
     background-color: #ffffff;
@@ -43,19 +169,17 @@
     border-bottom: 2px solid #e2e8f0;
     padding-bottom: 6px;
   }
-  /* Wrapper enables horizontal scrolling on narrow screens */
   .grid-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 4px;
   }
-  /* Fixed 6-column, 5-row CSS grid */
   .grid {
     display: grid;
     grid-template-columns: repeat(6, minmax(110px, 1fr));
     grid-template-rows: repeat(5, minmax(58px, auto));
     gap: 6px;
-    min-width: 670px; /* Guarantees 6-column layout on mobile */
+    min-width: 670px;
   }
   .cell {
     background-color: #f8fafc;
@@ -77,7 +201,6 @@
     border: 1px dashed #cbd5e1;
     cursor: default;
   }
-  /* Completed cell style */
   .cell.completed {
     background-color: #ecfdf5;
     border-color: #a7f3d0;
@@ -100,17 +223,47 @@
     font-size: 0.75rem;
     font-weight: 500;
   }
+
+  /* List View Specific Styles */
+  .list-container {
+    display: none;
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 8px 16px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  }
+  .list-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e2e8f0;
+    gap: 16px;
+    cursor: pointer;
+  }
+  .list-row:last-child {
+    border-bottom: none;
+  }
+  .list-row.completed {
+    background-color: #f0fdf4;
+  }
+  .list-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
   /* Circular Checkmark */
   .checkbox {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     border: 1.5px solid #cbd5e1;
     border-radius: 50%;
-    margin-top: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #ffffff;
+    flex-shrink: 0;
     transition: all 0.2s;
   }
   .checkbox::after {
@@ -120,481 +273,632 @@
     display: none;
     font-weight: bold;
   }
-  .cell.completed .checkbox {
+  .completed .checkbox {
     background-color: #10b981;
     border-color: #10b981;
   }
-  .cell.completed .checkbox::after {
+  .completed .checkbox::after {
     display: block;
   }
 </style>
 </head>
 <body>
 
-<h1>B2W2 Living Regional Dex</h1>
+<h1>Jasper's Pokedex</h1>
 
-<div class="box-container">
+<!-- Game Selection Tab Bar -->
+<div class="tabs-container">
+  <button class="tab-btn active">Pokemon White 2</button>
+  <button class="tab-btn disabled" disabled>Pokemon Alpha Sapphire</button>
+  <button class="tab-btn disabled" disabled>Pokemon Sun</button>
+</div>
 
-  <!-- BOX 1 -->
-  <div class="pc-box">
-    <div class="box-title">Box 1 — Dex #000–#028</div>
-    <div class="grid-wrapper">
-      <div class="grid">
-        <div class="cell" data-id="000"><span class="dex-num">000</span><span class="name">Victini</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="001"><span class="dex-num">001</span><span class="name">Snivy</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="002"><span class="dex-num">002</span><span class="name">Servine</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="003"><span class="dex-num">003</span><span class="name">Serperior</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="004"><span class="dex-num">004</span><span class="name">Tepig</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="005"><span class="dex-num">005</span><span class="name">Pignite</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="006"><span class="dex-num">006</span><span class="name">Emboar</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="007"><span class="dex-num">007</span><span class="name">Oshawott</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="008"><span class="dex-num">008</span><span class="name">Dewott</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="009"><span class="dex-num">009</span><span class="name">Samurott</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="010"><span class="dex-num">010</span><span class="name">Patrat</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="011"><span class="dex-num">011</span><span class="name">Watchog</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="012"><span class="dex-num">012</span><span class="name">Purrloin</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="013"><span class="dex-num">013</span><span class="name">Liepard</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="014"><span class="dex-num">014</span><span class="name">Pidove</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="015"><span class="dex-num">015</span><span class="name">Tranquill</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="016-M"><span class="dex-num">016</span><span class="name">Unfezant <span class="form">(M)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="016-F"><span class="dex-num">016</span><span class="name">Unfezant <span class="form">(F)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="017"><span class="dex-num">017</span><span class="name">Sewaddle</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="018"><span class="dex-num">018</span><span class="name">Swadloon</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="019"><span class="dex-num">019</span><span class="name">Leavanny</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="020"><span class="dex-num">020</span><span class="name">Sunkern</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="021"><span class="dex-num">021</span><span class="name">Sunflora</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="022"><span class="dex-num">022</span><span class="name">Lillipup</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="023"><span class="dex-num">023</span><span class="name">Herdier</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="024"><span class="dex-num">024</span><span class="name">Stoutland</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="025"><span class="dex-num">025</span><span class="name">Mareep</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="026"><span class="dex-num">026</span><span class="name">Flaaffy</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="027"><span class="dex-num">027</span><span class="name">Ampharos</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="028"><span class="dex-num">028</span><span class="name">Psyduck</span><div class="checkbox"></div></div>
+<!-- Search & View Controls -->
+<div class="controls-container">
+  <div class="search-wrapper">
+    <input type="text" id="searchInput" class="search-input" placeholder="Search by pokemon name or by regional dex number...">
+    <div id="searchResults" class="search-results"></div>
+  </div>
+  
+  <div class="view-toggle">
+    <button id="boxViewBtn" class="toggle-btn active" title="Box View">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 4h-4.5V5H19v2zM12.5 5v2H8.5V5h4zM7 5v2H5V5h2zM5 9h2v3.5H5V9zm4.5 0h4v3.5h-4V9zm6 0H19v3.5h-3.5V9zM19 19h-3.5v-4.5H19V19zm-5.5 0h-4v-4.5h4V19zm-6 0H5v-4.5h2V19z"/></svg>
+      BOX VIEW
+    </button>
+    <button id="listViewBtn" class="toggle-btn" title="List View">
+      <svg viewBox="0 0 24 24"><path d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6s-.67-1.5-1.5-1.5zm0 12c-.83 0-1.5.68-1.5 1.5s.68 1.5 1.5 1.5 1.5-.68 1.5-1.5-.67-1.5-1.5-1.5zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8v2h14V5H7z"/></svg>
+      LIST VIEW
+    </button>
+  </div>
+</div>
+
+<div class="main-content">
+  <!-- Box View Container -->
+  <div id="boxContainer" class="box-container">
+    <!-- Box 1 -->
+    <div class="pc-box">
+      <div class="box-title">Box 1 — Dex #000–#028</div>
+      <div class="grid-wrapper">
+        <div class="grid">
+          <div class="cell" data-id="000" data-num="000" data-name="Victini"><span class="dex-num">000</span><span class="name">Victini</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="001" data-num="001" data-name="Snivy"><span class="dex-num">001</span><span class="name">Snivy</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="002" data-num="002" data-name="Servine"><span class="dex-num">002</span><span class="name">Servine</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="003" data-num="003" data-name="Serperior"><span class="dex-num">003</span><span class="name">Serperior</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="004" data-num="004" data-name="Tepig"><span class="dex-num">004</span><span class="name">Tepig</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="005" data-num="005" data-name="Pignite"><span class="dex-num">005</span><span class="name">Pignite</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="006" data-num="006" data-name="Emboar"><span class="dex-num">006</span><span class="name">Emboar</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="007" data-num="007" data-name="Oshawott"><span class="dex-num">007</span><span class="name">Oshawott</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="008" data-num="008" data-name="Dewott"><span class="dex-num">008</span><span class="name">Dewott</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="009" data-num="009" data-name="Samurott"><span class="dex-num">009</span><span class="name">Samurott</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="010" data-num="010" data-name="Patrat"><span class="dex-num">010</span><span class="name">Patrat</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="011" data-num="011" data-name="Watchog"><span class="dex-num">011</span><span class="name">Watchog</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="012" data-num="012" data-name="Purrloin"><span class="dex-num">012</span><span class="name">Purrloin</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="013" data-num="013" data-name="Liepard"><span class="dex-num">013</span><span class="name">Liepard</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="014" data-num="014" data-name="Pidove"><span class="dex-num">014</span><span class="name">Pidove</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="015" data-num="015" data-name="Tranquill"><span class="dex-num">015</span><span class="name">Tranquill</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="016-M" data-num="016" data-name="Unfezant (M)"><span class="dex-num">016</span><span class="name">Unfezant <span class="form">(M)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="016-F" data-num="016" data-name="Unfezant (F)"><span class="dex-num">016</span><span class="name">Unfezant <span class="form">(F)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="017" data-num="017" data-name="Sewaddle"><span class="dex-num">017</span><span class="name">Sewaddle</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="018" data-num="018" data-name="Swadloon"><span class="dex-num">018</span><span class="name">Swadloon</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="019" data-num="019" data-name="Leavanny"><span class="dex-num">019</span><span class="name">Leavanny</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="020" data-num="020" data-name="Sunkern"><span class="dex-num">020</span><span class="name">Sunkern</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="021" data-num="021" data-name="Sunflora"><span class="dex-num">021</span><span class="name">Sunflora</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="022" data-num="022" data-name="Lillipup"><span class="dex-num">022</span><span class="name">Lillipup</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="023" data-num="023" data-name="Herdier"><span class="dex-num">023</span><span class="name">Herdier</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="024" data-num="024" data-name="Stoutland"><span class="dex-num">024</span><span class="name">Stoutland</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="025" data-num="025" data-name="Mareep"><span class="dex-num">025</span><span class="name">Mareep</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="026" data-num="026" data-name="Flaaffy"><span class="dex-num">026</span><span class="name">Flaaffy</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="027" data-num="027" data-name="Ampharos"><span class="dex-num">027</span><span class="name">Ampharos</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="028" data-num="028" data-name="Psyduck"><span class="dex-num">028</span><span class="name">Psyduck</span><div class="checkbox"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Box 2 -->
+    <div class="pc-box">
+      <div class="box-title">Box 2 — Dex #029–#058</div>
+      <div class="grid-wrapper">
+        <div class="grid">
+          <div class="cell" data-id="029" data-num="029" data-name="Golduck"><span class="dex-num">029</span><span class="name">Golduck</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="030" data-num="030" data-name="Azurill"><span class="dex-num">030</span><span class="name">Azurill</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="031" data-num="031" data-name="Marill"><span class="dex-num">031</span><span class="name">Marill</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="032" data-num="032" data-name="Azumarill"><span class="dex-num">032</span><span class="name">Azumarill</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="033" data-num="033" data-name="Riolu"><span class="dex-num">033</span><span class="name">Riolu</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="034" data-num="034" data-name="Lucario"><span class="dex-num">034</span><span class="name">Lucario</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="035" data-num="035" data-name="Dunsparce"><span class="dex-num">035</span><span class="name">Dunsparce</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="036" data-num="036" data-name="Audino"><span class="dex-num">036</span><span class="name">Audino</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="037" data-num="037" data-name="Pansage"><span class="dex-num">037</span><span class="name">Pansage</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="038" data-num="038" data-name="Simisage"><span class="dex-num">038</span><span class="name">Simisage</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="039" data-num="039" data-name="Pansear"><span class="dex-num">039</span><span class="name">Pansear</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="040" data-num="040" data-name="Simisear"><span class="dex-num">040</span><span class="name">Simisear</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="041" data-num="041" data-name="Panpour"><span class="dex-num">041</span><span class="name">Panpour</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="042" data-num="042" data-name="Simipour"><span class="dex-num">042</span><span class="name">Simipour</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="043" data-num="043" data-name="Venipede"><span class="dex-num">043</span><span class="name">Venipede</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="044" data-num="044" data-name="Whirlipede"><span class="dex-num">044</span><span class="name">Whirlipede</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="045" data-num="045" data-name="Scolipede"><span class="dex-num">045</span><span class="name">Scolipede</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="046" data-num="046" data-name="Koffing"><span class="dex-num">046</span><span class="name">Koffing</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="047" data-num="047" data-name="Weezing"><span class="dex-num">047</span><span class="name">Weezing</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="048" data-num="048" data-name="Magnemite"><span class="dex-num">048</span><span class="name">Magnemite</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="049" data-num="049" data-name="Magneton"><span class="dex-num">049</span><span class="name">Magneton</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="050" data-num="050" data-name="Magnezone"><span class="dex-num">050</span><span class="name">Magnezone</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="051" data-num="051" data-name="Growlithe"><span class="dex-num">051</span><span class="name">Growlithe</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="052" data-num="052" data-name="Arcanine"><span class="dex-num">052</span><span class="name">Arcanine</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="053" data-num="053" data-name="Magby"><span class="dex-num">053</span><span class="name">Magby</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="054" data-num="054" data-name="Magmar"><span class="dex-num">054</span><span class="name">Magmar</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="055" data-num="055" data-name="Magmortar"><span class="dex-num">055</span><span class="name">Magmortar</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="056" data-num="056" data-name="Elekid"><span class="dex-num">056</span><span class="name">Elekid</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="057" data-num="057" data-name="Electabuzz"><span class="dex-num">057</span><span class="name">Electabuzz</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="058" data-num="058" data-name="Electivire"><span class="dex-num">058</span><span class="name">Electivire</span><div class="checkbox"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Box 3 -->
+    <div class="pc-box">
+      <div class="box-title">Box 3 — Dex #059–#088</div>
+      <div class="grid-wrapper">
+        <div class="grid">
+          <div class="cell" data-id="059" data-num="059" data-name="Rattata"><span class="dex-num">059</span><span class="name">Rattata</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="060" data-num="060" data-name="Raticate"><span class="dex-num">060</span><span class="name">Raticate</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="061" data-num="061" data-name="Zubat"><span class="dex-num">061</span><span class="name">Zubat</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="062" data-num="062" data-name="Golbat"><span class="dex-num">062</span><span class="name">Golbat</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="063" data-num="063" data-name="Crobat"><span class="dex-num">063</span><span class="name">Crobat</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="064" data-num="064" data-name="Grimer"><span class="dex-num">064</span><span class="name">Grimer</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="065" data-num="065" data-name="Muk"><span class="dex-num">065</span><span class="name">Muk</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="066" data-num="066" data-name="Woobat"><span class="dex-num">066</span><span class="name">Woobat</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="067" data-num="067" data-name="Swoobat"><span class="dex-num">067</span><span class="name">Swoobat</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="068" data-num="068" data-name="Roggenrola"><span class="dex-num">068</span><span class="name">Roggenrola</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="069" data-num="069" data-name="Boldore"><span class="dex-num">069</span><span class="name">Boldore</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="070" data-num="070" data-name="Gigalith"><span class="dex-num">070</span><span class="name">Gigalith</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="071" data-num="071" data-name="Onix"><span class="dex-num">071</span><span class="name">Onix</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="072" data-num="072" data-name="Steelix"><span class="dex-num">072</span><span class="name">Steelix</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="073" data-num="073" data-name="Timburr"><span class="dex-num">073</span><span class="name">Timburr</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="074" data-num="074" data-name="Gurdurr"><span class="dex-num">074</span><span class="name">Gurdurr</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="075" data-num="075" data-name="Conkeldurr"><span class="dex-num">075</span><span class="name">Conkeldurr</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="076" data-num="076" data-name="Drilbur"><span class="dex-num">076</span><span class="name">Drilbur</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="077" data-num="077" data-name="Excadrill"><span class="dex-num">077</span><span class="name">Excadrill</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="078" data-num="078" data-name="Skitty"><span class="dex-num">078</span><span class="name">Skitty</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="079" data-num="079" data-name="Delcatty"><span class="dex-num">079</span><span class="name">Delcatty</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="080" data-num="080" data-name="Buneary"><span class="dex-num">080</span><span class="name">Buneary</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="081" data-num="081" data-name="Lopunny"><span class="dex-num">081</span><span class="name">Lopunny</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="082" data-num="082" data-name="Cottonee"><span class="dex-num">082</span><span class="name">Cottonee</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="083" data-num="083" data-name="Whimsicott"><span class="dex-num">083</span><span class="name">Whimsicott</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="084" data-num="084" data-name="Petilil"><span class="dex-num">084</span><span class="name">Petilil</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="085" data-num="085" data-name="Lilligant"><span class="dex-num">085</span><span class="name">Lilligant</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="086" data-num="086" data-name="Munna"><span class="dex-num">086</span><span class="name">Munna</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="087" data-num="087" data-name="Musharna"><span class="dex-num">087</span><span class="name">Musharna</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="088" data-num="088" data-name="Cleffa"><span class="dex-num">088</span><span class="name">Cleffa</span><div class="checkbox"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Box 4 -->
+    <div class="pc-box">
+      <div class="box-title">Box 4 — Dex #089–#117</div>
+      <div class="grid-wrapper">
+        <div class="grid">
+          <div class="cell" data-id="089" data-num="089" data-name="Clefairy"><span class="dex-num">089</span><span class="name">Clefairy</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="090" data-num="090" data-name="Clefable"><span class="dex-num">090</span><span class="name">Clefable</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="091" data-num="091" data-name="Eevee"><span class="dex-num">091</span><span class="name">Eevee</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="092" data-num="092" data-name="Vaporeon"><span class="dex-num">092</span><span class="name">Vaporeon</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="093" data-num="093" data-name="Jolteon"><span class="dex-num">093</span><span class="name">Jolteon</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="094" data-num="094" data-name="Flareon"><span class="dex-num">094</span><span class="name">Flareon</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="095" data-num="095" data-name="Espeon"><span class="dex-num">095</span><span class="name">Espeon</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="096" data-num="096" data-name="Umbreon"><span class="dex-num">096</span><span class="name">Umbreon</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="097" data-num="097" data-name="Leafeon"><span class="dex-num">097</span><span class="name">Leafeon</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="098" data-num="098" data-name="Glaceon"><span class="dex-num">098</span><span class="name">Glaceon</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="099" data-num="099" data-name="Sandile"><span class="dex-num">099</span><span class="name">Sandile</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="100" data-num="100" data-name="Krokorok"><span class="dex-num">100</span><span class="name">Krokorok</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="101" data-num="101" data-name="Krookodile"><span class="dex-num">101</span><span class="name">Krookodile</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="102" data-num="102" data-name="Darumaka"><span class="dex-num">102</span><span class="name">Darumaka</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="103" data-num="103" data-name="Darmanitan"><span class="dex-num">103</span><span class="name">Darmanitan</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="104-Red" data-num="104" data-name="Basculin (Red)"><span class="dex-num">104</span><span class="name">Basculin <span class="form">(Red)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="104-Blue" data-num="104" data-name="Basculin (Blue)"><span class="dex-num">104</span><span class="name">Basculin <span class="form">(Blue)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="105" data-num="105" data-name="Trubbish"><span class="dex-num">105</span><span class="name">Trubbish</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="106" data-num="106" data-name="Garbodor"><span class="dex-num">106</span><span class="name">Garbodor</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="107" data-num="107" data-name="Minccino"><span class="dex-num">107</span><span class="name">Minccino</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="108" data-num="108" data-name="Cinccino"><span class="dex-num">108</span><span class="name">Cinccino</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="109" data-num="109" data-name="Rufflet"><span class="dex-num">109</span><span class="name">Rufflet</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="110" data-num="110" data-name="Braviary"><span class="dex-num">110</span><span class="name">Braviary</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="111" data-num="111" data-name="Vullaby"><span class="dex-num">111</span><span class="name">Vullaby</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="112" data-num="112" data-name="Mandibuzz"><span class="dex-num">112</span><span class="name">Mandibuzz</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="113" data-num="113" data-name="Sandshrew"><span class="dex-num">113</span><span class="name">Sandshrew</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="114" data-num="114" data-name="Sandslash"><span class="dex-num">114</span><span class="name">Sandslash</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="115" data-num="115" data-name="Dwebble"><span class="dex-num">115</span><span class="name">Dwebble</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="116" data-num="116" data-name="Crustle"><span class="dex-num">116</span><span class="name">Crustle</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="117" data-num="117" data-name="Scraggy"><span class="dex-num">117</span><span class="name">Scraggy</span><div class="checkbox"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Box 5 -->
+    <div class="pc-box">
+      <div class="box-title">Box 5 — Dex #118–#147</div>
+      <div class="grid-wrapper">
+        <div class="grid">
+          <div class="cell" data-id="118" data-num="118" data-name="Scrafty"><span class="dex-num">118</span><span class="name">Scrafty</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="119" data-num="119" data-name="Maractus"><span class="dex-num">119</span><span class="name">Maractus</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="120" data-num="120" data-name="Sigilyph"><span class="dex-num">120</span><span class="name">Sigilyph</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="121" data-num="121" data-name="Trapinch"><span class="dex-num">121</span><span class="name">Trapinch</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="122" data-num="122" data-name="Vibrava"><span class="dex-num">122</span><span class="name">Vibrava</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="123" data-num="123" data-name="Flygon"><span class="dex-num">123</span><span class="name">Flygon</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="124" data-num="124" data-name="Yamask"><span class="dex-num">124</span><span class="name">Yamask</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="125" data-num="125" data-name="Cofagrigus"><span class="dex-num">125</span><span class="name">Cofagrigus</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="126" data-num="126" data-name="Tirtouga"><span class="dex-num">126</span><span class="name">Tirtouga</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="127" data-num="127" data-name="Carracosta"><span class="dex-num">127</span><span class="name">Carracosta</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="128" data-num="128" data-name="Archen"><span class="dex-num">128</span><span class="name">Archen</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="129" data-num="129" data-name="Archeops"><span class="dex-num">129</span><span class="name">Archeops</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="130" data-num="130" data-name="Klink"><span class="dex-num">130</span><span class="name">Klink</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="131" data-num="131" data-name="Klang"><span class="dex-num">131</span><span class="name">Klang</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="132" data-num="132" data-name="Klinklang"><span class="dex-num">132</span><span class="name">Klinklang</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="133" data-num="133" data-name="Budew"><span class="dex-num">133</span><span class="name">Budew</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="134" data-num="134" data-name="Roselia"><span class="dex-num">134</span><span class="name">Roselia</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="135" data-num="135" data-name="Roserade"><span class="dex-num">135</span><span class="name">Roserade</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="136" data-num="136" data-name="Gothita"><span class="dex-num">136</span><span class="name">Gothita</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="137" data-num="137" data-name="Gothorita"><span class="dex-num">137</span><span class="name">Gothorita</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="138" data-num="138" data-name="Gothitelle"><span class="dex-num">138</span><span class="name">Gothitelle</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="139" data-num="139" data-name="Solosis"><span class="dex-num">139</span><span class="name">Solosis</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="140" data-num="140" data-name="Duosion"><span class="dex-num">140</span><span class="name">Duosion</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="141" data-num="141" data-name="Reuniclus"><span class="dex-num">141</span><span class="name">Reuniclus</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="142" data-num="142" data-name="Combee"><span class="dex-num">142</span><span class="name">Combee</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="143" data-num="143" data-name="Vespiquen"><span class="dex-num">143</span><span class="name">Vespiquen</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="144" data-num="144" data-name="Emolga"><span class="dex-num">144</span><span class="name">Emolga</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="145" data-num="145" data-name="Heracross"><span class="dex-num">145</span><span class="name">Heracross</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="146" data-num="146" data-name="Pinsir"><span class="dex-num">146</span><span class="name">Pinsir</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="147" data-num="147" data-name="Blitzle"><span class="dex-num">147</span><span class="name">Blitzle</span><div class="checkbox"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Box 6 -->
+    <div class="pc-box">
+      <div class="box-title">Box 6 — Dex #148–#171</div>
+      <div class="grid-wrapper">
+        <div class="grid">
+          <div class="cell" data-id="148" data-num="148" data-name="Zebstrika"><span class="dex-num">148</span><span class="name">Zebstrika</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="149" data-num="149" data-name="Buizel"><span class="dex-num">149</span><span class="name">Buizel</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="150" data-num="150" data-name="Floatzel"><span class="dex-num">150</span><span class="name">Floatzel</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="151" data-num="151" data-name="Zorua"><span class="dex-num">151</span><span class="name">Zorua</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="152" data-num="152" data-name="Zoroark"><span class="dex-num">152</span><span class="name">Zoroark</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="153" data-num="153" data-name="Ducklett"><span class="dex-num">153</span><span class="name">Ducklett</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="154" data-num="154" data-name="Swanna"><span class="dex-num">154</span><span class="name">Swanna</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="155" data-num="155" data-name="Karrablast"><span class="dex-num">155</span><span class="name">Karrablast</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="156" data-num="156" data-name="Escavalier"><span class="dex-num">156</span><span class="name">Escavalier</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="157" data-num="157" data-name="Shelmet"><span class="dex-num">157</span><span class="name">Shelmet</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="158" data-num="158" data-name="Accelgor"><span class="dex-num">158</span><span class="name">Accelgor</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="159-Spring" data-num="159" data-name="Deerling (Spring)"><span class="dex-num">159</span><span class="name">Deerling <span class="form">(Spring)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="159-Summer" data-num="159" data-name="Deerling (Summer)"><span class="dex-num">159</span><span class="name">Deerling <span class="form">(Summer)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="159-Autumn" data-num="159" data-name="Deerling (Autumn)"><span class="dex-num">159</span><span class="name">Deerling <span class="form">(Autumn)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="159-Winter" data-num="159" data-name="Deerling (Winter)"><span class="dex-num">159</span><span class="name">Deerling <span class="form">(Winter)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="160-Spring" data-num="160" data-name="Sawsbuck (Spring)"><span class="dex-num">160</span><span class="name">Sawsbuck <span class="form">(Spring)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="160-Summer" data-num="160" data-name="Sawsbuck (Summer)"><span class="dex-num">160</span><span class="name">Sawsbuck <span class="form">(Summer)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="160-Autumn" data-num="160" data-name="Sawsbuck (Autumn)"><span class="dex-num">160</span><span class="name">Sawsbuck <span class="form">(Autumn)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="160-Winter" data-num="160" data-name="Sawsbuck (Winter)"><span class="dex-num">160</span><span class="name">Sawsbuck <span class="form">(Winter)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="161" data-num="161" data-name="Foongus"><span class="dex-num">161</span><span class="name">Foongus</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="162" data-num="162" data-name="Amoonguss"><span class="dex-num">162</span><span class="name">Amoonguss</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="163" data-num="163" data-name="Castform"><span class="dex-num">163</span><span class="name">Castform</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="164" data-num="164" data-name="Nosepass"><span class="dex-num">164</span><span class="name">Nosepass</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="165" data-num="165" data-name="Probopass"><span class="dex-num">165</span><span class="name">Probopass</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="166" data-num="166" data-name="Aron"><span class="dex-num">166</span><span class="name">Aron</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="167" data-num="167" data-name="Lairon"><span class="dex-num">167</span><span class="name">Lairon</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="168" data-num="168" data-name="Aggron"><span class="dex-num">168</span><span class="name">Aggron</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="169" data-num="169" data-name="Baltoy"><span class="dex-num">169</span><span class="name">Baltoy</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="170" data-num="170" data-name="Claydol"><span class="dex-num">170</span><span class="name">Claydol</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="171" data-num="171" data-name="Larvesta"><span class="dex-num">171</span><span class="name">Larvesta</span><div class="checkbox"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Box 7 -->
+    <div class="pc-box">
+      <div class="box-title">Box 7 — Dex #172–#202</div>
+      <div class="grid-wrapper">
+        <div class="grid">
+          <div class="cell" data-id="172" data-num="172" data-name="Volcarona"><span class="dex-num">172</span><span class="name">Volcarona</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="173" data-num="173" data-name="Joltik"><span class="dex-num">173</span><span class="name">Joltik</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="174" data-num="174" data-name="Galvantula"><span class="dex-num">174</span><span class="name">Galvantula</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="175" data-num="175" data-name="Ferroseed"><span class="dex-num">175</span><span class="name">Ferroseed</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="176" data-num="176" data-name="Ferrothorn"><span class="dex-num">176</span><span class="name">Ferrothorn</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="177" data-num="177" data-name="Tynamo"><span class="dex-num">177</span><span class="name">Tynamo</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="178" data-num="178" data-name="Eelektrik"><span class="dex-num">178</span><span class="name">Eelektrik</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="179" data-num="179" data-name="Eelektross"><span class="dex-num">179</span><span class="name">Eelektross</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="180-M" data-num="180" data-name="Frillish (M)"><span class="dex-num">180</span><span class="name">Frillish <span class="form">(M)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="180-F" data-num="180" data-name="Frillish (F)"><span class="dex-num">180</span><span class="name">Frillish <span class="form">(F)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="181-M" data-num="181" data-name="Jellicent (M)"><span class="dex-num">181</span><span class="name">Jellicent <span class="form">(M)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="181-F" data-num="181" data-name="Jellicent (F)"><span class="dex-num">181</span><span class="name">Jellicent <span class="form">(F)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="182" data-num="182" data-name="Alomomola"><span class="dex-num">182</span><span class="name">Alomomola</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="183" data-num="183" data-name="Axew"><span class="dex-num">183</span><span class="name">Axew</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="184" data-num="184" data-name="Fraxure"><span class="dex-num">184</span><span class="name">Fraxure</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="185" data-num="185" data-name="Haxorus"><span class="dex-num">185</span><span class="name">Haxorus</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="186" data-num="186" data-name="Zangoose"><span class="dex-num">186</span><span class="name">Zangoose</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="187" data-num="187" data-name="Seviper"><span class="dex-num">187</span><span class="name">Seviper</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="188" data-num="188" data-name="Elgyem"><span class="dex-num">188</span><span class="name">Elgyem</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="189" data-num="189" data-name="Beheeyem"><span class="dex-num">189</span><span class="name">Beheeyem</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="190" data-num="190" data-name="Litwick"><span class="dex-num">190</span><span class="name">Litwick</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="191" data-num="191" data-name="Lampent"><span class="dex-num">191</span><span class="name">Lampent</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="192" data-num="192" data-name="Chandelure"><span class="dex-num">192</span><span class="name">Chandelure</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="193" data-num="193" data-name="Heatmor"><span class="dex-num">193</span><span class="name">Heatmor</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="194" data-num="194" data-name="Durant"><span class="dex-num">194</span><span class="name">Durant</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="195" data-num="195" data-name="Cubchoo"><span class="dex-num">195</span><span class="name">Cubchoo</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="196" data-num="196" data-name="Beartic"><span class="dex-num">196</span><span class="name">Beartic</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="197" data-num="197" data-name="Cryogonal"><span class="dex-num">197</span><span class="name">Cryogonal</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="201" data-num="201" data-name="Skorupi"><span class="dex-num">201</span><span class="name">Skorupi</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="202" data-num="202" data-name="Drapion"><span class="dex-num">202</span><span class="name">Drapion</span><div class="checkbox"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Box 8 -->
+    <div class="pc-box">
+      <div class="box-title">Box 8 — Dex #203–#232</div>
+      <div class="grid-wrapper">
+        <div class="grid">
+          <div class="cell" data-id="203" data-num="203" data-name="Skarmory"><span class="dex-num">203</span><span class="name">Skarmory</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="204" data-num="204" data-name="Numel"><span class="dex-num">204</span><span class="name">Numel</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="205" data-num="205" data-name="Camerupt"><span class="dex-num">205</span><span class="name">Camerupt</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="206" data-num="206" data-name="Spoink"><span class="dex-num">206</span><span class="name">Spoink</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="207" data-num="207" data-name="Grumpig"><span class="dex-num">207</span><span class="name">Grumpig</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="208" data-num="208" data-name="Drifloon"><span class="dex-num">208</span><span class="name">Drifloon</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="209" data-num="209" data-name="Drifblim"><span class="dex-num">209</span><span class="name">Drifblim</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="210" data-num="210" data-name="Shuppet"><span class="dex-num">210</span><span class="name">Shuppet</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="211" data-num="211" data-name="Banette"><span class="dex-num">211</span><span class="name">Banette</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="212" data-num="212" data-name="Wingull"><span class="dex-num">212</span><span class="name">Wingull</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="213" data-num="213" data-name="Pelipper"><span class="dex-num">213</span><span class="name">Pelipper</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="214" data-num="214" data-name="Lunatone"><span class="dex-num">214</span><span class="name">Lunatone</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="215" data-num="215" data-name="Solrock"><span class="dex-num">215</span><span class="name">Solrock</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="216" data-num="216" data-name="Absol"><span class="dex-num">216</span><span class="name">Absol</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="217" data-num="217" data-name="Tangela"><span class="dex-num">217</span><span class="name">Tangela</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="218" data-num="218" data-name="Tangrowth"><span class="dex-num">218</span><span class="name">Tangrowth</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="219" data-num="219" data-name="Mienfoo"><span class="dex-num">219</span><span class="name">Mienfoo</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="220" data-num="220" data-name="Mienshao"><span class="dex-num">220</span><span class="name">Mienshao</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="221" data-num="221" data-name="Gligar"><span class="dex-num">221</span><span class="name">Gligar</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="222" data-num="222" data-name="Gliscor"><span class="dex-num">222</span><span class="name">Gliscor</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="223" data-num="223" data-name="Pawniard"><span class="dex-num">223</span><span class="name">Pawniard</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="224" data-num="224" data-name="Bisharp"><span class="dex-num">224</span><span class="name">Bisharp</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="225" data-num="225" data-name="Cobalion"><span class="dex-num">225</span><span class="name">Cobalion</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="226" data-num="226" data-name="Terrakion"><span class="dex-num">226</span><span class="name">Terrakion</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="227" data-num="227" data-name="Virizion"><span class="dex-num">227</span><span class="name">Virizion</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="228" data-num="228" data-name="Tympole"><span class="dex-num">228</span><span class="name">Tympole</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="229" data-num="229" data-name="Palpitoad"><span class="dex-num">229</span><span class="name">Palpitoad</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="230" data-num="230" data-name="Seismitoad"><span class="dex-num">230</span><span class="name">Seismitoad</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="231" data-num="231" data-name="Stunfisk"><span class="dex-num">231</span><span class="name">Stunfisk</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="232" data-num="232" data-name="Shuckle"><span class="dex-num">232</span><span class="name">Shuckle</span><div class="checkbox"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Box 9 -->
+    <div class="pc-box">
+      <div class="box-title">Box 9 — Dex #233–#262</div>
+      <div class="grid-wrapper">
+        <div class="grid">
+          <div class="cell" data-id="233" data-num="233" data-name="Mantyke"><span class="dex-num">233</span><span class="name">Mantyke</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="234" data-num="234" data-name="Mantine"><span class="dex-num">234</span><span class="name">Mantine</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="235" data-num="235" data-name="Remoraid"><span class="dex-num">235</span><span class="name">Remoraid</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="236" data-num="236" data-name="Octillery"><span class="dex-num">236</span><span class="name">Octillery</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="237" data-num="237" data-name="Corsola"><span class="dex-num">237</span><span class="name">Corsola</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="238" data-num="238" data-name="Staryu"><span class="dex-num">238</span><span class="name">Staryu</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="239" data-num="239" data-name="Starmie"><span class="dex-num">239</span><span class="name">Starmie</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="240" data-num="240" data-name="Wailmer"><span class="dex-num">240</span><span class="name">Wailmer</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="241" data-num="241" data-name="Wailord"><span class="dex-num">241</span><span class="name">Wailord</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="242" data-num="242" data-name="Lapras"><span class="dex-num">242</span><span class="name">Lapras</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="243" data-num="243" data-name="Spheal"><span class="dex-num">243</span><span class="name">Spheal</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="244" data-num="244" data-name="Sealeo"><span class="dex-num">244</span><span class="name">Sealeo</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="245" data-num="245" data-name="Walrein"><span class="dex-num">245</span><span class="name">Walrein</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="246" data-num="246" data-name="Swablu"><span class="dex-num">246</span><span class="name">Swablu</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="247" data-num="247" data-name="Altaria"><span class="dex-num">247</span><span class="name">Altaria</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="248" data-num="248" data-name="Vulpix"><span class="dex-num">248</span><span class="name">Vulpix</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="249" data-num="249" data-name="Ninetales"><span class="dex-num">249</span><span class="name">Ninetales</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="250" data-num="250" data-name="Bronzor"><span class="dex-num">250</span><span class="name">Bronzor</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="251" data-num="251" data-name="Bronzong"><span class="dex-num">251</span><span class="name">Bronzong</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="252" data-num="252" data-name="Sneasel"><span class="dex-num">252</span><span class="name">Sneasel</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="253" data-num="253" data-name="Weavile"><span class="dex-num">253</span><span class="name">Weavile</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="254" data-num="254" data-name="Delibird"><span class="dex-num">254</span><span class="name">Delibird</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="255" data-num="255" data-name="Vanillite"><span class="dex-num">255</span><span class="name">Vanillite</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="256" data-num="256" data-name="Vanillish"><span class="dex-num">256</span><span class="name">Vanillish</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="257" data-num="257" data-name="Vanilluxe"><span class="dex-num">257</span><span class="name">Vanilluxe</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="258" data-num="258" data-name="Swinub"><span class="dex-num">258</span><span class="name">Swinub</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="259" data-num="259" data-name="Piloswine"><span class="dex-num">259</span><span class="name">Piloswine</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="260" data-num="260" data-name="Mamoswine"><span class="dex-num">260</span><span class="name">Mamoswine</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="261" data-num="261" data-name="Ditto"><span class="dex-num">261</span><span class="name">Ditto</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="262" data-num="262" data-name="Beldum"><span class="dex-num">262</span><span class="name">Beldum</span><div class="checkbox"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Box 10 -->
+    <div class="pc-box">
+      <div class="box-title">Box 10 — Dex #263–#292</div>
+      <div class="grid-wrapper">
+        <div class="grid">
+          <div class="cell" data-id="263" data-num="263" data-name="Metang"><span class="dex-num">263</span><span class="name">Metang</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="264" data-num="264" data-name="Metagross"><span class="dex-num">264</span><span class="name">Metagross</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="265" data-num="265" data-name="Seel"><span class="dex-num">265</span><span class="name">Seel</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="266" data-num="266" data-name="Dewgong"><span class="dex-num">266</span><span class="name">Dewgong</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="267" data-num="267" data-name="Throh"><span class="dex-num">267</span><span class="name">Throh</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="268" data-num="268" data-name="Sawk"><span class="dex-num">268</span><span class="name">Sawk</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="269" data-num="269" data-name="Bouffalant"><span class="dex-num">269</span><span class="name">Bouffalant</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="270" data-num="270" data-name="Druddigon"><span class="dex-num">270</span><span class="name">Druddigon</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="271" data-num="271" data-name="Golett"><span class="dex-num">271</span><span class="name">Golett</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="272" data-num="272" data-name="Golurk"><span class="dex-num">272</span><span class="name">Golurk</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="273" data-num="273" data-name="Deino"><span class="dex-num">273</span><span class="name">Deino</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="274" data-num="274" data-name="Zweilous"><span class="dex-num">274</span><span class="name">Zweilous</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="275" data-num="275" data-name="Hydreigon"><span class="dex-num">275</span><span class="name">Hydreigon</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="276" data-num="276" data-name="Slakoth"><span class="dex-num">276</span><span class="name">Slakoth</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="277" data-num="277" data-name="Vigoroth"><span class="dex-num">277</span><span class="name">Vigoroth</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="278" data-num="278" data-name="Slaking"><span class="dex-num">278</span><span class="name">Slaking</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="279" data-num="279" data-name="Corphish"><span class="dex-num">279</span><span class="name">Corphish</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="280" data-num="280" data-name="Crawdaunt"><span class="dex-num">280</span><span class="name">Crawdaunt</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="281" data-num="281" data-name="Igglybuff"><span class="dex-num">281</span><span class="name">Igglybuff</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="282" data-num="282" data-name="Jigglypuff"><span class="dex-num">282</span><span class="name">Jigglypuff</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="283" data-num="283" data-name="Wigglytuff"><span class="dex-num">283</span><span class="name">Wigglytuff</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="284" data-num="284" data-name="Lickitung"><span class="dex-num">284</span><span class="name">Lickitung</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="285" data-num="285" data-name="Lickilicky"><span class="dex-num">285</span><span class="name">Lickilicky</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="286" data-num="286" data-name="Yanma"><span class="dex-num">286</span><span class="name">Yanma</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="287" data-num="287" data-name="Yanmega"><span class="dex-num">287</span><span class="name">Yanmega</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="288" data-num="288" data-name="Tropius"><span class="dex-num">288</span><span class="name">Tropius</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="289" data-num="289" data-name="Carnivine"><span class="dex-num">289</span><span class="name">Carnivine</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="290" data-num="290" data-name="Croagunk"><span class="dex-num">290</span><span class="name">Croagunk</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="291" data-num="291" data-name="Toxicroak"><span class="dex-num">291</span><span class="name">Toxicroak</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="292" data-num="292" data-name="Larvitar"><span class="dex-num">292</span><span class="name">Larvitar</span><div class="checkbox"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Box 11 -->
+    <div class="pc-box">
+      <div class="box-title">Box 11 — Dex #293–#300</div>
+      <div class="grid-wrapper">
+        <div class="grid">
+          <div class="cell" data-id="293" data-num="293" data-name="Pupitar"><span class="dex-num">293</span><span class="name">Pupitar</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="294" data-num="294" data-name="Tyranitar"><span class="dex-num">294</span><span class="name">Tyranitar</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="295" data-num="295" data-name="Reshiram"><span class="dex-num">295</span><span class="name">Reshiram</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="296" data-num="296" data-name="Zekrom"><span class="dex-num">296</span><span class="name">Zekrom</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="297-Normal" data-num="297" data-name="Kyurem (Normal)"><span class="dex-num">297</span><span class="name">Kyurem <span class="form">(Normal)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="297-Black" data-num="297" data-name="Kyurem (Black)"><span class="dex-num">297</span><span class="name">Kyurem <span class="form">(Black)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="297-White" data-num="297" data-name="Kyurem (White)"><span class="dex-num">297</span><span class="name">Kyurem <span class="form">(White)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="298-Ordinary" data-num="298" data-name="Keldeo (Ordinary)"><span class="dex-num">298</span><span class="name">Keldeo <span class="form">(Ordinary)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="298-Resolute" data-num="298" data-name="Keldeo (Resolute)"><span class="dex-num">298</span><span class="name">Keldeo <span class="form">(Resolute)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="299" data-num="299" data-name="Meloetta"><span class="dex-num">299</span><span class="name">Meloetta</span><div class="checkbox"></div></div>
+          <div class="cell" data-id="300-NoDrive" data-num="300" data-name="Genesect (No Drive)"><span class="dex-num">300</span><span class="name">Genesect <span class="form">(No Drive)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="300-Burn" data-num="300" data-name="Genesect (Burn)"><span class="dex-num">300</span><span class="name">Genesect <span class="form">(Burn)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="300-Shock" data-num="300" data-name="Genesect (Shock)"><span class="dex-num">300</span><span class="name">Genesect <span class="form">(Shock)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="300-Chill" data-num="300" data-name="Genesect (Chill)"><span class="dex-num">300</span><span class="name">Genesect <span class="form">(Chill)</span></span><div class="checkbox"></div></div>
+          <div class="cell" data-id="300-Douse" data-num="300" data-name="Genesect (Douse)"><span class="dex-num">300</span><span class="name">Genesect <span class="form">(Douse)</span></span><div class="checkbox"></div></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- BOX 2 -->
-  <div class="pc-box">
-    <div class="box-title">Box 2 — Dex #029–#058</div>
-    <div class="grid-wrapper">
-      <div class="grid">
-        <div class="cell" data-id="029"><span class="dex-num">029</span><span class="name">Golduck</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="030"><span class="dex-num">030</span><span class="name">Azurill</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="031"><span class="dex-num">031</span><span class="name">Marill</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="032"><span class="dex-num">032</span><span class="name">Azumarill</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="033"><span class="dex-num">033</span><span class="name">Riolu</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="034"><span class="dex-num">034</span><span class="name">Lucario</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="035"><span class="dex-num">035</span><span class="name">Dunsparce</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="036"><span class="dex-num">036</span><span class="name">Audino</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="037"><span class="dex-num">037</span><span class="name">Pansage</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="038"><span class="dex-num">038</span><span class="name">Simisage</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="039"><span class="dex-num">039</span><span class="name">Pansear</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="040"><span class="dex-num">040</span><span class="name">Simisear</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="041"><span class="dex-num">041</span><span class="name">Panpour</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="042"><span class="dex-num">042</span><span class="name">Simipour</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="043"><span class="dex-num">043</span><span class="name">Venipede</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="044"><span class="dex-num">044</span><span class="name">Whirlipede</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="045"><span class="dex-num">045</span><span class="name">Scolipede</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="046"><span class="dex-num">046</span><span class="name">Koffing</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="047"><span class="dex-num">047</span><span class="name">Weezing</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="048"><span class="dex-num">048</span><span class="name">Magnemite</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="049"><span class="dex-num">049</span><span class="name">Magneton</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="050"><span class="dex-num">050</span><span class="name">Magnezone</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="051"><span class="dex-num">051</span><span class="name">Growlithe</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="052"><span class="dex-num">052</span><span class="name">Arcanine</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="053"><span class="dex-num">053</span><span class="name">Magby</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="054"><span class="dex-num">054</span><span class="name">Magmar</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="055"><span class="dex-num">055</span><span class="name">Magmortar</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="056"><span class="dex-num">056</span><span class="name">Elekid</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="057"><span class="dex-num">057</span><span class="name">Electabuzz</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="058"><span class="dex-num">058</span><span class="name">Electivire</span><div class="checkbox"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOX 3 -->
-  <div class="pc-box">
-    <div class="box-title">Box 3 — Dex #059–#088</div>
-    <div class="grid-wrapper">
-      <div class="grid">
-        <div class="cell" data-id="059"><span class="dex-num">059</span><span class="name">Rattata</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="060"><span class="dex-num">060</span><span class="name">Raticate</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="061"><span class="dex-num">061</span><span class="name">Zubat</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="062"><span class="dex-num">062</span><span class="name">Golbat</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="063"><span class="dex-num">063</span><span class="name">Crobat</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="064"><span class="dex-num">064</span><span class="name">Grimer</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="065"><span class="dex-num">065</span><span class="name">Muk</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="066"><span class="dex-num">066</span><span class="name">Woobat</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="067"><span class="dex-num">067</span><span class="name">Swoobat</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="068"><span class="dex-num">068</span><span class="name">Roggenrola</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="069"><span class="dex-num">069</span><span class="name">Boldore</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="070"><span class="dex-num">070</span><span class="name">Gigalith</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="071"><span class="dex-num">071</span><span class="name">Onix</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="072"><span class="dex-num">072</span><span class="name">Steelix</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="073"><span class="dex-num">073</span><span class="name">Timburr</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="074"><span class="dex-num">074</span><span class="name">Gurdurr</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="075"><span class="dex-num">075</span><span class="name">Conkeldurr</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="076"><span class="dex-num">076</span><span class="name">Drilbur</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="077"><span class="dex-num">077</span><span class="name">Excadrill</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="078"><span class="dex-num">078</span><span class="name">Skitty</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="079"><span class="dex-num">079</span><span class="name">Delcatty</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="080"><span class="dex-num">080</span><span class="name">Buneary</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="081"><span class="dex-num">081</span><span class="name">Lopunny</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="082"><span class="dex-num">082</span><span class="name">Cottonee</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="083"><span class="dex-num">083</span><span class="name">Whimsicott</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="084"><span class="dex-num">084</span><span class="name">Petilil</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="085"><span class="dex-num">085</span><span class="name">Lilligant</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="086"><span class="dex-num">086</span><span class="name">Munna</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="087"><span class="dex-num">087</span><span class="name">Musharna</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="088"><span class="dex-num">088</span><span class="name">Cleffa</span><div class="checkbox"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOX 4 -->
-  <div class="pc-box">
-    <div class="box-title">Box 4 — Dex #089–#117</div>
-    <div class="grid-wrapper">
-      <div class="grid">
-        <div class="cell" data-id="089"><span class="dex-num">089</span><span class="name">Clefairy</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="090"><span class="dex-num">090</span><span class="name">Clefable</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="091"><span class="dex-num">091</span><span class="name">Eevee</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="092"><span class="dex-num">092</span><span class="name">Vaporeon</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="093"><span class="dex-num">093</span><span class="name">Jolteon</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="094"><span class="dex-num">094</span><span class="name">Flareon</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="095"><span class="dex-num">095</span><span class="name">Espeon</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="096"><span class="dex-num">096</span><span class="name">Umbreon</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="097"><span class="dex-num">097</span><span class="name">Leafeon</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="098"><span class="dex-num">098</span><span class="name">Glaceon</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="099"><span class="dex-num">099</span><span class="name">Sandile</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="100"><span class="dex-num">100</span><span class="name">Krokorok</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="101"><span class="dex-num">101</span><span class="name">Krookodile</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="102"><span class="dex-num">102</span><span class="name">Darumaka</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="103"><span class="dex-num">103</span><span class="name">Darmanitan</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="104-Red"><span class="dex-num">104</span><span class="name">Basculin <span class="form">(Red)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="104-Blue"><span class="dex-num">104</span><span class="name">Basculin <span class="form">(Blue)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="105"><span class="dex-num">105</span><span class="name">Trubbish</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="106"><span class="dex-num">106</span><span class="name">Garbodor</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="107"><span class="dex-num">107</span><span class="name">Minccino</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="108"><span class="dex-num">108</span><span class="name">Cinccino</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="109"><span class="dex-num">109</span><span class="name">Rufflet</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="110"><span class="dex-num">110</span><span class="name">Braviary</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="111"><span class="dex-num">111</span><span class="name">Vullaby</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="112"><span class="dex-num">112</span><span class="name">Mandibuzz</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="113"><span class="dex-num">113</span><span class="name">Sandshrew</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="114"><span class="dex-num">114</span><span class="name">Sandslash</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="115"><span class="dex-num">115</span><span class="name">Dwebble</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="116"><span class="dex-num">116</span><span class="name">Crustle</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="117"><span class="dex-num">117</span><span class="name">Scraggy</span><div class="checkbox"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOX 5 -->
-  <div class="pc-box">
-    <div class="box-title">Box 5 — Dex #118–#147</div>
-    <div class="grid-wrapper">
-      <div class="grid">
-        <div class="cell" data-id="118"><span class="dex-num">118</span><span class="name">Scrafty</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="119"><span class="dex-num">119</span><span class="name">Maractus</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="120"><span class="dex-num">120</span><span class="name">Sigilyph</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="121"><span class="dex-num">121</span><span class="name">Trapinch</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="122"><span class="dex-num">122</span><span class="name">Vibrava</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="123"><span class="dex-num">123</span><span class="name">Flygon</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="124"><span class="dex-num">124</span><span class="name">Yamask</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="125"><span class="dex-num">125</span><span class="name">Cofagrigus</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="126"><span class="dex-num">126</span><span class="name">Tirtouga</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="127"><span class="dex-num">127</span><span class="name">Carracosta</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="128"><span class="dex-num">128</span><span class="name">Archen</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="129"><span class="dex-num">129</span><span class="name">Archeops</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="130"><span class="dex-num">130</span><span class="name">Klink</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="131"><span class="dex-num">131</span><span class="name">Klang</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="132"><span class="dex-num">132</span><span class="name">Klinklang</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="133"><span class="dex-num">133</span><span class="name">Budew</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="134"><span class="dex-num">134</span><span class="name">Roselia</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="135"><span class="dex-num">135</span><span class="name">Roserade</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="136"><span class="dex-num">136</span><span class="name">Gothita</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="137"><span class="dex-num">137</span><span class="name">Gothorita</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="138"><span class="dex-num">138</span><span class="name">Gothitelle</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="139"><span class="dex-num">139</span><span class="name">Solosis</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="140"><span class="dex-num">140</span><span class="name">Duosion</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="141"><span class="dex-num">141</span><span class="name">Reuniclus</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="142"><span class="dex-num">142</span><span class="name">Combee</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="143"><span class="dex-num">143</span><span class="name">Vespiquen</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="144"><span class="dex-num">144</span><span class="name">Emolga</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="145"><span class="dex-num">145</span><span class="name">Heracross</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="146"><span class="dex-num">146</span><span class="name">Pinsir</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="147"><span class="dex-num">147</span><span class="name">Blitzle</span><div class="checkbox"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOX 6 -->
-  <div class="pc-box">
-    <div class="box-title">Box 6 — Dex #148–#171</div>
-    <div class="grid-wrapper">
-      <div class="grid">
-        <div class="cell" data-id="148"><span class="dex-num">148</span><span class="name">Zebstrika</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="149"><span class="dex-num">149</span><span class="name">Buizel</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="150"><span class="dex-num">150</span><span class="name">Floatzel</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="151"><span class="dex-num">151</span><span class="name">Zorua</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="152"><span class="dex-num">152</span><span class="name">Zoroark</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="153"><span class="dex-num">153</span><span class="name">Ducklett</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="154"><span class="dex-num">154</span><span class="name">Swanna</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="155"><span class="dex-num">155</span><span class="name">Karrablast</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="156"><span class="dex-num">156</span><span class="name">Escavalier</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="157"><span class="dex-num">157</span><span class="name">Shelmet</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="158"><span class="dex-num">158</span><span class="name">Accelgor</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="159-Spring"><span class="dex-num">159</span><span class="name">Deerling <span class="form">(Spring)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="159-Summer"><span class="dex-num">159</span><span class="name">Deerling <span class="form">(Summer)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="159-Autumn"><span class="dex-num">159</span><span class="name">Deerling <span class="form">(Autumn)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="159-Winter"><span class="dex-num">159</span><span class="name">Deerling <span class="form">(Winter)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="160-Spring"><span class="dex-num">160</span><span class="name">Sawsbuck <span class="form">(Spring)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="160-Summer"><span class="dex-num">160</span><span class="name">Sawsbuck <span class="form">(Summer)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="160-Autumn"><span class="dex-num">160</span><span class="name">Sawsbuck <span class="form">(Autumn)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="160-Winter"><span class="dex-num">160</span><span class="name">Sawsbuck <span class="form">(Winter)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="161"><span class="dex-num">161</span><span class="name">Foongus</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="162"><span class="dex-num">162</span><span class="name">Amoonguss</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="163"><span class="dex-num">163</span><span class="name">Castform</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="164"><span class="dex-num">164</span><span class="name">Nosepass</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="165"><span class="dex-num">165</span><span class="name">Probopass</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="166"><span class="dex-num">166</span><span class="name">Aron</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="167"><span class="dex-num">167</span><span class="name">Lairon</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="168"><span class="dex-num">168</span><span class="name">Aggron</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="169"><span class="dex-num">169</span><span class="name">Baltoy</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="170"><span class="dex-num">170</span><span class="name">Claydol</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="171"><span class="dex-num">171</span><span class="name">Larvesta</span><div class="checkbox"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOX 7 -->
-  <div class="pc-box">
-    <div class="box-title">Box 7 — Dex #172–#202</div>
-    <div class="grid-wrapper">
-      <div class="grid">
-        <div class="cell" data-id="172"><span class="dex-num">172</span><span class="name">Volcarona</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="173"><span class="dex-num">173</span><span class="name">Joltik</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="174"><span class="dex-num">174</span><span class="name">Galvantula</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="175"><span class="dex-num">175</span><span class="name">Ferroseed</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="176"><span class="dex-num">176</span><span class="name">Ferrothorn</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="177"><span class="dex-num">177</span><span class="name">Tynamo</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="178"><span class="dex-num">178</span><span class="name">Eelektrik</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="179"><span class="dex-num">179</span><span class="name">Eelektross</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="180-M"><span class="dex-num">180</span><span class="name">Frillish <span class="form">(M)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="180-F"><span class="dex-num">180</span><span class="name">Frillish <span class="form">(F)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="181-M"><span class="dex-num">181</span><span class="name">Jellicent <span class="form">(M)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="181-F"><span class="dex-num">181</span><span class="name">Jellicent <span class="form">(F)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="182"><span class="dex-num">182</span><span class="name">Alomomola</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="183"><span class="dex-num">183</span><span class="name">Axew</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="184"><span class="dex-num">184</span><span class="name">Fraxure</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="185"><span class="dex-num">185</span><span class="name">Haxorus</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="186"><span class="dex-num">186</span><span class="name">Zangoose</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="187"><span class="dex-num">187</span><span class="name">Seviper</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="188"><span class="dex-num">188</span><span class="name">Elgyem</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="189"><span class="dex-num">189</span><span class="name">Beheeyem</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="190"><span class="dex-num">190</span><span class="name">Litwick</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="191"><span class="dex-num">191</span><span class="name">Lampent</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="192"><span class="dex-num">192</span><span class="name">Chandelure</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="193"><span class="dex-num">193</span><span class="name">Heatmor</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="194"><span class="dex-num">194</span><span class="name">Durant</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="195"><span class="dex-num">195</span><span class="name">Cubchoo</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="196"><span class="dex-num">196</span><span class="name">Beartic</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="197"><span class="dex-num">197</span><span class="name">Cryogonal</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="201"><span class="dex-num">201</span><span class="name">Skorupi</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="202"><span class="dex-num">202</span><span class="name">Drapion</span><div class="checkbox"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOX 8 -->
-  <div class="pc-box">
-    <div class="box-title">Box 8 — Dex #203–#232</div>
-    <div class="grid-wrapper">
-      <div class="grid">
-        <div class="cell" data-id="203"><span class="dex-num">203</span><span class="name">Skarmory</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="204"><span class="dex-num">204</span><span class="name">Numel</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="205"><span class="dex-num">205</span><span class="name">Camerupt</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="206"><span class="dex-num">206</span><span class="name">Spoink</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="207"><span class="dex-num">207</span><span class="name">Grumpig</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="208"><span class="dex-num">208</span><span class="name">Drifloon</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="209"><span class="dex-num">209</span><span class="name">Drifblim</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="210"><span class="dex-num">210</span><span class="name">Shuppet</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="211"><span class="dex-num">211</span><span class="name">Banette</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="212"><span class="dex-num">212</span><span class="name">Wingull</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="213"><span class="dex-num">213</span><span class="name">Pelipper</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="214"><span class="dex-num">214</span><span class="name">Lunatone</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="215"><span class="dex-num">215</span><span class="name">Solrock</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="216"><span class="dex-num">216</span><span class="name">Absol</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="217"><span class="dex-num">217</span><span class="name">Tangela</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="218"><span class="dex-num">218</span><span class="name">Tangrowth</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="219"><span class="dex-num">219</span><span class="name">Mienfoo</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="220"><span class="dex-num">220</span><span class="name">Mienshao</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="221"><span class="dex-num">221</span><span class="name">Gligar</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="222"><span class="dex-num">222</span><span class="name">Gliscor</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="223"><span class="dex-num">223</span><span class="name">Pawniard</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="224"><span class="dex-num">224</span><span class="name">Bisharp</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="225"><span class="dex-num">225</span><span class="name">Cobalion</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="226"><span class="dex-num">226</span><span class="name">Terrakion</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="227"><span class="dex-num">227</span><span class="name">Virizion</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="228"><span class="dex-num">228</span><span class="name">Tympole</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="229"><span class="dex-num">229</span><span class="name">Palpitoad</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="230"><span class="dex-num">230</span><span class="name">Seismitoad</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="231"><span class="dex-num">231</span><span class="name">Stunfisk</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="232"><span class="dex-num">232</span><span class="name">Shuckle</span><div class="checkbox"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOX 9 -->
-  <div class="pc-box">
-    <div class="box-title">Box 9 — Dex #233–#262</div>
-    <div class="grid-wrapper">
-      <div class="grid">
-        <div class="cell" data-id="233"><span class="dex-num">233</span><span class="name">Mantyke</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="234"><span class="dex-num">234</span><span class="name">Mantine</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="235"><span class="dex-num">235</span><span class="name">Remoraid</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="236"><span class="dex-num">236</span><span class="name">Octillery</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="237"><span class="dex-num">237</span><span class="name">Corsola</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="238"><span class="dex-num">238</span><span class="name">Staryu</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="239"><span class="dex-num">239</span><span class="name">Starmie</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="240"><span class="dex-num">240</span><span class="name">Wailmer</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="241"><span class="dex-num">241</span><span class="name">Wailord</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="242"><span class="dex-num">242</span><span class="name">Lapras</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="243"><span class="dex-num">243</span><span class="name">Spheal</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="244"><span class="dex-num">244</span><span class="name">Sealeo</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="245"><span class="dex-num">245</span><span class="name">Walrein</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="246"><span class="dex-num">246</span><span class="name">Swablu</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="247"><span class="dex-num">247</span><span class="name">Altaria</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="248"><span class="dex-num">248</span><span class="name">Vulpix</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="249"><span class="dex-num">249</span><span class="name">Ninetales</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="250"><span class="dex-num">250</span><span class="name">Bronzor</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="251"><span class="dex-num">251</span><span class="name">Bronzong</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="252"><span class="dex-num">252</span><span class="name">Sneasel</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="253"><span class="dex-num">253</span><span class="name">Weavile</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="254"><span class="dex-num">254</span><span class="name">Delibird</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="255"><span class="dex-num">255</span><span class="name">Vanillite</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="256"><span class="dex-num">256</span><span class="name">Vanillish</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="257"><span class="dex-num">257</span><span class="name">Vanilluxe</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="258"><span class="dex-num">258</span><span class="name">Swinub</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="259"><span class="dex-num">259</span><span class="name">Piloswine</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="260"><span class="dex-num">260</span><span class="name">Mamoswine</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="261"><span class="dex-num">261</span><span class="name">Ditto</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="262"><span class="dex-num">262</span><span class="name">Beldum</span><div class="checkbox"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOX 10 -->
-  <div class="pc-box">
-    <div class="box-title">Box 10 — Dex #263–#292</div>
-    <div class="grid-wrapper">
-      <div class="grid">
-        <div class="cell" data-id="263"><span class="dex-num">263</span><span class="name">Metang</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="264"><span class="dex-num">264</span><span class="name">Metagross</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="265"><span class="dex-num">265</span><span class="name">Seel</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="266"><span class="dex-num">266</span><span class="name">Dewgong</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="267"><span class="dex-num">267</span><span class="name">Throh</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="268"><span class="dex-num">268</span><span class="name">Sawk</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="269"><span class="dex-num">269</span><span class="name">Bouffalant</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="270"><span class="dex-num">270</span><span class="name">Druddigon</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="271"><span class="dex-num">271</span><span class="name">Golett</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="272"><span class="dex-num">272</span><span class="name">Golurk</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="273"><span class="dex-num">273</span><span class="name">Deino</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="274"><span class="dex-num">274</span><span class="name">Zweilous</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="275"><span class="dex-num">275</span><span class="name">Hydreigon</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="276"><span class="dex-num">276</span><span class="name">Slakoth</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="277"><span class="dex-num">277</span><span class="name">Vigoroth</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="278"><span class="dex-num">278</span><span class="name">Slaking</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="279"><span class="dex-num">279</span><span class="name">Corphish</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="280"><span class="dex-num">280</span><span class="name">Crawdaunt</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="281"><span class="dex-num">281</span><span class="name">Igglybuff</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="282"><span class="dex-num">282</span><span class="name">Jigglypuff</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="283"><span class="dex-num">283</span><span class="name">Wigglytuff</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="284"><span class="dex-num">284</span><span class="name">Lickitung</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="285"><span class="dex-num">285</span><span class="name">Lickilicky</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="286"><span class="dex-num">286</span><span class="name">Yanma</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="287"><span class="dex-num">287</span><span class="name">Yanmega</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="288"><span class="dex-num">288</span><span class="name">Tropius</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="289"><span class="dex-num">289</span><span class="name">Carnivine</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="290"><span class="dex-num">290</span><span class="name">Croagunk</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="291"><span class="dex-num">291</span><span class="name">Toxicroak</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="292"><span class="dex-num">292</span><span class="name">Larvitar</span><div class="checkbox"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOX 11 -->
-  <div class="pc-box">
-    <div class="box-title">Box 11 — Dex #293–#300</div>
-    <div class="grid-wrapper">
-      <div class="grid">
-        <div class="cell" data-id="293"><span class="dex-num">293</span><span class="name">Pupitar</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="294"><span class="dex-num">294</span><span class="name">Tyranitar</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="295"><span class="dex-num">295</span><span class="name">Reshiram</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="296"><span class="dex-num">296</span><span class="name">Zekrom</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="297-Normal"><span class="dex-num">297</span><span class="name">Kyurem <span class="form">(Normal)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="297-Black"><span class="dex-num">297</span><span class="name">Kyurem <span class="form">(Black)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="297-White"><span class="dex-num">297</span><span class="name">Kyurem <span class="form">(White)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="298-Ordinary"><span class="dex-num">298</span><span class="name">Keldeo <span class="form">(Ordinary)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="298-Resolute"><span class="dex-num">298</span><span class="name">Keldeo <span class="form">(Resolute)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="299"><span class="dex-num">299</span><span class="name">Meloetta</span><div class="checkbox"></div></div>
-        <div class="cell" data-id="300-NoDrive"><span class="dex-num">300</span><span class="name">Genesect <span class="form">(No Drive)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="300-Burn"><span class="dex-num">300</span><span class="name">Genesect <span class="form">(Burn)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="300-Shock"><span class="dex-num">300</span><span class="name">Genesect <span class="form">(Shock)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="300-Chill"><span class="dex-num">300</span><span class="name">Genesect <span class="form">(Chill)</span></span><div class="checkbox"></div></div>
-        <div class="cell" data-id="300-Douse"><span class="dex-num">300</span><span class="name">Genesect <span class="form">(Douse)</span></span><div class="checkbox"></div></div>
-        <div class="cell empty"></div>
-        <div class="cell empty"></div>
-        <div class="cell empty"></div>
-        <div class="cell empty"></div>
-        <div class="cell empty"></div>
-        <div class="cell empty"></div>
-        <div class="cell empty"></div>
-        <div class="cell empty"></div>
-        <div class="cell empty"></div>
-        <div class="cell empty"></div>
-        <div class="cell empty"></div>
-        <div class="cell empty"></div>
-        <div class="cell empty"></div>
-        <div class="cell empty"></div>
-        <div class="cell empty"></div>
-      </div>
-    </div>
-  </div>
-
+  <!-- List View Container -->
+  <div id="listContainer" class="list-container"></div>
 </div>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const STORAGE_KEY = "b2w2_living_dex_saved_state";
 
-    // Load saved states from localStorage
-    const savedState = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    // Extract all valid Pokémon entries from HTML
+    const cells = Array.from(document.querySelectorAll(".cell:not(.empty)"));
+    const pokemonList = cells.map(cell => ({
+      id: cell.getAttribute("data-id"),
+      num: cell.getAttribute("data-num"),
+      name: cell.getAttribute("data-name"),
+      htmlContent: cell.querySelector(".name").innerHTML
+    }));
 
-    // Restore saved checkmarks
-    Object.keys(savedState).forEach(id => {
-      if (savedState[id]) {
-        const cell = document.querySelector(`.cell[data-id="${id}"]`);
-        if (cell) {
-          cell.classList.add("completed");
-        }
+    // Local Storage Helpers
+    const getSavedState = () => JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    
+    const setPokemonStatus = (id, isCompleted) => {
+      const state = getSavedState();
+      state[id] = isCompleted;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      syncAllUI();
+    };
+
+    // Synchronize checkmarks across Box View, List View, and Search Results
+    const syncAllUI = () => {
+      const savedState = getSavedState();
+
+      // Sync Box View
+      cells.forEach(cell => {
+        const id = cell.getAttribute("data-id");
+        cell.classList.toggle("completed", !!savedState[id]);
+      });
+
+      // Sync List View
+      document.querySelectorAll(".list-row").forEach(row => {
+        const id = row.getAttribute("data-id");
+        row.classList.toggle("completed", !!savedState[id]);
+      });
+
+      // Sync active search results
+      document.querySelectorAll(".search-result-item").forEach(item => {
+        const id = item.getAttribute("data-id");
+        item.classList.toggle("completed", !!savedState[id]);
+      });
+    };
+
+    // Populate List View (Numbered order 000-300)
+    const listContainer = document.getElementById("listContainer");
+    pokemonList.forEach(mon => {
+      const row = document.createElement("div");
+      row.className = "list-row";
+      row.setAttribute("data-id", mon.id);
+      row.innerHTML = `
+        <div class="checkbox"></div>
+        <div class="list-info">
+          <span class="dex-num">#${mon.num}</span>
+          <span class="name">${mon.htmlContent}</span>
+        </div>
+      `;
+      row.addEventListener("click", () => {
+        const currentState = !!getSavedState()[mon.id];
+        setPokemonStatus(mon.id, !currentState);
+      });
+      listContainer.appendChild(row);
+    });
+
+    // Box View Click Events
+    cells.forEach(cell => {
+      cell.addEventListener("click", () => {
+        const id = cell.getAttribute("data-id");
+        const currentState = !!getSavedState()[id];
+        setPokemonStatus(id, !currentState);
+      });
+    });
+
+    // View Toggle Handler
+    const boxViewBtn = document.getElementById("boxViewBtn");
+    const listViewBtn = document.getElementById("listViewBtn");
+    const boxContainer = document.getElementById("boxContainer");
+
+    boxViewBtn.addEventListener("click", () => {
+      boxViewBtn.classList.add("active");
+      listViewBtn.classList.remove("active");
+      boxContainer.style.display = "flex";
+      listContainer.style.display = "none";
+    });
+
+    listViewBtn.addEventListener("click", () => {
+      listViewBtn.classList.add("active");
+      boxViewBtn.classList.remove("active");
+      boxContainer.style.display = "none";
+      listContainer.style.display = "block";
+    });
+
+    // Search Bar & Dropdown Logic
+    const searchInput = document.getElementById("searchInput");
+    const searchResults = document.getElementById("searchResults");
+
+    searchInput.addEventListener("input", (e) => {
+      const query = e.target.value.trim().toLowerCase();
+      if (!query) {
+        searchResults.style.display = "none";
+        searchResults.innerHTML = "";
+        return;
+      }
+
+      // Filter & sort alphabetically by Pokémon name
+      const matches = pokemonList
+        .filter(mon => mon.name.toLowerCase().includes(query) || mon.num.includes(query))
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+      if (matches.length === 0) {
+        searchResults.style.display = "none";
+        return;
+      }
+
+      const savedState = getSavedState();
+      searchResults.innerHTML = "";
+      
+      matches.forEach(mon => {
+        const item = document.createElement("div");
+        item.className = `search-result-item ${savedState[mon.id] ? "completed" : ""}`;
+        item.setAttribute("data-id", mon.id);
+        item.innerHTML = `
+          <div class="checkbox"></div>
+          <span class="dex-num">#${mon.num}</span>
+          <span class="name">${mon.htmlContent}</span>
+        `;
+        
+        item.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const currentState = !!getSavedState()[mon.id];
+          setPokemonStatus(mon.id, !currentState);
+        });
+
+        searchResults.appendChild(item);
+      });
+
+      searchResults.style.display = "block";
+    });
+
+    // Close search dropdown on outside click
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".search-wrapper")) {
+        searchResults.style.display = "none";
       }
     });
 
-    // Handle clicks/taps on cells
-    document.querySelectorAll(".cell:not(.empty)").forEach(cell => {
-      cell.addEventListener("click", () => {
-        const id = cell.getAttribute("data-id");
-        const isCompleted = cell.classList.toggle("completed");
-
-        // Save updated state back to localStorage
-        const currentState = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-        currentState[id] = isCompleted;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(currentState));
-      });
-    });
+    // Initial load state sync
+    syncAllUI();
   });
 </script>
 
