@@ -28,7 +28,8 @@
     }
   };
 
-  // version.js remains the only moniker source. Theme and presentation are
-  // loaded afterward so existing rendering/data ownership is unchanged.
-  load('version.js', () => loadTheme(() => load('theme-toggle.js', () => load('beta071-base.js'))));
+  // version.js remains the only moniker source. Existing presentation boots
+  // first; the theme layer is applied afterward so it can safely override
+  // legacy presentation colors without changing functional ownership.
+  load('version.js', () => load('beta071-base.js', () => loadTheme(() => load('theme-toggle.js'))));
 })();
