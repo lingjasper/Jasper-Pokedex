@@ -88,7 +88,11 @@
     /* Bulk Mode: selection is blue; preserve the existing blue checkbox. */
     .cell.bulk-pending,
     .cell.completed.bulk-pending,
-    .list-row.bulk-pending{background:var(--color-pending-surface)!important;border-color:var(--color-pending-border)!important}
+    .list-row.bulk-pending,
+    .list-row.completed.bulk-pending{background:var(--color-pending-surface)!important;border-color:var(--color-pending-border)!important}
+
+    /* Bulk Mode pending-count typography. */
+    #bulkPendingCount{font-size:13.12px!important}
   `;
   document.head.appendChild(style);
 
