@@ -1,0 +1,208 @@
+:root {
+  color-scheme: light;
+  --color-page: #f1f5f9;
+  --color-workspace: #f1f5f9;
+  --color-sidebar: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-input: #ffffff;
+  --color-dropdown: #ffffff;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #64748b;
+  --color-text-muted: #94a3b8;
+  --color-text-disabled: #cbd5e1;
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+  --color-separator: #e5e7eb;
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-accent-active: #1e40af;
+  --color-focus: #2563eb;
+  --color-selection: #dbeafe;
+  --color-jump-highlight: #2563eb;
+  --color-success: #16a34a;
+  --color-success-surface: #f0fdf4;
+  --color-success-border: #86efac;
+  --color-warning: #d97706;
+  --color-warning-surface: #fffbeb;
+  --color-warning-border: #fcd34d;
+  --color-error: #dc2626;
+  --color-error-surface: #fef2f2;
+  --color-error-border: #fca5a5;
+  --color-pending-surface: #eff6ff;
+  --color-pending-border: #93c5fd;
+  --color-pending-accent: #2563eb;
+  --color-shadow: rgba(15, 23, 42, 0.10);
+}
+
+@media (min-width: 769px) {
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --color-page: #111318;
+    --color-workspace: #111318;
+    --color-sidebar: #181a20;
+    --color-surface: #1c1f26;
+    --color-surface-elevated: #242831;
+    --color-input: #1c1f26;
+    --color-dropdown: #242831;
+    --color-text-primary: #f5f7fa;
+    --color-text-secondary: #c5cad3;
+    --color-text-tertiary: #9aa3b2;
+    --color-text-muted: #7d8797;
+    --color-text-disabled: #555e6c;
+    --color-border: #343a46;
+    --color-border-strong: #454c59;
+    --color-separator: #303640;
+    --color-accent: #5b9cff;
+    --color-accent-hover: #78adff;
+    --color-accent-active: #3f82ef;
+    --color-focus: #70a8ff;
+    --color-selection: #203b63;
+    --color-jump-highlight: #5b9cff;
+    --color-success: #4ade80;
+    --color-success-surface: #173522;
+    --color-success-border: #2f855a;
+    --color-warning: #fbbf24;
+    --color-warning-surface: #3a2d10;
+    --color-warning-border: #9a6b11;
+    --color-error: #f87171;
+    --color-error-surface: #3a1d20;
+    --color-error-border: #a9444c;
+    --color-pending-surface: #1d3150;
+    --color-pending-border: #4f86cc;
+    --color-pending-accent: #5b9cff;
+    --color-shadow: rgba(0, 0, 0, 0.32);
+  }
+}
+
+@media (max-width: 768px) {
+  html[data-theme="dark"] {
+    color-scheme: light;
+    /* Mobile deliberately remains on the established Light appearance. */
+    --color-page: #f1f5f9;
+    --color-workspace: #f1f5f9;
+    --color-sidebar: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-elevated: #ffffff;
+    --color-input: #ffffff;
+    --color-dropdown: #ffffff;
+    --color-text-primary: #0f172a;
+    --color-text-secondary: #475569;
+    --color-text-tertiary: #64748b;
+    --color-text-muted: #94a3b8;
+    --color-text-disabled: #cbd5e1;
+    --color-border: #e2e8f0;
+    --color-border-strong: #cbd5e1;
+    --color-separator: #e5e7eb;
+    --color-accent: #2563eb;
+    --color-accent-hover: #1d4ed8;
+    --color-accent-active: #1e40af;
+    --color-focus: #2563eb;
+    --color-selection: #dbeafe;
+    --color-jump-highlight: #2563eb;
+    --color-success: #16a34a;
+    --color-success-surface: #f0fdf4;
+    --color-success-border: #86efac;
+    --color-warning: #d97706;
+    --color-warning-surface: #fffbeb;
+    --color-warning-border: #fcd34d;
+    --color-error: #dc2626;
+    --color-error-surface: #fef2f2;
+    --color-error-border: #fca5a5;
+    --color-pending-surface: #eff6ff;
+    --color-pending-border: #93c5fd;
+    --color-pending-accent: #2563eb;
+    --color-shadow: rgba(15, 23, 42, 0.10);
+  }
+}
+
+html[data-theme="dark"] body {
+  background: var(--color-page) !important;
+  color: var(--color-text-primary) !important;
+}
+
+html[data-theme="dark"] .sidebar,
+html[data-theme="dark"] .sidebar-container,
+html[data-theme="dark"] #sidebar {
+  background: var(--color-sidebar) !important;
+  color: var(--color-text-primary) !important;
+}
+
+html[data-theme="dark"] .workspace,
+html[data-theme="dark"] .main-content,
+html[data-theme="dark"] #workspace {
+  background: var(--color-workspace) !important;
+}
+
+html[data-theme="dark"] .search-container,
+html[data-theme="dark"] .search-box,
+html[data-theme="dark"] input,
+html[data-theme="dark"] .search-dropdown,
+html[data-theme="dark"] .dropdown-menu {
+  background: var(--color-input) !important;
+  color: var(--color-text-primary) !important;
+  border-color: var(--color-border) !important;
+}
+
+html[data-theme="dark"] .search-dropdown,
+html[data-theme="dark"] .dropdown-menu {
+  background: var(--color-dropdown) !important;
+}
+
+html[data-theme="dark"] .banner,
+html[data-theme="dark"] .dex-progress-banner,
+html[data-theme="dark"] .storage-box,
+html[data-theme="dark"] .box,
+html[data-theme="dark"] .list-row,
+html[data-theme="dark"] .list-container,
+html[data-theme="dark"] .card {
+  background: var(--color-surface) !important;
+  color: var(--color-text-primary) !important;
+  border-color: var(--color-border) !important;
+}
+
+html[data-theme="dark"] button {
+  color: var(--color-text-primary);
+}
+
+html[data-theme="dark"] a,
+html[data-theme="dark"] .accent,
+html[data-theme="dark"] .jump-button {
+  color: var(--color-accent) !important;
+}
+
+html[data-theme="dark"] input::placeholder {
+  color: var(--color-text-tertiary) !important;
+}
+
+html[data-theme="dark"] .form,
+html[data-theme="dark"] .pokemon-form,
+html[data-theme="dark"] .secondary,
+html[data-theme="dark"] .muted {
+  color: var(--color-text-tertiary) !important;
+}
+
+html[data-theme="dark"] .completed,
+html[data-theme="dark"] .list-row.completed,
+html[data-theme="dark"] .pokemon-card.completed {
+  color: var(--color-success) !important;
+  border-color: var(--color-success-border) !important;
+  background-color: var(--color-success-surface) !important;
+}
+
+html[data-theme="dark"] :focus-visible {
+  outline-color: var(--color-focus) !important;
+}
+
+html[data-theme="dark"] .jump-highlight,
+html[data-theme="dark"] .box.jump-highlight,
+html[data-theme="dark"] .storage-box.jump-highlight {
+  outline-color: var(--color-jump-highlight) !important;
+  border-color: var(--color-jump-highlight) !important;
+}
+
+html[data-theme="dark"] .token-sync-pill,
+html[data-theme="dark"] .sync-pill {
+  border-color: var(--color-border-strong) !important;
+}
