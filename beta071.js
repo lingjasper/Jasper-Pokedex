@@ -15,6 +15,20 @@
     document.head.appendChild(script);
   };
 
-  // version.js remains the only moniker source. The renderer waits for it before booting.
-  load('version.js', () => load('theme-toggle.js', () => load('beta071-base.js')));
+  const loadTheme = (onload) => {
+    if (!document.querySelector('link[data-jasper-theme]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'theme.css';
+      link.dataset.jasperTheme = 'true';
+      link.onload = () => onload?.();
+      document.head.appendChild(link);
+    } else {
+      onload?.();
+    }
+  };
+
+  // version.js remains the only moniker source. Theme and presentation are
+  // loaded afterward so existing rendering/data ownership is unchanged.
+  load('version.js', () => loadTheme(() => load('theme-toggle.js', () => load('beta071-base.js'))));
 })();
