@@ -117,92 +117,59 @@
   }
 }
 
-html[data-theme="dark"] body {
-  background: var(--color-page) !important;
-  color: var(--color-text-primary) !important;
+/* Desktop theme is intentionally scoped to the desktop presentation. */
+@media (min-width: 769px) {
+  html[data-theme="dark"] body { background: var(--color-page) !important; color: var(--color-text-primary) !important; }
+  html[data-theme="dark"] #desktopSidebar { background: var(--color-sidebar) !important; color: var(--color-text-primary) !important; border-right-color: var(--color-border-strong) !important; box-shadow: 3px 0 14px var(--color-shadow) !important; }
+  html[data-theme="dark"] .desktop-sidebar-brand .brand-title { color: var(--color-text-primary) !important; }
+  html[data-theme="dark"] .desktop-sidebar-brand .beta { color: var(--color-text-secondary) !important; }
+  html[data-theme="dark"] .desktop-sidebar-separator { background: var(--color-separator) !important; }
+  html[data-theme="dark"] .desktop-sidebar-subheader { color: var(--color-text-tertiary) !important; }
+  html[data-theme="dark"] .desktop-title-tabs .tab-btn { background: var(--color-surface) !important; color: var(--color-text-secondary) !important; border-color: var(--color-border) !important; }
+  html[data-theme="dark"] .desktop-title-tabs .tab-btn.active { background: var(--color-accent) !important; color: #fff !important; border-color: var(--color-accent) !important; }
+  html[data-theme="dark"] #desktopWorkspace { background: var(--color-workspace) !important; }
+  html[data-theme="dark"] #desktopWorkspaceTitle { color: var(--color-text-primary) !important; }
+  html[data-theme="dark"] #desktopTableContainer { background: var(--color-surface) !important; border-color: var(--color-border-strong) !important; box-shadow: 0 2px 8px var(--color-shadow) !important; }
+  html[data-theme="dark"] #dexProgressBanner { background: var(--color-surface-elevated) !important; border-color: var(--color-border) !important; color: var(--color-text-secondary) !important; box-shadow: 0 2px 5px var(--color-shadow) !important; }
+  html[data-theme="dark"] .dex-progress-icon { background: var(--color-border) !important; color: var(--color-text-secondary) !important; }
+  html[data-theme="dark"] .controls-container .search-input,
+  html[data-theme="dark"] .search-wrapper #searchInput { background: var(--color-input) !important; color: var(--color-text-primary) !important; border-color: var(--color-border-strong) !important; }
+  html[data-theme="dark"] .search-wrapper #searchInput:focus { border-color: var(--color-focus) !important; }
+  html[data-theme="dark"] .search-wrapper #searchClearButton { background: var(--color-border) !important; color: var(--color-text-secondary) !important; }
+  html[data-theme="dark"] .search-results { background: var(--color-dropdown) !important; border-color: var(--color-border) !important; box-shadow: 0 4px 12px var(--color-shadow) !important; }
+  html[data-theme="dark"] .search-result-item { color: var(--color-text-primary) !important; border-bottom-color: var(--color-separator) !important; }
+  html[data-theme="dark"] .search-result-item:hover { background: var(--color-selection) !important; }
+  html[data-theme="dark"] .search-jump { background: var(--color-accent) !important; color: #fff !important; border-color: var(--color-accent-active) !important; }
+  html[data-theme="dark"] .view-toggle { background: var(--color-border) !important; }
+  html[data-theme="dark"] .toggle-btn { color: var(--color-text-secondary) !important; }
+  html[data-theme="dark"] .toggle-btn.active { background: var(--color-surface-elevated) !important; color: var(--color-text-primary) !important; }
+  html[data-theme="dark"] .pc-box { background: var(--color-surface) !important; border-color: var(--color-border-strong) !important; box-shadow: 0 4px 6px -1px var(--color-shadow) !important; }
+  html[data-theme="dark"] .box-title { color: var(--color-text-primary) !important; border-bottom-color: var(--color-separator) !important; }
+  html[data-theme="dark"] .box-completion-counter { color: var(--color-text-secondary) !important; }
+  html[data-theme="dark"] .cell { background: var(--color-surface-elevated) !important; border-color: var(--color-border) !important; color: var(--color-text-primary) !important; }
+  html[data-theme="dark"] .cell.empty { background: var(--color-surface) !important; border-color: var(--color-border-strong) !important; }
+  html[data-theme="dark"] .cell.completed { background: var(--color-success-surface) !important; border-color: var(--color-success-border) !important; }
+  html[data-theme="dark"] .dex-num { color: var(--color-text-secondary) !important; }
+  html[data-theme="dark"] .name { color: var(--color-text-primary) !important; }
+  html[data-theme="dark"] .form { color: var(--color-accent) !important; }
+  html[data-theme="dark"] .checkbox { background: var(--color-surface) !important; border-color: var(--color-border-strong) !important; }
+  html[data-theme="dark"] .completed .checkbox { background: var(--color-success) !important; border-color: var(--color-success) !important; }
+  html[data-theme="dark"] .list-container { background: var(--color-surface) !important; border-color: var(--color-border-strong) !important; box-shadow: 0 4px 6px -1px var(--color-shadow) !important; }
+  html[data-theme="dark"] .list-row { color: var(--color-text-primary) !important; border-bottom-color: var(--color-separator) !important; }
+  html[data-theme="dark"] .list-row.completed { background: var(--color-success-surface) !important; }
+  html[data-theme="dark"] .jump-highlight { box-shadow: inset 0 0 0 3px var(--color-jump-highlight) !important; }
+  html[data-theme="dark"] .bulk-separator { border-top-color: var(--color-separator) !important; }
+  html[data-theme="dark"] .bulk-toggle-row strong { color: var(--color-text-primary) !important; }
+  html[data-theme="dark"] .bulk-toggle-row small { color: var(--color-text-tertiary) !important; }
+  html[data-theme="dark"] .bulk-action-buttons button { background: var(--color-surface-elevated) !important; border-color: var(--color-border-strong) !important; color: var(--color-text-primary) !important; }
+  html[data-theme="dark"] .bulk-pending { background: var(--color-pending-surface) !important; border-color: var(--color-pending-border) !important; }
+  html[data-theme="dark"] .bulk-pending .checkbox { background: var(--color-pending-accent) !important; border-color: var(--color-pending-accent) !important; }
+  html[data-theme="dark"] .github-sync-chevron { border-color: currentColor !important; }
+  html[data-theme="dark"] #githubSyncWrap,
+  html[data-theme="dark"] #githubSyncMenu { color: var(--color-text-primary) !important; }
 }
 
-html[data-theme="dark"] .sidebar,
-html[data-theme="dark"] .sidebar-container,
-html[data-theme="dark"] #sidebar {
-  background: var(--color-sidebar) !important;
-  color: var(--color-text-primary) !important;
-}
-
-html[data-theme="dark"] .workspace,
-html[data-theme="dark"] .main-content,
-html[data-theme="dark"] #workspace {
-  background: var(--color-workspace) !important;
-}
-
-html[data-theme="dark"] .search-container,
-html[data-theme="dark"] .search-box,
-html[data-theme="dark"] input,
-html[data-theme="dark"] .search-dropdown,
-html[data-theme="dark"] .dropdown-menu {
-  background: var(--color-input) !important;
-  color: var(--color-text-primary) !important;
-  border-color: var(--color-border) !important;
-}
-
-html[data-theme="dark"] .search-dropdown,
-html[data-theme="dark"] .dropdown-menu {
-  background: var(--color-dropdown) !important;
-}
-
-html[data-theme="dark"] .banner,
-html[data-theme="dark"] .dex-progress-banner,
-html[data-theme="dark"] .storage-box,
-html[data-theme="dark"] .box,
-html[data-theme="dark"] .list-row,
-html[data-theme="dark"] .list-container,
-html[data-theme="dark"] .card {
-  background: var(--color-surface) !important;
-  color: var(--color-text-primary) !important;
-  border-color: var(--color-border) !important;
-}
-
-html[data-theme="dark"] button {
-  color: var(--color-text-primary);
-}
-
-html[data-theme="dark"] a,
-html[data-theme="dark"] .accent,
-html[data-theme="dark"] .jump-button {
-  color: var(--color-accent) !important;
-}
-
-html[data-theme="dark"] input::placeholder {
-  color: var(--color-text-tertiary) !important;
-}
-
-html[data-theme="dark"] .form,
-html[data-theme="dark"] .pokemon-form,
-html[data-theme="dark"] .secondary,
-html[data-theme="dark"] .muted {
-  color: var(--color-text-tertiary) !important;
-}
-
-html[data-theme="dark"] .completed,
-html[data-theme="dark"] .list-row.completed,
-html[data-theme="dark"] .pokemon-card.completed {
-  color: var(--color-success) !important;
-  border-color: var(--color-success-border) !important;
-  background-color: var(--color-success-surface) !important;
-}
-
-html[data-theme="dark"] :focus-visible {
-  outline-color: var(--color-focus) !important;
-}
-
-html[data-theme="dark"] .jump-highlight,
-html[data-theme="dark"] .box.jump-highlight,
-html[data-theme="dark"] .storage-box.jump-highlight {
-  outline-color: var(--color-jump-highlight) !important;
-  border-color: var(--color-jump-highlight) !important;
-}
-
-html[data-theme="dark"] .token-sync-pill,
-html[data-theme="dark"] .sync-pill {
-  border-color: var(--color-border-strong) !important;
+/* Keep the established Light appearance on Mobile, even if a dark preference exists. */
+@media (max-width: 768px) {
+  html[data-theme="dark"] body { background: var(--color-page) !important; color: var(--color-text-primary) !important; }
 }
