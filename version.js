@@ -1,5 +1,5 @@
 (() => {
   'use strict';
-  // SINGLE SOURCE OF TRUTH for the release moniker.
-  window.JASPER_POKEDEX_VERSION = 'Beta v0.11';
+  // SINGLE SOURCE OF TRUTH for the website release moniker.
+  window.JASPER_POKEDEX_VERSION = 'Beta v0.11.0.1';
 })();
