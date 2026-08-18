@@ -46,8 +46,8 @@
       #boxContainer .box-title { position: relative; padding-right: 4.5rem; }
       #boxContainer .box-completion-counter { position: absolute; right: 0; top: 0; white-space: nowrap; }
       #boxContainer .grid { grid-template-rows: repeat(5, minmax(58px, auto)) !important; }
-      #boxContainer .cell { min-width: 0; min-height: 58px; overflow: hidden; gap: 4px; }
-      #boxContainer .cell .name { min-width: 0; max-width: 100%; height: 20px; margin-top: 2px; margin-bottom: 2px; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      #boxContainer .cell { min-width: 0; min-height: 58px; overflow: hidden; gap: 0; }
+      #boxContainer .cell .name { min-width: 0; max-width: 100%; height: 20px; margin-top: 0; margin-bottom: 0; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     `;
     document.head.appendChild(style);
   };
@@ -56,7 +56,7 @@
     if (document.getElementById('mobileOverhaulV133')) return;
     const script = document.createElement('script');
     script.id = 'mobileOverhaulV133';
-    script.src = 'mobile-overhaul-v133.js';
+    script.src = 'mobile-overhaul-v133.js?v=0.13.4';
     document.head.appendChild(script);
   };
 
