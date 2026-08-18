@@ -2,7 +2,7 @@
   'use strict';
 
   /*
-   * Beta v0.13.3 — Mobile Overhaul: UI refinement and shell alignment.
+   * Beta v0.13.3.2 — Mobile Overhaul: freeze fix and shell alignment.
    *
    * This layer owns Mobile presentation only. Pokémon data, Box allocation,
    * forms, completion state, search logic, and GitHub sync remain owned by
@@ -29,195 +29,49 @@
         body { padding-left:8px!important; padding-right:8px!important; }
 
         #mobileHeader {
-          position:absolute;
-          top:0;
-          left:8px;
-          right:8px;
-          height:64px;
-          display:flex;
-          align-items:flex-start;
-          justify-content:space-between;
-          gap:12px;
-          padding-top:8px;
-          z-index:11900;
-          pointer-events:none;
+          position:absolute; top:0; left:8px; right:8px; height:64px;
+          display:flex; align-items:flex-start; justify-content:space-between;
+          gap:12px; padding-top:8px; z-index:11900; pointer-events:none;
         }
         #mobileHeaderBrand { min-width:0; padding-top:1px; }
-        #mobileHeaderTitle {
-          margin:0;
-          color:#0f172a;
-          font-size:1.05rem;
-          line-height:1.25;
-          font-weight:700;
-          white-space:nowrap;
-          overflow:hidden;
-          text-overflow:ellipsis;
-        }
-        #mobileHeaderMoniker {
-          margin-top:2px;
-          color:#475569;
-          font-size:.78rem;
-          line-height:1.2;
-          font-weight:600;
-        }
-        #mobileHeaderActions {
-          display:flex;
-          align-items:center;
-          gap:8px;
-          flex:0 0 auto;
-          pointer-events:auto;
-        }
-        #mobileDarkModePlaceholder {
-          width:34px;
-          height:34px;
-          flex:0 0 34px;
-          display:inline-flex;
-          align-items:center;
-          justify-content:center;
-          padding:0;
-          border:1px solid #cbd5e1;
-          border-radius:999px;
-          background:#f8fafc;
-          color:#94a3b8;
-          font-size:17px;
-          line-height:1;
-          cursor:not-allowed;
-          opacity:.58;
-        }
-        #mobileHeader #githubSyncWrap {
-          position:relative!important;
-          top:auto!important;
-          right:auto!important;
-          flex:0 0 auto;
-        }
+        #mobileHeaderTitle { margin:0; color:#0f172a; font-size:1.05rem; line-height:1.25; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        #mobileHeaderMoniker { margin-top:2px; color:#475569; font-size:.78rem; line-height:1.2; font-weight:600; }
+        #mobileHeaderActions { display:flex; align-items:center; gap:8px; flex:0 0 auto; pointer-events:auto; }
+        #mobileDarkModePlaceholder { width:34px; height:34px; flex:0 0 34px; display:inline-flex; align-items:center; justify-content:center; padding:0; border:1px solid #cbd5e1; border-radius:999px; background:#f8fafc; color:#94a3b8; font-size:17px; line-height:1; cursor:not-allowed; opacity:.58; }
+        #mobileHeader #githubSyncWrap { position:relative!important; top:auto!important; right:auto!important; flex:0 0 auto; }
         #mobileHeader #githubSyncPill { white-space:nowrap; }
 
-        .tabs-container {
-          width:100%!important;
-          justify-content:flex-start!important;
-          flex-wrap:nowrap!important;
-          overflow-x:auto!important;
-          overflow-y:hidden!important;
-          -webkit-overflow-scrolling:touch;
-          scrollbar-width:thin;
-          padding:0 2px 4px!important;
-          gap:8px!important;
-          margin-bottom:14px!important;
-        }
-        .tabs-container .tab-btn {
-          flex:0 0 auto!important;
-          white-space:nowrap!important;
-        }
+        .tabs-container { width:100%!important; justify-content:flex-start!important; flex-wrap:nowrap!important; overflow-x:auto!important; overflow-y:hidden!important; -webkit-overflow-scrolling:touch; scrollbar-width:thin; padding:0 2px 4px!important; gap:8px!important; margin-bottom:14px!important; }
+        .tabs-container .tab-btn { flex:0 0 auto!important; white-space:nowrap!important; }
 
-        #mobileProgressBanner {
-          display:flex;
-          align-items:center;
-          gap:10px;
-          width:100%;
-          margin:0 0 14px;
-          padding:11px 12px;
-          background:#fff;
-          border:1px solid #cbd5e1;
-          border-radius:10px;
-          box-shadow:0 2px 5px rgba(15,23,42,.05);
-          color:#475569;
-          font-size:.78rem;
-          font-weight:600;
-        }
-        #mobileProgressBanner .mobile-progress-icon {
-          width:20px;
-          height:20px;
-          flex:0 0 20px;
-          display:inline-flex;
-          align-items:center;
-          justify-content:center;
-          border-radius:50%;
-          background:#e2e8f0;
-          color:#475569;
-          font-size:.75rem;
-          font-weight:800;
-        }
+        #mobileProgressBanner { display:flex; align-items:center; gap:10px; width:100%; margin:0 0 14px; padding:11px 12px; background:#fff; border:1px solid #cbd5e1; border-radius:10px; box-shadow:0 2px 5px rgba(15,23,42,.05); color:#475569; font-size:.78rem; font-weight:600; }
+        #mobileProgressBanner .mobile-progress-icon { width:20px; height:20px; flex:0 0 20px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:#e2e8f0; color:#475569; font-size:.75rem; font-weight:800; }
         #mobileProgressText { min-width:0; }
 
-        .controls-container {
-          width:100%!important;
-          max-width:none!important;
-          margin:0 0 16px!important;
-          flex-direction:column!important;
-          align-items:stretch!important;
-          gap:8px!important;
-        }
+        .controls-container { width:100%!important; max-width:none!important; margin:0 0 16px!important; flex-direction:column!important; align-items:stretch!important; gap:8px!important; }
         .search-wrapper { width:100%!important; min-width:0!important; }
         .search-input { font-size:16px!important; width:100%!important; }
-        .search-results {
-          left:0!important;
-          right:0!important;
-          width:100%!important;
-          max-width:100%!important;
-          box-sizing:border-box!important;
-          overflow-x:hidden!important;
-        }
+        .search-results { left:0!important; right:0!important; width:100%!important; max-width:100%!important; box-sizing:border-box!important; overflow-x:hidden!important; }
         .search-result-item { min-width:0!important; gap:8px!important; }
-        .search-result-item .name {
-          min-width:0!important;
-          flex:1 1 auto!important;
-          overflow:hidden!important;
-          text-overflow:ellipsis!important;
-          white-space:nowrap!important;
-        }
+        .search-result-item .name { min-width:0!important; flex:1 1 auto!important; overflow:hidden!important; text-overflow:ellipsis!important; white-space:nowrap!important; }
         .search-jump { flex:0 0 auto!important; }
 
-        .view-toggle {
-          align-self:flex-end!important;
-          width:auto!important;
-        }
-        .view-toggle .toggle-btn {
-          width:80px!important;
-          min-width:80px!important;
-          height:34px!important;
-          justify-content:center!important;
-          padding:6px 8px!important;
-          gap:5px!important;
-          font-size:.78rem!important;
-        }
+        .view-toggle { align-self:flex-end!important; width:auto!important; }
+        .view-toggle .toggle-btn { width:80px!important; min-width:80px!important; height:34px!important; justify-content:center!important; padding:6px 8px!important; gap:5px!important; font-size:.78rem!important; }
         .view-toggle .toggle-btn svg { width:15px!important; height:15px!important; }
 
         .main-content { width:100%!important; max-width:none!important; min-width:0!important; margin:0!important; }
         #boxContainer, #listContainer { width:100%!important; max-width:100%!important; min-width:0!important; }
         #boxContainer { overflow:visible!important; }
         #boxContainer .pc-box { width:100%!important; min-width:0!important; }
-        #boxContainer .grid-wrapper {
-          width:100%!important;
-          max-width:100%!important;
-          min-width:0!important;
-          overflow-x:auto!important;
-          overflow-y:hidden!important;
-          -webkit-overflow-scrolling:touch;
-          overscroll-behavior-x:contain;
-        }
+        #boxContainer .grid-wrapper { width:100%!important; max-width:100%!important; min-width:0!important; overflow-x:auto!important; overflow-y:hidden!important; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; }
         #boxContainer .grid { min-width:670px!important; width:max-content!important; }
 
         #listContainer { overflow-x:hidden!important; }
         #listContainer .list-row { min-width:0!important; }
         #listContainer .list-info { min-width:0!important; flex:1 1 auto!important; }
-        #listContainer .list-info .name {
-          min-width:0!important;
-          overflow:hidden!important;
-          text-overflow:ellipsis!important;
-          white-space:nowrap!important;
-        }
-
-        #boxContainer .cell .name {
-          min-width:0!important;
-          max-width:100%!important;
-          height:20px!important;
-          margin-top:2px!important;
-          margin-bottom:2px!important;
-          line-height:1.5!important;
-          overflow:hidden!important;
-          text-overflow:ellipsis!important;
-          white-space:nowrap!important;
-        }
+        #listContainer .list-info .name { min-width:0!important; overflow:hidden!important; text-overflow:ellipsis!important; white-space:nowrap!important; }
+        #boxContainer .cell .name { min-width:0!important; max-width:100%!important; height:20px!important; margin-top:2px!important; margin-bottom:2px!important; line-height:1.5!important; overflow:hidden!important; text-overflow:ellipsis!important; white-space:nowrap!important; }
       }
     `;
     document.head.appendChild(style);
@@ -236,7 +90,6 @@
         <button id="mobileDarkModePlaceholder" type="button" disabled aria-disabled="true" aria-label="Dark mode unavailable on Mobile" title="Dark mode is currently available on Desktop only">☾</button>
       </div>`;
     document.body.insertBefore(header, document.body.firstChild);
-
     const sync = document.getElementById('githubSyncWrap');
     if (sync) header.querySelector('#mobileHeaderActions').appendChild(sync);
     updateMoniker();
@@ -244,7 +97,8 @@
 
   const updateMoniker = () => {
     const el = document.getElementById('mobileHeaderMoniker');
-    if (el) el.textContent = window.JASPER_POKEDEX_VERSION || '';
+    const value = window.JASPER_POKEDEX_VERSION || '';
+    if (el && el.textContent !== value) el.textContent = value;
   };
 
   const installProgress = () => {
@@ -299,12 +153,10 @@
         setTimeout(apply, 0);
       }
       if (event.target.closest('[data-id]:not(.empty), .search-result-item')) setTimeout(updateProgress, 0);
-      if (event.target.closest('.tab-btn')) setTimeout(() => { updateProgress(); apply(); }, 80);
+      if (event.target.closest('.tab-btn')) setTimeout(() => { updateProgress(); apply(); updateMoniker(); }, 80);
     }, true);
 
-    window.addEventListener('jasper:pokedex-state-synced', () => setTimeout(() => { updateProgress(); apply(); }, 80));
-    const observer = new MutationObserver(() => { updateMoniker(); installProgress(); apply(); });
-    observer.observe(document.body, { childList:true, subtree:true });
+    window.addEventListener('jasper:pokedex-state-synced', () => setTimeout(() => { updateProgress(); apply(); updateMoniker(); }, 80));
     window.JASPER_APPLY_VIEW_STATE = apply;
     apply();
   };
