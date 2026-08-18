@@ -26,7 +26,7 @@
 
     const boxButton = document.getElementById('boxViewBtn');
     if (boxButton) {
-      boxButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 4h-4.5V5H19v2zM12.5 5v2H8.5V5h4zM7 5v2H5V5h2zM5 9h2v3.5H5V9zm4.5 0h4v3.5h-4V9zm6 0H19v3.5h-3.5V9zM19 19h-3.5v-4.5H19V19zm-5.5 0h-4v-4.5h4V19zm-6 0H5v-4.5H7V19z"/></svg><span>Box view</span>';
+      boxButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1.9-2-2-2zm0 4h-4.5V5H19v2zM12.5 5v2H8.5V5h4zM7 5v2H5V5h2zM5 9h2v3.5H5V9zm4.5 0h4v3.5h-4V9zm6 0H19v3.5h-3.5V9zM19 19h-3.5v-4.5H19V19zm-5.5 0h-4v-4.5h4V19zm-6 0H5v-4.5H7V19z"/></svg><span>Box view</span>';
     }
 
     const listButton = document.getElementById('listViewBtn');
@@ -45,7 +45,7 @@
       .search-result-item > .checkbox { flex-shrink: 0; }
       #boxContainer .box-title { position: relative; padding-right: 4.5rem; }
       #boxContainer .box-completion-counter { position: absolute; right: 0; top: 0; white-space: nowrap; }
-      #boxContainer .grid { grid-template-rows: repeat(5, 58px) !important; }
+      #boxContainer .grid { grid-template-rows: repeat(5, minmax(58px, auto)) !important; }
       #boxContainer .cell { min-width: 0; min-height: 58px; overflow: hidden; }
       #boxContainer .cell .name { min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     `;
