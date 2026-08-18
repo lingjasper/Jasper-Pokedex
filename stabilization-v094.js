@@ -56,7 +56,7 @@
     if (document.getElementById('mobileOverhaulV133')) return;
     const script = document.createElement('script');
     script.id = 'mobileOverhaulV133';
-    script.src = 'mobile-overhaul-v133.js?v=0.13.4';
+    script.src = 'mobile-overhaul-v133.js?v=0.13.4.1';
     document.head.appendChild(script);
   };
 
