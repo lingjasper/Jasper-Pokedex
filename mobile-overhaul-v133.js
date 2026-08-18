@@ -2,7 +2,7 @@
   'use strict';
 
   /*
-   * Beta v0.13.4 — Mobile visual refinement.
+   * Beta v0.13.4.1 — Mobile Overhaul: UI Refinements.
    *
    * This layer owns Mobile presentation only. Pokémon data, Box allocation,
    * forms, completion state, search logic, and GitHub sync remain owned by
@@ -25,30 +25,34 @@
     style.textContent = `
       #mobileHeader { display:none; }
       @media (max-width:640px) {
-        html, body { max-width:100%; overflow-x:hidden!important; }
-        body { padding-left:8px!important; padding-right:8px!important; }
+        html, body { max-width:100%; overflow:hidden!important; }
+        body { padding:0 8px!important; margin:0!important; }
 
         #mobileHeader {
-          position:relative; top:auto; left:auto; right:auto; width:100%; height:auto;
-          display:flex; align-items:center; justify-content:flex-start;
-          gap:10px; padding:0; margin:0 0 14px!important; z-index:11900;
+          position:fixed; top:0; left:0; right:0; width:auto;
+          box-sizing:border-box; display:flex; flex-direction:column;
+          align-items:stretch; justify-content:flex-start;
+          gap:0; padding:8px 8px 0; margin:0!important;
+          background:#fff; z-index:11900;
+          box-shadow:0 1px 4px rgba(15,23,42,.08);
         }
-        #mobileHeaderBrand { min-width:0; flex:1 1 auto; display:flex; align-items:center; gap:8px; }
+        #mobileHeaderTop { display:flex; align-items:center; justify-content:space-between; gap:12px; min-width:0; }
+        #mobileHeaderBrand { min-width:0; flex:1 1 auto; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:0; }
         #mobileHeaderTitle { margin:0; color:#0f172a; font-size:1.05rem; line-height:1.25; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        #mobileHeaderMoniker { margin:0; color:#475569; font-size:.78rem; line-height:1.2; font-weight:600; white-space:nowrap; flex:0 0 auto; }
+        #mobileHeaderMoniker { margin:0; color:#475569; font-size:.78rem; line-height:1.2; font-weight:600; white-space:nowrap; }
         #mobileHeaderActions { display:flex; align-items:center; gap:8px; flex:0 0 auto; }
         #mobileDarkModePlaceholder { width:34px; height:34px; flex:0 0 34px; display:inline-flex; align-items:center; justify-content:center; padding:0; border:1px solid #cbd5e1; border-radius:999px; background:#f8fafc; color:#94a3b8; font-size:17px; line-height:1; cursor:not-allowed; opacity:.58; }
         #mobileHeader #githubSyncWrap { position:relative!important; top:auto!important; right:auto!important; flex:0 0 auto; }
         #mobileHeader #githubSyncPill { white-space:nowrap; }
 
-        .tabs-container { width:100%!important; justify-content:flex-start!important; flex-wrap:nowrap!important; overflow-x:auto!important; overflow-y:hidden!important; -webkit-overflow-scrolling:touch; scrollbar-width:thin; padding:0 2px 4px!important; gap:8px!important; margin:0 0 14px!important; }
+        .tabs-container { width:100%!important; justify-content:flex-start!important; flex-wrap:nowrap!important; overflow-x:auto!important; overflow-y:hidden!important; -webkit-overflow-scrolling:touch; scrollbar-width:thin; padding:0 2px 4px!important; gap:8px!important; margin:14px 0 14px!important; box-sizing:border-box; }
         .tabs-container .tab-btn { flex:0 0 auto!important; white-space:nowrap!important; }
 
-        #mobileProgressBanner { display:flex; align-items:center; gap:10px; width:100%; margin:0 0 14px; padding:11px 12px; background:#fff; border:1px solid #cbd5e1; border-radius:10px; box-shadow:0 2px 5px rgba(15,23,42,.05); color:#475569; font-size:.78rem; font-weight:600; }
+        #mobileProgressBanner { display:flex; align-items:center; gap:10px; width:100%; box-sizing:border-box; margin:0 0 14px; padding:11px 12px; background:#fff; border:1px solid #cbd5e1; border-radius:10px; box-shadow:0 2px 5px rgba(15,23,42,.05); color:#475569; font-size:.78rem; font-weight:600; }
         #mobileProgressBanner .mobile-progress-icon { width:20px; height:20px; flex:0 0 20px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:#e2e8f0; color:#475569; font-size:.75rem; font-weight:800; }
         #mobileProgressText { min-width:0; }
 
-        .controls-container { width:100%!important; max-width:none!important; margin:0 0 16px!important; flex-direction:row!important; align-items:center!important; gap:8px!important; }
+        .controls-container { width:100%!important; max-width:none!important; margin:0 0 14px!important; flex-direction:row!important; align-items:center!important; gap:8px!important; box-sizing:border-box; }
         .search-wrapper { width:auto!important; min-width:0!important; flex:1 1 auto!important; position:relative!important; }
         .search-input { font-size:16px!important; width:100%!important; }
         .search-results { left:0!important; right:auto!important; width:calc(100vw - 16px)!important; max-width:calc(100vw - 16px)!important; box-sizing:border-box!important; overflow-x:hidden!important; }
@@ -60,7 +64,7 @@
         .view-toggle .toggle-btn { width:80px!important; min-width:80px!important; height:34px!important; justify-content:center!important; padding:6px 8px!important; gap:5px!important; font-size:.78rem!important; }
         .view-toggle .toggle-btn svg { width:15px!important; height:15px!important; }
 
-        .main-content { width:100%!important; max-width:none!important; min-width:0!important; margin:0!important; }
+        .main-content { width:100%!important; max-width:none!important; min-width:0!important; margin:0!important; padding:0!important; box-sizing:border-box; position:fixed!important; left:8px!important; right:8px!important; top:var(--mobile-header-height, 180px)!important; width:calc(100% - 16px)!important; height:calc(100dvh - var(--mobile-header-height, 180px))!important; overflow-y:auto!important; overflow-x:hidden!important; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; }
         #boxContainer, #listContainer { width:100%!important; max-width:100%!important; min-width:0!important; }
         #boxContainer { overflow:visible!important; }
         #boxContainer .pc-box { width:100%!important; min-width:0!important; }
@@ -78,21 +82,34 @@
     document.head.appendChild(style);
   };
 
+  const syncHeaderHeight = () => {
+    if (!isMobile()) return;
+    const header = document.getElementById('mobileHeader');
+    if (!header) return;
+    document.documentElement.style.setProperty('--mobile-header-height', `${Math.ceil(header.getBoundingClientRect().height)}px`);
+  };
+
   const installHeader = () => {
     if (!isMobile() || document.getElementById('mobileHeader')) return;
     const header = document.createElement('header');
     header.id = 'mobileHeader';
     header.innerHTML = `
-      <div id="mobileHeaderBrand">
-        <div id="mobileHeaderTitle">Jasper's Pokédex</div>
-        <div id="mobileHeaderMoniker"></div>
-      </div>
-      <div id="mobileHeaderActions">
-        <button id="mobileDarkModePlaceholder" type="button" disabled aria-disabled="true" aria-label="Dark mode unavailable on Mobile" title="Dark mode is currently available on Desktop only">☾</button>
+      <div id="mobileHeaderTop">
+        <div id="mobileHeaderBrand">
+          <div id="mobileHeaderTitle">Jasper's Pokédex</div>
+          <div id="mobileHeaderMoniker"></div>
+        </div>
+        <div id="mobileHeaderActions">
+          <button id="mobileDarkModePlaceholder" type="button" disabled aria-disabled="true" aria-label="Dark mode unavailable on Mobile" title="Dark mode is currently available on Desktop only">☾</button>
+        </div>
       </div>`;
     document.body.insertBefore(header, document.body.firstChild);
     const sync = document.getElementById('githubSyncWrap');
     if (sync) header.querySelector('#mobileHeaderActions').appendChild(sync);
+
+    const tabs = document.querySelector('.tabs-container');
+    if (tabs) header.appendChild(tabs);
+
     updateMoniker();
   };
 
@@ -104,13 +121,20 @@
 
   const installProgress = () => {
     if (!isMobile() || document.getElementById('mobileProgressBanner')) return;
-    const tabs = document.querySelector('.tabs-container');
+    const tabs = document.querySelector('#mobileHeader .tabs-container');
     if (!tabs || !tabs.parentNode) return;
     const banner = document.createElement('div');
     banner.id = 'mobileProgressBanner';
     banner.innerHTML = '<span class="mobile-progress-icon">i</span><span id="mobileProgressText"></span>';
     tabs.insertAdjacentElement('afterend', banner);
     updateProgress();
+  };
+
+  const installControls = () => {
+    if (!isMobile()) return;
+    const controls = document.querySelector('.controls-container');
+    const header = document.getElementById('mobileHeader');
+    if (controls && header && !header.contains(controls)) header.appendChild(controls);
   };
 
   const updateProgress = () => {
@@ -154,10 +178,10 @@
         setTimeout(apply, 0);
       }
       if (event.target.closest('[data-id]:not(.empty), .search-result-item')) setTimeout(updateProgress, 0);
-      if (event.target.closest('.tab-btn')) setTimeout(() => { updateProgress(); apply(); updateMoniker(); }, 80);
+      if (event.target.closest('.tab-btn')) setTimeout(() => { updateProgress(); apply(); updateMoniker(); syncHeaderHeight(); }, 80);
     }, true);
 
-    window.addEventListener('jasper:pokedex-state-synced', () => setTimeout(() => { updateProgress(); apply(); updateMoniker(); }, 80));
+    window.addEventListener('jasper:pokedex-state-synced', () => setTimeout(() => { updateProgress(); apply(); updateMoniker(); syncHeaderHeight(); }, 80));
     window.JASPER_APPLY_VIEW_STATE = apply;
     apply();
   };
@@ -166,8 +190,11 @@
     installStyles();
     installHeader();
     installProgress();
+    installControls();
     installViewState();
     updateMoniker();
+    syncHeaderHeight();
+    requestAnimationFrame(syncHeaderHeight);
   };
 
   const waitForEngine = () => {
@@ -175,6 +202,11 @@
     if (window.JASPER_POKEDEX) boot();
     else setTimeout(waitForEngine, 50);
   };
+
+  window.addEventListener('resize', () => {
+    if (isMobile()) syncHeaderHeight();
+  });
+  window.addEventListener('orientationchange', () => setTimeout(syncHeaderHeight, 100));
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', waitForEngine, { once:true });
   else waitForEngine();
