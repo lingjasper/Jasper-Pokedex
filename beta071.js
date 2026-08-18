@@ -22,6 +22,7 @@
       link.href = 'theme.css';
       link.dataset.jasperTheme = 'true';
       link.onload = () => onload?.();
+      document.head.appendChild(link);
     } else {
       onload?.();
     }
