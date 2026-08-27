@@ -1,8 +1,8 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-27T11:00:18.981Z",
+  "updatedAt": "2026-08-27T11:00:20.223Z",
   "pokemon": {
-    "103": true,
+    "103": false,
     "104": true,
     "105": true,
     "106": true,
