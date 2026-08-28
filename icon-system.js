@@ -3,7 +3,7 @@
  *
  * Semantic icon mapping is documented in Icons/ICON_SYSTEM.md.
  * This file is the single runtime mapping from UI meaning/state to canonical SVG assets.
- * It intentionally does not contain SVG path data.
+ * It intentionally contains no SVG path data.
  */
 (function () {
   'use strict';
@@ -34,7 +34,6 @@
   function resolveIcon(name, state) {
     const entry = ICONS[name];
     if (!entry) return null;
-
     if (typeof entry === 'string') return entry;
     if (state && Object.prototype.hasOwnProperty.call(entry, state)) {
       const value = entry[state];
@@ -45,31 +44,49 @@
     return null;
   }
 
-  function createIcon(name, state, options) {
+  /*
+   * SVGs are loaded and inlined so path-level `currentColor` inherits from the
+   * host element. External <img> rendering does not provide that inheritance.
+   */
+  async function createIcon(name, state, options) {
     const opts = options || {};
     const file = resolveIcon(name, state);
-    const img = document.createElement('img');
-    img.className = 'icon icon-' + name + (opts.className ? ' ' + opts.className : '');
-    img.alt = opts.alt || '';
-    img.setAttribute('aria-hidden', opts.decorative === false ? 'false' : 'true');
-    img.draggable = false;
+    const wrapper = document.createElement('span');
+    wrapper.className = 'icon icon-' + name + (opts.className ? ' ' + opts.className : '');
+    wrapper.setAttribute('aria-hidden', opts.decorative === false ? 'false' : 'true');
+    if (opts.title) wrapper.title = opts.title;
 
     if (!file) {
-      img.classList.add('icon-missing');
-      img.removeAttribute('src');
-      return img;
+      wrapper.classList.add('icon-missing');
+      return wrapper;
     }
 
-    img.src = ROOT + file;
-    if (opts.title) img.title = opts.title;
-    if (opts.width != null) img.width = opts.width;
-    if (opts.height != null) img.height = opts.height;
-    return img;
+    try {
+      const response = await fetch(ROOT + file, { cache: 'force-cache' });
+      if (!response.ok) throw new Error('Icon request failed: ' + response.status);
+      const markup = await response.text();
+      const parsed = new DOMParser().parseFromString(markup, 'image/svg+xml');
+      const svg = parsed.documentElement;
+      if (!svg || svg.nodeName.toLowerCase() !== 'svg') throw new Error('Invalid SVG');
+
+      svg.setAttribute('focusable', 'false');
+      svg.setAttribute('aria-hidden', opts.decorative === false ? 'false' : 'true');
+      if (opts.width != null) svg.setAttribute('width', String(opts.width));
+      if (opts.height != null) svg.setAttribute('height', String(opts.height));
+      if (opts.decorative === false && opts.alt) svg.setAttribute('aria-label', opts.alt);
+      wrapper.replaceChildren(document.importNode(svg, true));
+    } catch (error) {
+      wrapper.classList.add('icon-missing');
+      wrapper.setAttribute('data-icon-error', name);
+      if (window.console && console.warn) console.warn('[Icon System] Failed to load ' + file, error);
+    }
+
+    return wrapper;
   }
 
-  function replaceElement(element, name, state, options) {
+  async function replaceElement(element, name, state, options) {
     if (!element) return null;
-    const icon = createIcon(name, state, options);
+    const icon = await createIcon(name, state, options);
     element.replaceChildren(icon);
     return icon;
   }
