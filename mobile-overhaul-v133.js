@@ -2,7 +2,7 @@
   'use strict';
 
   /*
-   * Beta v0.13.4.2 — Mobile Refinements.
+   * Beta v0.13.5.1 — Mobile iOS Viewport / Bottom-Region Hotfix.
    *
    * This layer owns Mobile presentation only. Pokémon data, Box allocation,
    * forms, completion state, search logic, and GitHub sync remain owned by
@@ -64,7 +64,7 @@
         .view-toggle .toggle-btn { width:80px!important; min-width:80px!important; height:34px!important; justify-content:center!important; padding:6px 8px!important; gap:5px!important; font-size:.78rem!important; }
         .view-toggle .toggle-btn svg { width:15px!important; height:15px!important; }
 
-        .main-content { width:100%!important; max-width:none!important; min-width:0!important; margin:0!important; padding:0!important; box-sizing:border-box; position:fixed!important; left:8px!important; right:8px!important; top:calc(var(--mobile-header-height, 180px) + 8px)!important; width:calc(100% - 16px)!important; height:calc(100dvh - var(--mobile-header-height, 180px) - 8px)!important; overflow-y:auto!important; overflow-x:hidden!important; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; }
+        .main-content { width:100%!important; max-width:none!important; min-width:0!important; margin:0!important; padding:0!important; box-sizing:border-box; position:fixed!important; left:8px!important; right:8px!important; top:calc(var(--mobile-header-height, 180px) + 8px)!important; bottom:8px!important; width:calc(100% - 16px)!important; height:auto!important; overflow-y:auto!important; overflow-x:hidden!important; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; }
         #boxContainer, #listContainer { width:100%!important; max-width:100%!important; min-width:0!important; }
         #boxContainer { overflow:visible!important; gap:8px!important; }
         #boxContainer .pc-box { width:100%!important; min-width:0!important; }
