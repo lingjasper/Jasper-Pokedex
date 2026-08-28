@@ -84,10 +84,13 @@ const engine = read('pokedex-engine.js');
 const stabilization = read('stabilization-v094.js');
 if (/<svg\b/i.test(engine)) fail('pokedex-engine.js contains duplicated inline SVG artwork.');
 if (/<svg\b/i.test(stabilization)) fail('stabilization-v094.js contains duplicated inline SVG artwork.');
-if (!engine.includes("completion',state") || !engine.includes("'empty-circle.svg")) {
+if (!engine.includes("JasperIcon.replace(box,'completion',state")) {
   fail('Completion UI is not routed through the shared icon system.');
 }
-if (!engine.includes("await ensureIconSystem()")) fail('Pokedex engine does not load the shared icon system before rendering.');
+if (!registry.includes("unchecked: 'empty-circle.svg'")) {
+  fail('Unchecked completion is not mapped to empty-circle.svg.');
+}
+if (!engine.includes('await ensureIconSystem()')) fail('Pokedex engine does not load the shared icon system before rendering.');
 if (!stabilization.includes('Icon artwork is owned by icon-system.js/pokedex-engine.js')) {
   fail('Stabilization layer does not document shared icon ownership.');
 }
