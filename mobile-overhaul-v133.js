@@ -2,7 +2,7 @@
   'use strict';
 
   /*
-   * Beta v0.13.4.1 — Mobile Overhaul: UI Refinements.
+   * Beta v0.13.4.2 — Mobile Refinements.
    *
    * This layer owns Mobile presentation only. Pokémon data, Box allocation,
    * forms, completion state, search logic, and GitHub sync remain owned by
@@ -64,9 +64,9 @@
         .view-toggle .toggle-btn { width:80px!important; min-width:80px!important; height:34px!important; justify-content:center!important; padding:6px 8px!important; gap:5px!important; font-size:.78rem!important; }
         .view-toggle .toggle-btn svg { width:15px!important; height:15px!important; }
 
-        .main-content { width:100%!important; max-width:none!important; min-width:0!important; margin:0!important; padding:0!important; box-sizing:border-box; position:fixed!important; left:8px!important; right:8px!important; top:var(--mobile-header-height, 180px)!important; width:calc(100% - 16px)!important; height:calc(100dvh - var(--mobile-header-height, 180px))!important; overflow-y:auto!important; overflow-x:hidden!important; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; }
+        .main-content { width:100%!important; max-width:none!important; min-width:0!important; margin:0!important; padding:0!important; box-sizing:border-box; position:fixed!important; left:8px!important; right:8px!important; top:calc(var(--mobile-header-height, 180px) + 8px)!important; width:calc(100% - 16px)!important; height:calc(100dvh - var(--mobile-header-height, 180px) - 8px)!important; overflow-y:auto!important; overflow-x:hidden!important; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; }
         #boxContainer, #listContainer { width:100%!important; max-width:100%!important; min-width:0!important; }
-        #boxContainer { overflow:visible!important; }
+        #boxContainer { overflow:visible!important; gap:8px!important; }
         #boxContainer .pc-box { width:100%!important; min-width:0!important; }
         #boxContainer .grid-wrapper { width:100%!important; max-width:100%!important; min-width:0!important; overflow-x:auto!important; overflow-y:hidden!important; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; }
         #boxContainer .grid { min-width:670px!important; width:max-content!important; }
@@ -75,7 +75,8 @@
         #listContainer .list-row { min-width:0!important; }
         #listContainer .list-info { min-width:0!important; flex:1 1 auto!important; }
         #listContainer .list-info .name { min-width:0!important; overflow:hidden!important; text-overflow:ellipsis!important; white-space:nowrap!important; }
-        #boxContainer .cell .name { min-width:0!important; max-width:100%!important; height:20px!important; margin-top:0!important; margin-bottom:0!important; line-height:1.5!important; overflow:hidden!important; text-overflow:ellipsis!important; white-space:nowrap!important; }
+        #boxContainer .cell .name { min-width:0!important; max-width:100%!important; height:auto!important; min-height:20px!important; margin-top:0!important; margin-bottom:0!important; line-height:1.2!important; overflow:visible!important; text-overflow:clip!important; white-space:normal!important; display:block!important; }
+        #boxContainer .cell .name .form { display:block!important; }
         #boxContainer .cell { gap:0!important; }
       }
     `;
