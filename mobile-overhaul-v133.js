@@ -2,15 +2,11 @@
   'use strict';
 
   /*
-   * Beta v0.13.5.2 — Mobile Viewport Ownership Correction.
+   * Beta v0.13.5.6 — RC 2 Mobile Header Full-Bleed Correction.
    *
-   * This layer owns Mobile presentation only. Pokémon data, Box allocation,
-   * forms, completion state, search logic, and GitHub sync remain owned by
-   * their existing modules.
-   *
-   * Mobile viewport ownership is intentionally kept in normal document flow.
-   * The header is sticky, while the page remains the browser's scroll surface.
-   * This avoids a JS-calculated fixed viewport that is fragile on iOS Safari.
+   * Mobile presentation layer. The site's 8px horizontal body inset remains
+   * the shared content safe-space. The header surface extends to the viewport
+   * edges while its internal content remains aligned to that same 8px grid.
    */
   if (window.__JASPER_MOBILE_OVERHAUL_133__) return;
   window.__JASPER_MOBILE_OVERHAUL_133__ = true;
@@ -33,10 +29,11 @@
         body { padding:0 8px!important; margin:0!important; }
 
         #mobileHeader {
-          position:sticky; top:0; left:auto; right:auto; width:100%;
+          position:sticky; top:0; left:auto; right:auto;
+          width:calc(100% + 16px)!important;
           box-sizing:border-box; display:flex; flex-direction:column;
           align-items:stretch; justify-content:flex-start;
-          gap:0; padding:8px 0 0; margin:0!important;
+          gap:0; padding:8px 8px 0; margin:0 -8px!important;
           background:#fff; z-index:11900;
           box-shadow:0 1px 4px rgba(15,23,42,.08);
         }
