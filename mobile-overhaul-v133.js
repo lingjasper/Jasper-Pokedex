@@ -2,10 +2,10 @@
   'use strict';
 
   /*
-   * RC 3 (Beta v0.13.5.7) — Mobile header correction.
-   * The Mobile header is a full-bleed sticky surface; its contents remain
-   * aligned to the site's 8px edge-safe content grid. All page content remains
-   * outside the sticky header and therefore scrolls normally underneath it.
+   * RC 3 (Beta v0.13.5.8) — Mobile sticky header control region.
+   * Header surface is full-bleed; internal content remains on the 8px grid.
+   * Title/actions, game tabs, banner, and search/view controls remain sticky.
+   * Storage boxes/list remain outside the sticky header and scroll normally.
    */
   if (window.__JASPER_MOBILE_OVERHAUL_133__) return;
   window.__JASPER_MOBILE_OVERHAUL_133__ = true;
@@ -27,7 +27,7 @@
         html { max-width:100%; overflow-x:clip; }
         body { max-width:100%; padding:0 8px!important; margin:0!important; }
 
-        /* Full-bleed surface; internal content stays on the 8px site grid. */
+        /* Full-bleed sticky surface; every child remains on the 8px grid. */
         #mobileHeader {
           position:sticky!important;
           top:0!important;
@@ -72,7 +72,7 @@
         #mobileProgressBanner .mobile-progress-icon { width:20px; height:20px; flex:0 0 20px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:#e2e8f0; color:#475569; font-size:.75rem; font-weight:800; }
         #mobileProgressText { min-width:0; }
 
-        .controls-container { width:100%!important; max-width:none!important; margin:0 0 14px!important; flex-direction:row!important; align-items:center!important; gap:8px!important; box-sizing:border-box; }
+        .controls-container { width:100%!important; max-width:none!important; margin:0 0 16px!important; flex-direction:row!important; align-items:center!important; gap:8px!important; box-sizing:border-box; }
         .search-wrapper { width:auto!important; min-width:0!important; flex:1 1 auto!important; position:relative!important; }
         .search-input { font-size:16px!important; width:100%!important; }
         .search-results { left:0!important; right:auto!important; width:calc(100vw - 16px)!important; max-width:calc(100vw - 16px)!important; box-sizing:border-box!important; overflow-x:hidden!important; }
@@ -118,6 +118,7 @@
         </div>
       </div>`;
     document.body.insertBefore(header, document.body.firstChild);
+
     const sync = document.getElementById('githubSyncWrap');
     if (sync) header.querySelector('#mobileHeaderActions').appendChild(sync);
 
@@ -125,6 +126,18 @@
     if (tabs) header.appendChild(tabs);
 
     updateMoniker();
+  };
+
+  const installHeaderControls = () => {
+    if (!isMobile()) return;
+    const header = document.getElementById('mobileHeader');
+    if (!header) return;
+
+    const banner = document.getElementById('mobileProgressBanner');
+    if (banner && !header.contains(banner)) header.appendChild(banner);
+
+    const controls = document.querySelector('.controls-container');
+    if (controls && !header.contains(controls)) header.appendChild(controls);
   };
 
   const updateMoniker = () => {
@@ -135,19 +148,12 @@
 
   const installProgress = () => {
     if (!isMobile() || document.getElementById('mobileProgressBanner')) return;
-    const tabs = document.querySelector('#mobileHeader .tabs-container');
-    if (!tabs || !tabs.parentNode) return;
     const banner = document.createElement('div');
     banner.id = 'mobileProgressBanner';
     banner.innerHTML = '<span class="mobile-progress-icon">i</span><span id="mobileProgressText"></span>';
-    const contentAnchor = document.querySelector('.controls-container') || document.querySelector('.main-content') || document.body.lastElementChild;
-    if (contentAnchor && contentAnchor.parentNode) contentAnchor.parentNode.insertBefore(banner, contentAnchor);
-    else document.body.appendChild(banner);
+    const header = document.getElementById('mobileHeader');
+    if (header) header.appendChild(banner);
     updateProgress();
-  };
-
-  const installControls = () => {
-    /* Intentionally do not move .controls-container into the sticky header. */
   };
 
   const updateProgress = () => {
@@ -203,7 +209,7 @@
     installStyles();
     installHeader();
     installProgress();
-    installControls();
+    installHeaderControls();
     installViewState();
     updateMoniker();
   };
