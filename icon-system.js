@@ -38,14 +38,9 @@
     style.textContent = `
       .icon { display:inline-flex; align-items:center; justify-content:center; line-height:0; flex-shrink:0; color:inherit; }
       .icon > svg { display:block; width:100%; height:100%; }
-      .toggle-btn > .icon { width:16px; height:16px; }
       .checkbox { border:0!important; background:transparent!important; }
       .checkbox::after { content:none!important; display:none!important; }
-      .checkbox > .icon { width:18px; height:18px; }
-      #searchClearButton > .icon { width:16px; height:16px; }
-      .dex-progress-icon > .icon { width:18px; height:18px; }
-      #githubSyncIcon { border:0!important; background:transparent!important; width:20px!important; height:20px!important; padding:0!important; animation:none!important; }
-      #githubSyncIcon > .icon { width:20px; height:20px; }
+      #githubSyncIcon { border:0!important; background:transparent!important; width:auto!important; height:28px!important; padding:0!important; animation:none!important; }
     `;
     document.head.appendChild(style);
   }
@@ -87,8 +82,24 @@
 
       svg.setAttribute('focusable', 'false');
       svg.setAttribute('aria-hidden', opts.decorative === false ? 'false' : 'true');
-      if (opts.width != null) svg.setAttribute('width', String(opts.width));
-      if (opts.height != null) svg.setAttribute('height', String(opts.height));
+
+      const defaultSizes = {
+        box: [16, 16], list: [16, 16], completion: [18, 18], clear: [16, 16], info: [18, 18]
+      };
+      const size = defaultSizes[name];
+      const width = opts.width != null ? opts.width : size?.[0];
+      const height = opts.height != null ? opts.height : size?.[1];
+      if (width != null) svg.setAttribute('width', String(width));
+      if (height != null) svg.setAttribute('height', String(height));
+      if (width != null && height != null) {
+        wrapper.style.width = width + 'px';
+        wrapper.style.height = height + 'px';
+      } else {
+        const intrinsicWidth = parseFloat(svg.getAttribute('width'));
+        const intrinsicHeight = parseFloat(svg.getAttribute('height'));
+        if (Number.isFinite(intrinsicWidth)) wrapper.style.width = intrinsicWidth + 'px';
+        if (Number.isFinite(intrinsicHeight)) wrapper.style.height = intrinsicHeight + 'px';
+      }
       if (opts.decorative === false && opts.alt) svg.setAttribute('aria-label', opts.alt);
       wrapper.replaceChildren(document.importNode(svg, true));
     } catch (error) {
