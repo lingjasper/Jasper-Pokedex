@@ -68,9 +68,9 @@ const monochromeFiles = [
   'search.svg', 'clear-outline.svg', 'clear-fill.svg',
   'moon-fill.svg', 'moon-outline.svg', 'sun-fill.svg', 'sun-outline.svg',
   'sync-inprogress-outline.svg', 'sync-inprogress-fill.svg',
-  'sync-warn-outline.svg', 'sync-warn-fill.svg', 'bulk-mode-outline.svg',
-  'bulk-mode-fill.svg', 'bulk-pending-outline.svg', 'bulk-pending-fill.svg',
-  'info-outline.svg', 'info-fill.svg'
+  'sync-warn-outline.svg', 'sync-warn-fill.svg', 'sync-token-needed.svg',
+  'bulk-mode-outline.svg', 'bulk-mode-fill.svg', 'bulk-pending-outline.svg',
+  'bulk-pending-fill.svg', 'info-outline.svg', 'info-fill.svg'
 ];
 
 for (const file of monochromeFiles) {
@@ -82,17 +82,14 @@ for (const file of monochromeFiles) {
 
 const engine = read('pokedex-engine.js');
 const stabilization = read('stabilization-v094.js');
+const sync = read('github-sync.js');
 if (/<svg\b/i.test(engine)) fail('pokedex-engine.js contains duplicated inline SVG artwork.');
 if (/<svg\b/i.test(stabilization)) fail('stabilization-v094.js contains duplicated inline SVG artwork.');
-if (!engine.includes("JasperIcon.replace(box,'completion',state")) {
-  fail('Completion UI is not routed through the shared icon system.');
-}
-if (!registry.includes("unchecked: 'empty-circle.svg'")) {
-  fail('Unchecked completion is not mapped to empty-circle.svg.');
-}
+if (!engine.includes("JasperIcon.replace(box,'completion',state")) fail('Completion UI is not routed through the shared icon system.');
+if (!registry.includes("unchecked: 'empty-circle.svg'")) fail('Unchecked completion is not mapped to empty-circle.svg.');
 if (!engine.includes('await ensureIconSystem()')) fail('Pokedex engine does not load the shared icon system before rendering.');
-if (!stabilization.includes('Icon artwork is owned by icon-system.js/pokedex-engine.js')) {
-  fail('Stabilization layer does not document shared icon ownership.');
-}
+if (sync.includes("textContent=type==='ok'?'✓'")) fail('Sync pill still contains a Unicode icon implementation.');
+if (!sync.includes('window.JasperIcon.replace')) fail('Sync pill is not routed through the shared icon system.');
+if (!stabilization.includes('Icon artwork is owned by icon-system.js/pokedex-engine.js')) fail('Stabilization layer does not document shared icon ownership.');
 
 console.log('Icon system regression checks passed.');
