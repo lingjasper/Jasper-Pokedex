@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-28T07:08:21.562Z",
+  "updatedAt": "2026-08-28T07:08:28.194Z",
   "pokemon": {
     "102": true,
     "103": true,
@@ -114,11 +114,11 @@
     "298": true,
     "299": true,
     "300": true,
-    "004": false,
-    "001": false,
+    "004": true,
+    "001": true,
     "300-Douse": false,
-    "003": false,
-    "002": false,
+    "003": true,
+    "002": true,
     "008": true,
     "014": true,
     "009": true,
