@@ -1,0 +1,22 @@
+name: Icon System Regression
+
+on:
+  push:
+    branches: ["icon-system-integration"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Syntax check shared icon runtime
+        run: node --check icon-system.js
+      - name: Syntax check Pokedex engine
+        run: node --check pokedex-engine.js
+      - name: Run icon system regression checks
+        run: node tests/icon-system-regression.mjs
