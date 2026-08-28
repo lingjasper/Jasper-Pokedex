@@ -31,6 +31,25 @@
     info: Object.freeze({ default: 'info-outline.svg', active: 'info-fill.svg' })
   });
 
+  function installStyles() {
+    if (document.getElementById('jasperIconSystemStyles')) return;
+    const style = document.createElement('style');
+    style.id = 'jasperIconSystemStyles';
+    style.textContent = `
+      .icon { display:inline-flex; align-items:center; justify-content:center; line-height:0; flex-shrink:0; color:inherit; }
+      .icon > svg { display:block; width:100%; height:100%; }
+      .toggle-btn > .icon { width:16px; height:16px; }
+      .checkbox { border:0!important; background:transparent!important; }
+      .checkbox::after { content:none!important; display:none!important; }
+      .checkbox > .icon { width:18px; height:18px; }
+      #searchClearButton > .icon { width:16px; height:16px; }
+      .dex-progress-icon > .icon { width:18px; height:18px; }
+      #githubSyncIcon { border:0!important; background:transparent!important; width:20px!important; height:20px!important; padding:0!important; animation:none!important; }
+      #githubSyncIcon > .icon { width:20px; height:20px; }
+    `;
+    document.head.appendChild(style);
+  }
+
   function resolveIcon(name, state) {
     const entry = ICONS[name];
     if (!entry) return null;
@@ -44,11 +63,8 @@
     return null;
   }
 
-  /*
-   * SVGs are loaded and inlined so path-level `currentColor` inherits from the
-   * host element. External <img> rendering does not provide that inheritance.
-   */
   async function createIcon(name, state, options) {
+    installStyles();
     const opts = options || {};
     const file = resolveIcon(name, state);
     const wrapper = document.createElement('span');
