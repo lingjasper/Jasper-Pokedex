@@ -5,9 +5,11 @@ This document is the semantic contract for the icon assets used by Jasper's Poke
 ## Source of truth
 
 - `Icons/` is the canonical source for icon artwork.
+- `icon-system.js` is the single runtime semantic mapping from UI meaning/state to canonical SVG files.
 - UI code must not duplicate SVG path data for icons that exist in `Icons/`.
-- UI code should request icons by semantic purpose/state through the shared icon layer rather than scattering asset filenames throughout components.
-- This document records the relationship between each canonical icon asset and its intended UI purpose.
+- `pokedex-engine.js` owns icon placement/state requests; it does not own SVG artwork.
+- `stabilization-v094.js` may normalize the legacy HTML shell, but it must not recreate icon artwork.
+- `index.html` still contains legacy boot markup from the pre-icon-system shell. `stabilization-v094.js` immediately replaces those legacy inline view icons with text placeholders, and `pokedex-engine.js` then paints the canonical assets. The inline SVG in `index.html` is therefore a legacy fallback artifact, not a second runtime icon implementation. Removing that legacy shell markup is a later cleanup task and must not become a new source of icon truth.
 
 ## State rules
 
@@ -79,18 +81,19 @@ Desktop and Mobile consume the same semantic mapping. They may use different siz
 When adding or changing an icon:
 
 1. Add/update the canonical SVG in `Icons/`.
-2. Add/update its semantic mapping in the shared icon layer.
+2. Add/update its semantic mapping in `icon-system.js`.
 3. Update this document with the UI purpose/state relationship.
 4. Remove duplicated inline SVG/CSS/Unicode implementations of the same icon meaning.
 5. Verify Light, Desktop Dark, and Mobile presentation as applicable.
 6. Verify that legacy compatibility layers do not recreate or override the icon.
+7. Run `node tests/icon-system-regression.mjs` before merging icon changes.
 
 ## Invariant
 
 ```text
 Semantic UI state
         ↓
-Shared icon mapping
+icon-system.js
         ↓
 Icons/*.svg
         ↓
