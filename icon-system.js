@@ -73,7 +73,7 @@
     }
 
     try {
-      const response = await fetch(ROOT + file, { cache: 'force-cache' });
+      const response = await fetch(ROOT + file, { cache: 'no-cache' });
       if (!response.ok) throw new Error('Icon request failed: ' + response.status);
       const markup = await response.text();
       const parsed = new DOMParser().parseFromString(markup, 'image/svg+xml');
