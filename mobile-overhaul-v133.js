@@ -2,11 +2,15 @@
   'use strict';
 
   /*
-   * Beta v0.13.4.2 — Mobile Refinements.
+   * Beta v0.13.5.2 — Mobile Viewport Ownership Correction.
    *
    * This layer owns Mobile presentation only. Pokémon data, Box allocation,
    * forms, completion state, search logic, and GitHub sync remain owned by
    * their existing modules.
+   *
+   * Mobile viewport ownership is intentionally kept in normal document flow.
+   * The header is sticky, while the page remains the browser's scroll surface.
+   * This avoids a JS-calculated fixed viewport that is fragile on iOS Safari.
    */
   if (window.__JASPER_MOBILE_OVERHAUL_133__) return;
   window.__JASPER_MOBILE_OVERHAUL_133__ = true;
@@ -25,14 +29,14 @@
     style.textContent = `
       #mobileHeader { display:none; }
       @media (max-width:640px) {
-        html, body { max-width:100%; overflow:hidden!important; }
+        html, body { max-width:100%; overflow-x:hidden!important; }
         body { padding:0 8px!important; margin:0!important; }
 
         #mobileHeader {
-          position:fixed; top:0; left:0; right:0; width:auto;
+          position:sticky; top:0; left:auto; right:auto; width:100%;
           box-sizing:border-box; display:flex; flex-direction:column;
           align-items:stretch; justify-content:flex-start;
-          gap:0; padding:8px 8px 0; margin:0!important;
+          gap:0; padding:8px 0 0; margin:0!important;
           background:#fff; z-index:11900;
           box-shadow:0 1px 4px rgba(15,23,42,.08);
         }
@@ -64,7 +68,7 @@
         .view-toggle .toggle-btn { width:80px!important; min-width:80px!important; height:34px!important; justify-content:center!important; padding:6px 8px!important; gap:5px!important; font-size:.78rem!important; }
         .view-toggle .toggle-btn svg { width:15px!important; height:15px!important; }
 
-        .main-content { width:100%!important; max-width:none!important; min-width:0!important; margin:0!important; padding:0!important; box-sizing:border-box; position:fixed!important; left:8px!important; right:8px!important; top:calc(var(--mobile-header-height, 180px) + 8px)!important; width:calc(100% - 16px)!important; height:calc(100dvh - var(--mobile-header-height, 180px) - 8px)!important; overflow-y:auto!important; overflow-x:hidden!important; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain; }
+        .main-content { width:100%!important; max-width:none!important; min-width:0!important; margin:0!important; padding:0!important; box-sizing:border-box; position:static!important; left:auto!important; right:auto!important; top:auto!important; bottom:auto!important; height:auto!important; overflow:visible!important; }
         #boxContainer, #listContainer { width:100%!important; max-width:100%!important; min-width:0!important; }
         #boxContainer { overflow:visible!important; gap:8px!important; }
         #boxContainer .pc-box { width:100%!important; min-width:0!important; }
@@ -81,13 +85,6 @@
       }
     `;
     document.head.appendChild(style);
-  };
-
-  const syncHeaderHeight = () => {
-    if (!isMobile()) return;
-    const header = document.getElementById('mobileHeader');
-    if (!header) return;
-    document.documentElement.style.setProperty('--mobile-header-height', `${Math.ceil(header.getBoundingClientRect().height)}px`);
   };
 
   const installHeader = () => {
@@ -179,10 +176,10 @@
         setTimeout(apply, 0);
       }
       if (event.target.closest('[data-id]:not(.empty), .search-result-item')) setTimeout(updateProgress, 0);
-      if (event.target.closest('.tab-btn')) setTimeout(() => { updateProgress(); apply(); updateMoniker(); syncHeaderHeight(); }, 80);
+      if (event.target.closest('.tab-btn')) setTimeout(() => { updateProgress(); apply(); updateMoniker(); }, 80);
     }, true);
 
-    window.addEventListener('jasper:pokedex-state-synced', () => setTimeout(() => { updateProgress(); apply(); updateMoniker(); syncHeaderHeight(); }, 80));
+    window.addEventListener('jasper:pokedex-state-synced', () => setTimeout(() => { updateProgress(); apply(); updateMoniker(); }, 80));
     window.JASPER_APPLY_VIEW_STATE = apply;
     apply();
   };
@@ -194,8 +191,6 @@
     installControls();
     installViewState();
     updateMoniker();
-    syncHeaderHeight();
-    requestAnimationFrame(syncHeaderHeight);
   };
 
   const waitForEngine = () => {
@@ -203,11 +198,6 @@
     if (window.JASPER_POKEDEX) boot();
     else setTimeout(waitForEngine, 50);
   };
-
-  window.addEventListener('resize', () => {
-    if (isMobile()) syncHeaderHeight();
-  });
-  window.addEventListener('orientationchange', () => setTimeout(syncHeaderHeight, 100));
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', waitForEngine, { once:true });
   else waitForEngine();
