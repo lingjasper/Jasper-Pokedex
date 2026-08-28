@@ -2,11 +2,10 @@
   'use strict';
 
   /*
-   * Beta v0.13.5.6 — RC 2 Mobile Header Full-Bleed Correction.
-   *
-   * Mobile presentation layer. The site's 8px horizontal body inset remains
-   * the shared content safe-space. The header surface extends to the viewport
-   * edges while its internal content remains aligned to that same 8px grid.
+   * RC 3 (Beta v0.13.5.7) — Mobile header correction.
+   * The Mobile header is a full-bleed sticky surface; its contents remain
+   * aligned to the site's 8px edge-safe content grid. All page content remains
+   * outside the sticky header and therefore scrolls normally underneath it.
    */
   if (window.__JASPER_MOBILE_OVERHAUL_133__) return;
   window.__JASPER_MOBILE_OVERHAUL_133__ = true;
@@ -25,16 +24,24 @@
     style.textContent = `
       #mobileHeader { display:none; }
       @media (max-width:640px) {
-        html, body { max-width:100%; overflow-x:hidden!important; }
-        body { padding:0 8px!important; margin:0!important; }
+        html { max-width:100%; overflow-x:clip; }
+        body { max-width:100%; padding:0 8px!important; margin:0!important; }
 
+        /* Full-bleed surface; internal content stays on the 8px site grid. */
         #mobileHeader {
-          position:sticky; top:0; left:auto; right:auto;
+          position:sticky!important;
+          top:0!important;
           width:calc(100% + 16px)!important;
-          box-sizing:border-box; display:flex; flex-direction:column;
-          align-items:stretch; justify-content:flex-start;
-          gap:0; padding:8px 8px 0; margin:0 -8px!important;
-          background:#fff; z-index:11900;
+          box-sizing:border-box!important;
+          display:flex!important;
+          flex-direction:column!important;
+          align-items:stretch!important;
+          justify-content:flex-start!important;
+          gap:0!important;
+          padding:8px 8px 0!important;
+          margin:0 -8px 16px!important;
+          background:#fff;
+          z-index:11900;
           box-shadow:0 1px 4px rgba(15,23,42,.08);
         }
         #mobileHeaderTop { display:flex; align-items:center; justify-content:space-between; gap:12px; min-width:0; }
@@ -46,7 +53,19 @@
         #mobileHeader #githubSyncWrap { position:relative!important; top:auto!important; right:auto!important; flex:0 0 auto; }
         #mobileHeader #githubSyncPill { white-space:nowrap; }
 
-        .tabs-container { width:100%!important; justify-content:flex-start!important; flex-wrap:nowrap!important; overflow-x:auto!important; overflow-y:hidden!important; -webkit-overflow-scrolling:touch; scrollbar-width:thin; padding:0 2px 4px!important; gap:8px!important; margin:14px 0 14px!important; box-sizing:border-box; }
+        .tabs-container {
+          width:100%!important;
+          justify-content:flex-start!important;
+          flex-wrap:nowrap!important;
+          overflow-x:auto!important;
+          overflow-y:hidden!important;
+          -webkit-overflow-scrolling:touch;
+          scrollbar-width:thin;
+          padding:0 2px 4px!important;
+          gap:8px!important;
+          margin:14px 0 14px!important;
+          box-sizing:border-box;
+        }
         .tabs-container .tab-btn { flex:0 0 auto!important; white-space:nowrap!important; }
 
         #mobileProgressBanner { display:flex; align-items:center; gap:10px; width:100%; box-sizing:border-box; margin:0 0 14px; padding:11px 12px; background:#fff; border:1px solid #cbd5e1; border-radius:10px; box-shadow:0 2px 5px rgba(15,23,42,.05); color:#475569; font-size:.78rem; font-weight:600; }
@@ -121,15 +140,14 @@
     const banner = document.createElement('div');
     banner.id = 'mobileProgressBanner';
     banner.innerHTML = '<span class="mobile-progress-icon">i</span><span id="mobileProgressText"></span>';
-    tabs.insertAdjacentElement('afterend', banner);
+    const contentAnchor = document.querySelector('.controls-container') || document.querySelector('.main-content') || document.body.lastElementChild;
+    if (contentAnchor && contentAnchor.parentNode) contentAnchor.parentNode.insertBefore(banner, contentAnchor);
+    else document.body.appendChild(banner);
     updateProgress();
   };
 
   const installControls = () => {
-    if (!isMobile()) return;
-    const controls = document.querySelector('.controls-container');
-    const header = document.getElementById('mobileHeader');
-    if (controls && header && !header.contains(controls)) header.appendChild(controls);
+    /* Intentionally do not move .controls-container into the sticky header. */
   };
 
   const updateProgress = () => {
