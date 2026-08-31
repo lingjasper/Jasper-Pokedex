@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-28T07:09:13.498Z",
+  "updatedAt": "2026-08-31T03:34:50.638Z",
   "pokemon": {
     "102": true,
     "103": true,
@@ -107,6 +107,7 @@
     "278": false,
     "280": true,
     "282": true,
+    "283": true,
     "288": true,
     "290": true,
     "295": true,
@@ -181,7 +182,7 @@
     "298-Ordinary": true,
     "028": true,
     "027": true,
-    "026": false,
+    "026": true,
     "021": true,
     "017": true,
     "104-1": true,
