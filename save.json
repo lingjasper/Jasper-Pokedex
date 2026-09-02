@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-31T03:34:50.638Z",
+  "updatedAt": "2026-09-02T05:34:48.320Z",
   "pokemon": {
     "102": true,
     "103": true,
@@ -44,6 +44,8 @@
     "156": true,
     "157": true,
     "158": true,
+    "159": true,
+    "160": true,
     "161": true,
     "162": true,
     "163": true,
@@ -75,6 +77,7 @@
     "215": true,
     "216": true,
     "217": true,
+    "219": true,
     "220": true,
     "221": false,
     "222": true,
@@ -147,11 +150,11 @@
     "044": true,
     "043": true,
     "041": true,
-    "054": false,
+    "054": true,
     "056": true,
     "051": true,
     "034": false,
-    "005": false,
+    "005": true,
     "053": true,
     "060": true,
     "061": true,
@@ -207,6 +210,9 @@
     "059": true,
     "076": true,
     "082": true,
-    "006": true
+    "006": true,
+    "049": true,
+    "052": true,
+    "057": true
   }
 }
