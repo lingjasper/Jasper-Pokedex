@@ -3,6 +3,8 @@ name: v1.0.1 Foundation Regression
 on:
   push:
     branches: ["v1.0.1-multigame-foundation"]
+  pull_request:
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
