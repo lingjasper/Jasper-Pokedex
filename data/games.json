@@ -4,7 +4,7 @@
   "games": [
     {
       "id": "pokemon-white-2",
-      "name": "Pokemon White 2",
+      "name": "Pokémon White 2",
       "enabled": true,
       "dataset": "White2",
       "dex": "White2",
@@ -12,7 +12,7 @@
     },
     {
       "id": "pokemon-alpha-sapphire",
-      "name": "Pokemon Alpha Sapphire",
+      "name": "Pokémon Alpha Sapphire",
       "enabled": false,
       "dataset": "AlphaSapphire",
       "dex": "AlphaSapphire",
@@ -20,7 +20,7 @@
     },
     {
       "id": "pokemon-sun",
-      "name": "Pokemon Sun",
+      "name": "Pokémon Sun",
       "enabled": false,
       "dataset": "Sun",
       "dex": "Sun",
