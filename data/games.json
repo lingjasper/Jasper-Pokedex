@@ -1,23 +1,27 @@
 {
   "schemaVersion": 1,
+  "defaultGame": "pokemon-white-2",
   "games": [
     {
       "id": "pokemon-white-2",
       "name": "Pokemon White 2",
       "enabled": true,
-      "dex": "pokemon-white-2"
+      "dataset": "White2",
+      "save": "saves/pokemon-white-2.json"
     },
     {
       "id": "pokemon-alpha-sapphire",
       "name": "Pokemon Alpha Sapphire",
       "enabled": false,
-      "dex": "pokemon-alpha-sapphire"
+      "dataset": "AlphaSapphire",
+      "save": "saves/pokemon-alpha-sapphire.json"
     },
     {
       "id": "pokemon-sun",
       "name": "Pokemon Sun",
       "enabled": false,
-      "dex": "pokemon-sun"
+      "dataset": "Sun",
+      "save": "saves/pokemon-sun.json"
     }
   ]
 }
