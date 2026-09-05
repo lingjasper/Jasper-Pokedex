@@ -1,0 +1,31 @@
+name: v1.0.1 Foundation Regression
+
+on:
+  push:
+    branches: ["v1.0.1-multigame-foundation"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Syntax check changed runtime modules
+        run: |
+          node --check pokedex-engine.js
+          node --check github-sync.js
+          node --check beta071-base.js
+          node --check beta1353-bugfix.js
+
+      - name: Validate game registry
+        run: node -e "const fs=require('fs'); const x=JSON.parse(fs.readFileSync('data/games.json','utf8')); if(x.schemaVersion!==1||x.defaultGame!=='pokemon-white-2'||!x.games.some(g=>g.id==='pokemon-white-2'&&g.enabled&&g.dataset==='White2'&&g.save==='saves/pokemon-white-2.json')) process.exit(1); console.log('Game registry valid.');"
+
+      - name: Run existing structural regression tests
+        run: node tests/stabilization-regression.mjs

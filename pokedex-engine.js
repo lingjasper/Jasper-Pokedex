@@ -1,23 +1,128 @@
 (() => {
   'use strict';
-  /* Beta v0.11.0.8 — gradual Jump fade and unobstructed Box edge highlight. */
-  const DEFAULT_GAME='White2',RAW_ROOT='https://raw.githubusercontent.com/lingjasper/Jasper-Pokedex/main/Pokedexes/',API_ROOT='https://api.github.com/repos/lingjasper/Jasper-Pokedex/contents/Pokedexes?ref=main';
-  const GAME_NAV=[{key:'White2',label:'Pokémon White 2'},{key:'AlphaSapphire',label:'Pokémon Alpha Sapphire'},{key:'Sun',label:'Pokémon Sun'}];
-  const BOX_SIZE=30,BOX_COLUMNS=6,BOX_ROWS=5,STATE_PREFIX='jasper_pokedex_state_',LEGACY_KEY='b2w2_living_dex_saved_state';let activeGame=DEFAULT_GAME,activePokemon=[],booted=false;
-  const stateKey=g=>`${STATE_PREFIX}${g}`;const readState=g=>{try{const s=JSON.parse(localStorage.getItem(stateKey(g))||'null');if(s&&typeof s==='object')return s;if(g===DEFAULT_GAME){const l=JSON.parse(localStorage.getItem(LEGACY_KEY)||'null');if(l&&typeof l==='object')return l;}}catch(_){}return{}};const writeState=(g,s)=>{localStorage.setItem(stateKey(g),JSON.stringify(s));if(g===DEFAULT_GAME)localStorage.setItem(LEGACY_KEY,JSON.stringify(s));};const norm=v=>String(v).toLocaleLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const parse=text=>{const out=[],counts=new Map();for(const line of text.split(/\r?\n/)){const m=line.match(/^\|\s*#?(\d+)\s*\|\s*(.*?)\s*\|\s*$/);if(!m)continue;const num=m[1].padStart(3,'0'),name=m[2].trim();if(!name||/^-+$/.test(name))continue;const fm=name.match(/^(.*?)\s*(\([^)]*\))$/),baseName=fm?fm[1].trim():name,form=fm?fm[2]:'';const n=counts.get(num)||0;counts.set(num,n+1);out.push({id:n?`${num}-${n}`:num,num,name,baseName,form});}return out;};
-  const load=async g=>{const r=await fetch(`${RAW_ROOT}${encodeURIComponent(g)}`,{cache:'no-store'});if(!r.ok)throw Error(`Could not load Pokedexes/${g} (${r.status}).`);return parse(await r.text());};const discover=async()=>{try{const r=await fetch(API_ROOT,{cache:'no-store'});if(!r.ok)throw 0;return(await r.json()).filter(e=>e.type==='file').map(e=>e.name);}catch(_){return[DEFAULT_GAME];}};const setMoniker=()=>{const v=window.JASPER_POKEDEX_VERSION||'';document.querySelectorAll('#pokedexBetaMoniker,.desktop-sidebar-brand .beta').forEach(e=>e.textContent=v);document.title=v?`Jasper's Pokédex — ${v}`:"Jasper's Pokédex";};
-  const ensurePageTitle=()=>{let t=document.getElementById('desktopWorkspaceTitle');if(!t){const w=document.getElementById('desktopWorkspace'),b=document.getElementById('dexProgressBanner');if(!w||!b)return null;t=document.createElement('h1');t.id='desktopWorkspaceTitle';w.insertBefore(t,b);}t.textContent=GAME_NAV.find(x=>x.key===activeGame)?.label||activeGame;t.setAttribute('aria-live','polite');return t;};
-  const ensureBanner=()=>{let b=document.getElementById('dexProgressBanner');if(!b){const w=document.getElementById('desktopWorkspace'),t=document.getElementById('desktopTableContainer');if(!w||!t)return null;b=document.createElement('div');b.id='dexProgressBanner';b.innerHTML='<span class="dex-progress-icon">i</span><span class="dex-progress-text"></span>';w.insertBefore(b,t);}return b;};const banner=(p=activePokemon,s=readState(activeGame))=>{const b=ensureBanner(),x=b?.querySelector('.dex-progress-text');if(!x)return;const done=p.reduce((n,q)=>n+(s[q.id]===true?1:0),0),total=p.length;x.textContent=`${done} of ${total} Pokémon registered · ${total-done} remaining · ${Math.round(done/Math.max(1,total)*100)}% complete`;};const counters=()=>{const s=readState(activeGame);document.querySelectorAll('#boxContainer .pc-box').forEach((box,i)=>{const items=activePokemon.slice(i*BOX_SIZE,(i+1)*BOX_SIZE),c=box.querySelector('.box-completion-counter');if(c)c.textContent=`${items.reduce((n,p)=>n+(s[p.id]===true?1:0),0)}/${items.length}`;});};
+
+  /* v1.0.1 — multi-game foundation. Keep this file as the single runtime owner
+   * of game context, dataset loading, collection state, and rendering. */
+  const DEFAULT_GAME='pokemon-white-2';
+  const REGISTRY_URL='data/games.json';
+  const RAW_ROOT='https://raw.githubusercontent.com/lingjasper/Jasper-Pokedex/main/Pokedexes/';
+  const API_ROOT='https://api.github.com/repos/lingjasper/Jasper-Pokedex/contents/Pokedexes?ref=main';
+  const BOX_SIZE=30,BOX_COLUMNS=6,BOX_ROWS=5;
+  const STATE_PREFIX='jasper_pokedex_state_';
+  const LEGACY_KEY='b2w2_living_dex_saved_state';
+  let activeGame=DEFAULT_GAME,activePokemon=[],gameRegistry=[],booted=false;
+
+  const stateKey=g=>`${STATE_PREFIX}${g}`;
+  const norm=v=>String(v).toLocaleLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const slug=v=>norm(v).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  const gameById=g=>gameRegistry.find(x=>x.id===g)||null;
+  const stateAliases=(g,p)=>{
+    const out={};
+    const put=(old,id)=>{if(old&&id&&!Object.prototype.hasOwnProperty.call(out,old))out[old]=id;};
+    const seen=new Map();
+    p.forEach(q=>{
+      const n=seen.get(q.num)||0;
+      seen.set(q.num,n+1);
+      const stable=q.id;
+      put(n?`${q.num}-${n}`:q.num,stable);
+      if(q.form){
+        const formSlug=slug(q.form.replace(/^\(|\)$/g,''));
+        put(`${q.num}-${formSlug}`,stable);
+        const compact=formSlug==='male'?'M':formSlug==='female'?'F':null;
+        if(compact)put(`${q.num}-${compact}`,stable);
+      }
+    });
+    return out;
+  };
+  const migrateState=(g,p,state)=>{
+    if(!state||typeof state!=='object')return{};
+    const valid=new Set(p.map(q=>q.id)),aliases=stateAliases(g,p),out={};
+    Object.entries(state).forEach(([key,value])=>{
+      const target=valid.has(key)?key:aliases[key];
+      if(target)out[target]=value===true;
+    });
+    return out;
+  };
+  const readState=g=>{
+    try{
+      const s=JSON.parse(localStorage.getItem(stateKey(g))||'null');
+      if(s&&typeof s==='object')return s;
+      if(g===DEFAULT_GAME){const l=JSON.parse(localStorage.getItem(LEGACY_KEY)||'null');if(l&&typeof l==='object')return l;}
+    }catch(_){}
+    return{};
+  };
+  const writeState=(g,s)=>{localStorage.setItem(stateKey(g),JSON.stringify(s));if(g===DEFAULT_GAME)localStorage.setItem(LEGACY_KEY,JSON.stringify(s));};
+
+  const parse=text=>{
+    const out=[];
+    for(const line of text.split(/\r?\n/)){
+      const m=line.match(/^\|\s*#?(\d+)\s*\|\s*(.*?)\s*\|\s*$/);if(!m)continue;
+      const num=m[1].padStart(3,'0'),name=m[2].trim();if(!name||/^-+$/.test(name))continue;
+      const fm=name.match(/^(.*?)\s*(\([^)]*\))$/),baseName=fm?fm[1].trim():name,form=fm?fm[2]:'';
+      const stableId=`${num}-${slug(baseName)}${form?`-${slug(form.replace(/^\(|\)$/g,''))}`:''}`;
+      out.push({id:stableId,num,name,baseName,form,speciesId:slug(baseName)});
+    }
+    return out;
+  };
+
+  const loadRegistry=async()=>{
+    try{
+      const r=await fetch(REGISTRY_URL,{cache:'no-store'});if(!r.ok)throw Error(`Registry load failed (${r.status}).`);
+      const data=await r.json();
+      gameRegistry=Array.isArray(data.games)?data.games.filter(x=>x&&x.id):[];
+    }catch(_){
+      gameRegistry=[
+        {id:'pokemon-white-2',name:'Pokemon White 2',enabled:true,dex:'pokemon-white-2'},
+        {id:'pokemon-alpha-sapphire',name:'Pokemon Alpha Sapphire',enabled:false,dex:'pokemon-alpha-sapphire'},
+        {id:'pokemon-sun',name:'Pokemon Sun',enabled:false,dex:'pokemon-sun'}
+      ];
+    }
+    if(!gameRegistry.some(x=>x.id===DEFAULT_GAME))gameRegistry.unshift({id:DEFAULT_GAME,name:'Pokemon White 2',enabled:true,dex:DEFAULT_GAME});
+  };
+
+  const load=async g=>{
+    const cfg=gameById(g);const dataset=cfg?.dex||g;
+    const r=await fetch(`${RAW_ROOT}${encodeURIComponent(dataset)}`,{cache:'no-store'});
+    if(!r.ok)throw Error(`Could not load Pokedexes/${dataset} (${r.status}).`);
+    return parse(await r.text());
+  };
+  const discover=async()=>{
+    const enabled=gameRegistry.filter(x=>x.enabled).map(x=>x.id);
+    try{
+      const r=await fetch(API_ROOT,{cache:'no-store'});if(!r.ok)throw 0;
+      const files=new Set((await r.json()).filter(e=>e.type==='file').map(e=>e.name));
+      return enabled.filter(id=>{const cfg=gameById(id);return files.has(cfg?.dex||id)||id===DEFAULT_GAME;});
+    }catch(_){return enabled.includes(DEFAULT_GAME)?enabled:[DEFAULT_GAME];}
+  };
+
+  const setMoniker=()=>{const v=window.JASPER_POKEDEX_VERSION||'';document.querySelectorAll('#pokedexBetaMoniker,.desktop-sidebar-brand .beta').forEach(e=>e.textContent=v);document.title=v?`Jasper's Pokédex — ${v}`:"Jasper's Pokédex";};
+  const ensurePageTitle=()=>{let t=document.getElementById('desktopWorkspaceTitle');if(!t){const w=document.getElementById('desktopWorkspace'),b=document.getElementById('dexProgressBanner');if(!w||!b)return null;t=document.createElement('h1');t.id='desktopWorkspaceTitle';w.insertBefore(t,b);}t.textContent=gameById(activeGame)?.name||activeGame;t.setAttribute('aria-live','polite');return t;};
+  const ensureBanner=()=>{let b=document.getElementById('dexProgressBanner');if(!b){const w=document.getElementById('desktopWorkspace'),t=document.getElementById('desktopTableContainer');if(!w||!t)return null;b=document.createElement('div');b.id='dexProgressBanner';b.innerHTML='<span class="dex-progress-icon">i</span><span class="dex-progress-text"></span>';w.insertBefore(b,t);}return b;};
+  const banner=(p=activePokemon,s=readState(activeGame))=>{const b=ensureBanner(),x=b?.querySelector('.dex-progress-text');if(!x)return;const done=p.reduce((n,q)=>n+(s[q.id]===true?1:0),0),total=p.length;x.textContent=`${done} of ${total} Pokémon registered · ${total-done} remaining · ${Math.round(done/Math.max(1,total)*100)}% complete`;};
+  const counters=()=>{const s=readState(activeGame);document.querySelectorAll('#boxContainer .pc-box').forEach((box,i)=>{const items=activePokemon.slice(i*BOX_SIZE,(i+1)*BOX_SIZE),c=box.querySelector('.box-completion-counter');if(c)c.textContent=`${items.reduce((n,p)=>n+(s[p.id]===true?1:0),0)}/${items.length}`;});};
   const cell=(p,s)=>{const c=document.createElement('div');c.className=`cell${s[p.id]===true?' completed':''}`;c.dataset.id=p.id;c.dataset.num=p.num;c.dataset.name=p.name;c.innerHTML=`<span class="dex-num">${esc(p.num)}</span><span class="name">${esc(p.baseName)}${p.form?` <span class="form">${esc(p.form)}</span>`:''}</span><div class="checkbox"></div>`;return c;};
   const boxes=(p,s)=>{const root=document.getElementById('boxContainer');if(!root)return;root.replaceChildren();const n=Math.max(1,Math.ceil(p.length/BOX_SIZE));for(let i=0;i<n;i++){const items=p.slice(i*BOX_SIZE,(i+1)*BOX_SIZE),box=document.createElement('section');box.className='pc-box';const title=document.createElement('div');title.className='box-title';title.innerHTML=`<span>Box ${i+1} — ${items.length?`Dex #${items[0].num}–#${items[items.length-1].num}`:'Empty'}</span><span class="box-completion-counter">0/${items.length}</span>`;const wrap=document.createElement('div');wrap.className='grid-wrapper';const grid=document.createElement('div');grid.className='grid';grid.style.gridTemplateColumns=`repeat(${BOX_COLUMNS},minmax(110px,1fr))`;grid.style.gridTemplateRows=`repeat(${BOX_ROWS},minmax(58px,auto))`;items.forEach(q=>grid.appendChild(cell(q,s)));while(grid.children.length<BOX_SIZE){const e=document.createElement('div');e.className='cell empty';e.setAttribute('aria-hidden','true');grid.appendChild(e);}wrap.appendChild(grid);box.append(title,wrap);root.appendChild(box);}};
   const list=(p,s)=>{const root=document.getElementById('listContainer');if(!root)return;root.replaceChildren();p.forEach(q=>{const row=document.createElement('div');row.className=`list-row${s[q.id]===true?' completed':''}`;row.dataset.id=q.id;row.dataset.num=q.num;row.dataset.name=q.name;row.innerHTML=`<div class="checkbox"></div><div class="list-info"><span class="dex-num">#${esc(q.num)}</span><span class="name">${esc(q.baseName)}${q.form?` <span class="form">${esc(q.form)}</span>`:''}</span></div>`;root.appendChild(row);});};
   const installSearch=()=>{const old=document.getElementById('searchInput'),root=document.getElementById('searchResults');if(!old||!root)return;const input=old.cloneNode(true);input.id='searchInput';input.placeholder='Search...';input.autocomplete='off';old.replaceWith(input);let clear=document.getElementById('searchClearButton');if(!clear){clear=document.createElement('button');clear.id='searchClearButton';clear.type='button';clear.setAttribute('aria-label','Clear search');clear.textContent='×';document.querySelector('.search-wrapper')?.appendChild(clear);}const sync=()=>clear.hidden=!input.value;clear.onclick=()=>{input.value='';input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();};input.oninput=()=>{sync();search(input.value)};sync();root.onclick=e=>{const row=e.target.closest('.search-result-item[data-id]');if(!row)return;const id=row.dataset.id;if(e.target.closest('.search-jump')){e.preventDefault();e.stopPropagation();jump(id);return;}toggle(id);};if(!document.getElementById('v01107SearchStyles')){const st=document.createElement('style');st.id='v01107SearchStyles';st.textContent=`.search-wrapper{position:relative}.search-wrapper #searchInput{padding-right:42px}.search-wrapper #searchClearButton{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:24px;height:24px;border:0;border-radius:50%;background:#e2e8f0;color:#475569;font-size:18px;line-height:20px;padding:0;cursor:pointer}.search-wrapper #searchClearButton[hidden]{display:none}.search-jump{margin-left:auto;flex-shrink:0;background:#2563eb!important;color:#fff!important;border:1px solid #1d4ed8!important;border-radius:6px;padding:5px 10px;font-weight:700;cursor:pointer}.jump-highlight{position:relative!important;z-index:2!important;border-radius:6px!important;box-shadow:inset 0 0 0 3px rgba(37,99,235,1)!important;animation:jasperJumpFade 3s ease-in-out forwards!important}@keyframes jasperJumpFade{0%,66.666%{box-shadow:inset 0 0 0 3px rgba(37,99,235,1)}100%{box-shadow:inset 0 0 0 3px rgba(37,99,235,0)}}.list-row,.list-row.completed{padding-left:10px!important}.list-row.jump-highlight,.list-row.completed.jump-highlight{border-radius:6px!important}@media(max-width:640px){#searchInput{font-size:16px!important}.search-results{left:0;right:0;width:100%}}@media(min-width:641px){#desktopWorkspaceTitle{font-size:1.45rem!important;font-weight:700;color:#0f172a;text-align:left;margin:0!important;line-height:1.2;align-self:flex-start;flex:0 0 auto}#desktopWorkspace{padding-top:28px}#desktopWorkspaceTop{position:absolute;right:32px;top:28px;margin:0!important;z-index:11000}#desktopWorkspaceTitle{padding-right:220px}}`;document.head.appendChild(st);}};
   const search=q=>{const root=document.getElementById('searchResults');if(!root)return;const query=norm(String(q).trim());root.replaceChildren();if(!query){root.style.display='none';return;}const s=readState(activeGame),matches=activePokemon.filter(p=>norm(p.name).includes(query)||p.num.includes(query)).sort((a,b)=>a.name.localeCompare(b.name));if(!matches.length){root.style.display='none';return;}matches.slice(0,50).forEach(p=>{const r=document.createElement('div');r.className=`search-result-item${s[p.id]===true?' completed':''}`;r.dataset.id=p.id;r.innerHTML=`<div class="checkbox"></div><span class="dex-num">#${esc(p.num)}</span><span class="name">${esc(p.baseName)}${p.form?` <span class="form">${esc(p.form)}</span>`:''}</span><button class="search-jump" type="button">Jump</button>`;root.appendChild(r);});root.style.display='block';};
   const jump=id=>{const listView=document.getElementById('listContainer'),boxView=document.getElementById('boxContainer');const listActive=!!listView&&getComputedStyle(listView).display!=='none';const view=listActive?listView:boxView;if(!view)return;const target=view.querySelector(`[data-id="${CSS.escape(id)}"]`);if(!target)return;target.classList.remove('jump-highlight');void target.offsetWidth;target.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'});requestAnimationFrame(()=>{target.classList.add('jump-highlight');const finish=()=>{target.classList.remove('jump-highlight');target.removeEventListener('animationend',finish);};target.addEventListener('animationend',finish,{once:true});});};
-  const views=()=>{const b=document.getElementById('boxViewBtn'),l=document.getElementById('listViewBtn'),bx=document.getElementById('boxContainer'),ls=document.getElementById('listContainer');if(!b||!l||!bx||!ls)return;b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 4h-4.5V5H19v2zM12.5 5v2H8.5V5h4zM7 5v2H5V5h2zM5 9h2v3.5H5V9zm4.5 0h4v3.5h-4V9zm6 0H19v3.5h-3.5V9zM19 19h-3.5v-4.5H19V19zm-5.5 0h-4v-4.5h4V19zm-6 0H5v-4.5H7V19z"/></svg><span>Box view</span>';l.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6s-.67-1.5-1.5-1.5-1.5 0-1.5 0zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8h14V3H7v2z"/></svg><span>List view</span>';const box=()=>{bx.style.display='flex';ls.style.display='none';b.classList.add('active');l.classList.remove('active');};const listView=()=>{bx.style.display='none';ls.style.display='block';l.classList.add('active');b.classList.remove('active');};b.onclick=box;l.onclick=listView;box();};
-  const update=id=>document.querySelectorAll(`[data-id="${CSS.escape(id)}"]`).forEach(e=>e.classList.toggle('completed',readState(activeGame)[id]===true));const toggle=id=>{const s=readState(activeGame);s[id]=s[id]!==true;writeState(activeGame,s);update(id);banner(activePokemon,s);counters();search(document.getElementById('searchInput')?.value||'');};const bind=()=>{const bx=document.getElementById('boxContainer'),ls=document.getElementById('listContainer');if(bx)bx.onclick=e=>{const t=e.target.closest('.cell[data-id]');if(t&&!t.classList.contains('empty'))toggle(t.dataset.id);};if(ls)ls.onclick=e=>{const t=e.target.closest('.list-row[data-id]');if(t)toggle(t.dataset.id);};};
-  const render=async g=>{const p=await load(g);activeGame=g;activePokemon=p;window.JASPER_ACTIVE_GAME=g;window.JASPER_POKEDEX={game:g,pokemon:p,boxSize:BOX_SIZE,boxColumns:BOX_COLUMNS,boxRows:BOX_ROWS};const s=readState(g);boxes(p,s);list(p,s);views();installSearch();bind();ensurePageTitle();banner(p,s);counters();setMoniker();};
-  const tabs=games=>{const root=document.querySelector('.tabs-container');if(!root)return;root.replaceChildren();const available=new Set(games);GAME_NAV.forEach(x=>{const b=document.createElement('button');b.type='button';b.className=`tab-btn${x.key===activeGame?' active':''}${available.has(x.key)?'':' disabled'}`;b.dataset.game=x.key;b.textContent=x.label;b.disabled=!available.has(x.key);root.appendChild(b);});root.onclick=e=>{const b=e.target.closest('.tab-btn[data-game]:not(:disabled)');if(b)render(b.dataset.game).then(()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.toggle('active',x===b));ensurePageTitle();}).catch(console.error);};};
-  const boot=async()=>{if(booted)return;booted=true;let i=0;while(!window.JASPER_POKEDEX_VERSION&&i++<100)await new Promise(r=>setTimeout(r,10));setMoniker();const g=await discover();tabs(g);await render(g.includes(DEFAULT_GAME)?DEFAULT_GAME:g[0]);};window.addEventListener('jasper:pokedex-state-synced',e=>render(e.detail?.game||activeGame).catch(console.error));if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  const views=()=>{const b=document.getElementById('boxViewBtn'),l=document.getElementById('listViewBtn'),bx=document.getElementById('boxContainer'),ls=document.getElementById('listContainer');if(!b||!l||!bx||!ls)return;b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 4h-4.5V5H19v2zM12.5 5v2H8.5V5h4zM7 5v2H5V5h2zM5 9h2v3.5H5V9zm4.5 0h4v3.5h-4V9zm6 0H19v3.5h-3.5V9zM19 19h-3.5v-4.5H19V19zm-5.5 0h-4v-4.5h4V19zm-6 0H5v-4.5H7V19z"/></svg><span>Box view</span>';l.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6s-.67-1.5-1.5-1.5zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8h14V3H7v2z"/></svg><span>List view</span>';const box=()=>{bx.style.display='flex';ls.style.display='none';b.classList.add('active');l.classList.remove('active');};const listView=()=>{bx.style.display='none';ls.style.display='block';l.classList.add('active');b.classList.remove('active');};b.onclick=box;l.onclick=listView;box();};
+  const update=id=>document.querySelectorAll(`[data-id="${CSS.escape(id)}"]`).forEach(e=>e.classList.toggle('completed',readState(activeGame)[id]===true));
+  const toggle=id=>{const s=readState(activeGame);s[id]=s[id]!==true;writeState(activeGame,s);update(id);banner(activePokemon,s);counters();search(document.getElementById('searchInput')?.value||'');};
+  const bind=()=>{const bx=document.getElementById('boxContainer'),ls=document.getElementById('listContainer');if(bx)bx.onclick=e=>{const t=e.target.closest('.cell[data-id]');if(t&&!t.classList.contains('empty'))toggle(t.dataset.id);};if(ls)ls.onclick=e=>{const t=e.target.closest('.list-row[data-id]');if(t)toggle(t.dataset.id);};};
+
+  const render=async g=>{
+    const p=await load(g);activeGame=g;activePokemon=p;
+    const migrated=migrateState(g,p,readState(g));
+    if(JSON.stringify(migrated)!==JSON.stringify(readState(g)))writeState(g,migrated);
+    window.JASPER_ACTIVE_GAME=g;
+    window.JASPER_POKEDEX={game:g,pokemon:p,boxSize:BOX_SIZE,boxColumns:BOX_COLUMNS,boxRows:BOX_ROWS,gameConfig:gameById(g)};
+    const s=readState(g);boxes(p,s);list(p,s);views();installSearch();bind();ensurePageTitle();banner(p,s);counters();setMoniker();
+  };
+  const tabs=games=>{const root=document.querySelector('.tabs-container');if(!root)return;root.replaceChildren();const available=new Set(games);gameRegistry.forEach(x=>{const b=document.createElement('button');b.type='button';b.className=`tab-btn${x.id===activeGame?' active':''}${available.has(x.id)?'':' disabled'}`;b.dataset.game=x.id;b.textContent=x.name;b.disabled=!available.has(x.id);root.appendChild(b);});root.onclick=e=>{const b=e.target.closest('.tab-btn[data-game]:not(:disabled)');if(b)render(b.dataset.game).then(()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.toggle('active',x===b));ensurePageTitle();}).catch(console.error);};};
+  const boot=async()=>{if(booted)return;booted=true;let i=0;while(!window.JASPER_POKEDEX_VERSION&&i++<100)await new Promise(r=>setTimeout(r,10));setMoniker();await loadRegistry();const g=await discover();tabs(g);await render(g.includes(DEFAULT_GAME)?DEFAULT_GAME:g[0]);};
+  window.addEventListener('jasper:pokedex-state-synced',e=>render(e.detail?.game||activeGame).catch(console.error));
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
