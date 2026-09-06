@@ -163,7 +163,7 @@
     const state = readState(dex.game);
     const total = dex.pokemon.length;
     const done = dex.pokemon.reduce((n, p) => n + (state[p.id] === true ? 1 : 0), 0);
-    el.textContent = `${done} of ${total} Pokémon registered · ${total - done} remaining · ${Math.round(done / Math.max(1, total) * 100)}% complete`;
+    el.textContent = `${done} of ${total} registered · ${total - done} remaining · ${Math.round(done / Math.max(1, total) * 100)}% complete`;
   };
 
   const installViewState = () => {
