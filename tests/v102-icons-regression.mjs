@@ -21,7 +21,9 @@ for (const file of [
   'Icons/sun-fill.svg',
   'Icons/sync-token-needed.svg',
   'Icons/sync-inprogress-fill.svg',
-  'Icons/sync-warn-fill.svg'
+  'Icons/sync-warn-fill.svg',
+  'Icons/bulk-mode-fill.svg',
+  'Icons/Chevron_South.svg'
 ]) assert.ok(fs.existsSync(file), `Missing icon asset: ${file}`);
 
 assert.match(boot, /load\('icon-system\.js'/);
@@ -55,6 +57,11 @@ assert.doesNotMatch(mobile, /mobile-progress-icon">i</);
 assert.match(sync, /sync-token-needed/);
 assert.match(sync, /sync-inprogress-fill/);
 assert.match(sync, /sync-warn-fill/);
+assert.match(sync, /bulk-mode-fill/);
+assert.match(sync, /data-icon="Chevron_South"/);
+assert.match(sync, /github-sync-chevron.*transform:none/);
+assert.match(sync, /rotate\(180deg\)/);
+assert.match(sync, /transition:none!important/);
 assert.match(sync, /id='githubSyncPill'/);
 assert.match(sync, /window\.dispatchEvent\(new CustomEvent\('jasper:sync-ui-ready'\)\)/);
 assert.match(sync, /#githubSyncWrap\{.*display:block!important;visibility:visible!important/);
@@ -62,11 +69,15 @@ assert.doesNotMatch(sync, /i\.textContent=type==='ok'\?'✓'/);
 assert.doesNotMatch(sync, /i\.textContent=type==='busy'\?'↻'/);
 assert.match(base, /jasper:sync-ui-ready/);
 assert.match(base, /placeSync\(\)/);
+assert.match(base, /pill\('Bulk Mode','bulk'\)/);
+assert.match(base, /github-sync-chevron \.jasper-icon/);
 
 assert.match(read('Icons/check-fill.svg'), /fill="currentColor"/);
 assert.match(read('Icons/empty-circle.svg'), /fill="currentColor"/);
 assert.match(read('Icons/info-fill.svg'), /fill="currentColor"/);
 assert.match(read('Icons/clear-fill.svg'), /fill="currentColor"/);
+assert.match(read('Icons/bulk-mode-fill.svg'), /fill="currentColor"/);
+assert.match(read('Icons/Chevron_South.svg'), /fill="currentColor"/);
 
 assert.match(engine, /BOX_SIZE=30,BOX_COLUMNS=6,BOX_ROWS=5/);
 assert.match(engine, /while\(grid\.children\.length<BOX_SIZE\)/);
