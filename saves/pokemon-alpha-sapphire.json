@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "gameId": "pokemon-alpha-sapphire",
+  "updatedAt": "2026-09-06T01:44:08.409Z",
+  "pokemon": {
+    "193-horsea": false,
+    "194-seadra": false,
+    "195-kingdra": false,
+    "190-chinchou": false,
+    "189-corsola": false,
+    "188-relicanth": false,
+    "181-froslass": false,
+    "187-gorebyss": false,
+    "182-spheal": false,
+    "183-sealeo": false,
+    "184-walrein": false,
+    "196-bagon": false,
+    "197-shelgon": false,
+    "185-clamperl": false,
+    "191-lanturn": false,
+    "203-regice": false,
+    "202-regirock": false,
+    "208-groudon": false,
+    "001-treecko": true,
+    "002-grovyle": false
+  }
+}
