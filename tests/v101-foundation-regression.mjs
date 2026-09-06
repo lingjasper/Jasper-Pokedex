@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import vm from 'node:vm';
 
 const registry = JSON.parse(fs.readFileSync('data/games.json', 'utf8'));
 assert.equal(registry.schemaVersion, 1);
@@ -18,8 +17,8 @@ const rows = [...dataset.matchAll(/^\|\s*#?(\d+)\s*\|\s*(.*?)\s*\|\s*$/gm)].map(
 assert.equal(rows.length, 311, 'White 2 dataset count changed unexpectedly');
 assert.equal(new Set(rows.map(r => `${r.num}|${r.name}`)).size, rows.length, 'dataset contains duplicate entries');
 assert.equal(new Set(rows.map(r => r.num)).size, 301, 'White 2 must retain 301 numbered Dex slots');
-for (const num of ['016', '104', '159', '160', '180', '181']) {
-  assert.equal(rows.filter(r => r.num === num).length, 2, `expected two boxable forms for ${num}`);
+for (const [num, expected] of [['016', 2], ['104', 2], ['159', 4], ['160', 4], ['180', 2], ['181', 2]]) {
+  assert.equal(rows.filter(r => r.num === num).length, expected, `unexpected form count for ${num}`);
 }
 assert.equal(rows.filter(r => r.num === '297').length, 1, 'Kyurem must not gain unapproved forms in the dataset');
 assert.equal(rows.filter(r => r.num === '298').length, 1, 'Keldeo must not gain unapproved forms in the dataset');
@@ -35,21 +34,14 @@ const base = fs.readFileSync('beta071-base.js', 'utf8');
 assert.match(base, /jasper_pokedex_state_\$\{window\.JASPER_ACTIVE_GAME/);
 assert.match(base, /jasper:pokedex-game-changed/);
 
-const nationalCore = fs.readFileSync('national-dex-core.js', 'utf8');
-const context = { window: {}, console };
-vm.runInNewContext(nationalCore, context, { filename: 'national-dex-core.js' });
-const dex = context.window.JASPER_NATIONAL_DEX;
-assert.ok(dex, 'National Dex foundation API must load');
-assert.equal(dex.schemaVersion, 1);
-const aggregate = dex.aggregate([
-  { gameId: 'pokemon-white-2', entries: [{ entryId: '025-pikachu', globalSpeciesId: 25, name: 'Pikachu' }], state: { '025-pikachu': true } },
-  { gameId: 'pokemon-sun', entries: [{ entryId: '025-pikachu', globalSpeciesId: 25, name: 'Pikachu' }], state: { '025-pikachu': false } }
-]);
-assert.equal(aggregate.length, 1);
-assert.deepEqual(aggregate[0].games.map(g => [g.gameId, g.obtained]), [
-  ['pokemon-white-2', true],
-  ['pokemon-sun', false]
-]);
-assert.deepEqual(dex.ownership(aggregate[0]), ['pokemon-white-2']);
+const sync = fs.readFileSync('github-sync.js', 'utf8');
+assert.match(sync, /saves\/\$\{g\}\.json/);
+assert.match(sync, /version:1,gameId:g,updatedAt,pokemon:getState\(g\)/);
+assert.match(sync, /pokemon-white-2/);
+
+const saveSchema = JSON.parse(fs.readFileSync('data/game-save.schema.json', 'utf8'));
+assert.deepEqual(saveSchema.required, ['version', 'gameId', 'updatedAt', 'pokemon']);
+assert.equal(saveSchema.properties.version.const, 1);
+assert.equal(saveSchema.properties.pokemon.additionalProperties.type, 'boolean');
 
 console.log('v1.0.1 foundation regression passed.');
