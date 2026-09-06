@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   /* v1.0.1 — game-scoped GitHub persistence and deterministic legacy migration. */
-  const TOKEN_KEY='jasper_pokedex_github_token',SHA_PREFIX='jasper_pokedex_save_sha_',LAST_SYNC_PREFIX='jasper_pokedex_last_synced_at_',REPO='https://api.github.com/repos/lingjasper/Jasper-Pokedex',LEGACY_SAVE_URL=`${REPO}/contents/save.json?ref=main`,RAW_ROOT='https://raw.githubusercontent.com/lingjasper/Jasper-Pokedex/main/Pokedexes/`;
+  const TOKEN_KEY='jasper_pokedex_github_token',SHA_PREFIX='jasper_pokedex_save_sha_',LAST_SYNC_PREFIX='jasper_pokedex_last_synced_at_',REPO='https://api.github.com/repos/lingjasper/Jasper-Pokedex',LEGACY_SAVE_URL=`${REPO}/contents/save.json?ref=main`,RAW_ROOT='https://raw.githubusercontent.com/lingjasper/Jasper-Pokedex/main/Pokedexes/';
   let saveTimers=new Map(),busy=new Set(),suppressSave=false,readyGames=new Set();
   const game=()=>window.JASPER_ACTIVE_GAME||'pokemon-white-2',stateKey=g=>`jasper_pokedex_state_${g}`,shaKey=g=>`${SHA_PREFIX}${g}`,lastKey=g=>`${LAST_SYNC_PREFIX}${g}`,token=()=>localStorage.getItem(TOKEN_KEY)||'';
   const savePath=g=>`saves/${g}.json`,saveUrl=g=>`${REPO}/contents/${savePath(g)}?ref=main`;
