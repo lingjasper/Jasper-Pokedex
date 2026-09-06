@@ -1,11 +1,12 @@
 {
   "version": 1,
   "gameId": "pokemon-sun",
-  "updatedAt": "2026-09-06T10:13:42.843Z",
+  "updatedAt": "2026-09-06T10:13:50.860Z",
   "pokemon": {
     "001-rowlet": false,
     "002-dartrix": false,
     "003-decidueye": false,
-    "080-primeape": false
+    "080-primeape": false,
+    "015-rattata-alolan": true
   }
 }
