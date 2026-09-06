@@ -21,9 +21,9 @@
     {
       "id": "pokemon-sun",
       "name": "Pokémon Sun",
-      "enabled": false,
+      "enabled": true,
       "dataset": "Sun",
-      "dex": "Sun",
+      "dex": "Sun.md",
       "save": "saves/pokemon-sun.json"
     }
   ]
