@@ -1,9 +1,10 @@
 {
   "version": 1,
   "gameId": "pokemon-sun",
-  "updatedAt": "2026-09-06T02:45:38.643Z",
+  "updatedAt": "2026-09-06T02:45:40.756Z",
   "pokemon": {
     "001-rowlet": true,
-    "002-dartrix": false
+    "002-dartrix": true,
+    "003-decidueye": true
   }
 }
