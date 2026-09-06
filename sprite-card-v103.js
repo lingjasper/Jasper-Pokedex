@@ -47,8 +47,6 @@
     .pokemon-card .pokemon-name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .pokemon-card .pokemon-sprite { width:136px; height:112px; position:absolute; right:-17px; top:-41px; object-fit:contain; image-rendering:pixelated; pointer-events:none; user-select:none; z-index:1; }
     .pokemon-card .checkbox { display:none!important; }
-    .cell.pokemon-card.completed.bulk-pending,
-    .cell.pokemon-card.bulk-remove-pending { background-color:#3D1C1C!important; border-color:#6C2A2A!important; }
     @container pokemon-grid (max-width:1109px) {
       .cell.pokemon-card { width:100%; min-width:110px; max-width:179px; height:80px; min-height:80px; padding:6px 12px; align-items:center; gap:10px; }
       .pokemon-card .pokemon-card-text { align-items:center; text-align:center; }
@@ -62,29 +60,21 @@
   const style = document.createElement('style'); style.id='jasperV103SpriteCardStyles'; style.textContent=css; document.head.appendChild(style);
   const esc = v => String(v ?? '').replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
   const parseName = v => { const m=String(v||'').trim().match(/^(.*?)\s*\(([^)]+)\)\s*$/); return {name:m?m[1].trim():String(v||'').trim(),form:m?m[2].trim():''}; };
-  const previousCompleted = new WeakMap();
   const renderCard = async card => {
     if (card.classList.contains('empty') || card.classList.contains('pokemon-card')) return;
     const parsed=parseName(card.dataset.name); if(!parsed.name)return;
     const dex=card.dataset.num || card.querySelector('.dex-num')?.textContent?.trim() || '';
     card.classList.add('pokemon-card', parsed.form ? 'has-form' : 'no-form');
     card.innerHTML=`<span class="pokemon-card-text"><span class="pokemon-name-frame"><span class="name pokemon-name">${esc(parsed.name)}</span>${parsed.form?`<span class="form pokemon-form">(${esc(parsed.form)})</span>`:''}</span><span class="dex-num pokemon-dex-num">${esc(dex)}</span></span><img class="pokemon-sprite" alt="" aria-hidden="true" decoding="async" draggable="false">`;
-    previousCompleted.set(card, card.classList.contains('completed'));
     await applySprite(card.querySelector('.pokemon-sprite'), parsed.name, parsed.form);
   };
   const upgrade=root=>root.querySelectorAll?.('.cell[data-id]:not(.empty):not(.pokemon-card)').forEach(renderCard);
   const start=()=>{
     const target=document.getElementById('boxContainer')||document.body;
-    new MutationObserver(ms=>ms.forEach(m=>{
-      if(m.type==='attributes'&&m.attributeName==='class'&&m.target.matches?.('.cell.pokemon-card')){
-        const card=m.target,was=previousCompleted.get(card),now=card.classList.contains('completed'),pending=card.classList.contains('bulk-pending');
-        if(was===true&&!now&&pending)card.classList.add('bulk-remove-pending');
-        if(!pending)card.classList.remove('bulk-remove-pending');
-        previousCompleted.set(card,now);
-        return;
-      }
-      m.addedNodes.forEach(n=>{if(n.nodeType!==1)return;n.matches?.('.cell[data-id]:not(.empty)')?renderCard(n):upgrade(n);});
-    })).observe(target,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+    new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{
+      if(n.nodeType!==1)return;
+      n.matches?.('.cell[data-id]:not(.empty)')?renderCard(n):upgrade(n);
+    }))).observe(target,{childList:true,subtree:true});
     upgrade(document);
   };
   window.JASPER_SPRITES={resolve,apply:applySprite};
