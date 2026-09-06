@@ -3,12 +3,12 @@
   "$id": "jasper-pokedex/game-save.schema.json",
   "title": "Jasper's Pokédex Game Save",
   "type": "object",
-  "required": ["schemaVersion", "gameId", "state"],
+  "required": ["version", "gameId", "updatedAt", "pokemon"],
   "properties": {
-    "schemaVersion": { "type": "integer", "const": 1 },
+    "version": { "type": "integer", "const": 1 },
     "gameId": { "type": "string", "minLength": 1 },
-    "updatedAt": { "type": "string" },
-    "state": {
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "pokemon": {
       "type": "object",
       "additionalProperties": { "type": "boolean" }
     }
