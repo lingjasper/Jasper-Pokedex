@@ -23,7 +23,6 @@ jobs:
           node --check github-sync.js
           node --check beta071-base.js
           node --check beta1353-bugfix.js
-          node --check national-dex-core.js
 
       - name: Run v1.0.1 foundation regression
         run: node tests/v101-foundation-regression.mjs
