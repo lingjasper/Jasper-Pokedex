@@ -67,13 +67,16 @@ assert.match(engine, /activeGame/);
 const base = fs.readFileSync('beta071-base.js', 'utf8');
 assert.match(base, /jasper_pokedex_state_\$\{window\.JASPER_ACTIVE_GAME/);
 assert.match(base, /jasper:pokedex-game-changed/);
-assert.match(base, /enableGameTabs/);
-assert.match(base, /pokemon-alpha-sapphire/);
-assert.match(base, /pokemon-sun/);
 
-const index = fs.readFileSync('index.html', 'utf8');
-assert.match(index, /Pokemon Alpha Sapphire/);
-assert.match(index, /Pokemon Sun/);
+const tabs = fs.readFileSync('game-tabs.js', 'utf8');
+assert.match(tabs, /data\/games\.json/);
+assert.match(tabs, /registry\.games/);
+assert.match(tabs, /button\.dataset\.game = game\.id/);
+assert.match(tabs, /button\.disabled = game\.enabled !== true/);
+assert.match(tabs, /container\.replaceChildren/);
+
+const launcher = fs.readFileSync('beta071.js', 'utf8');
+assert.match(launcher, /game-tabs\.js/);
 
 const sync = fs.readFileSync('github-sync.js', 'utf8');
 assert.match(sync, /saves\/\$\{g\}\.json/);
