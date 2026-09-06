@@ -20,14 +20,15 @@ assert.match(sprites, /height:78px/);
 assert.match(sprites, /width:136px;height:112px/);
 assert.match(sprites, /right:-17px;top:-41px/);
 
-// Compact/mobile card contract.
+// Compact/mobile card contract: switch once six 180px cards plus five 6px gaps no longer fit.
+assert.match(sprites, /@container pokemon-grid \(max-width:1109px\)/);
 assert.match(sprites, /width:110px;min-width:110px;max-width:110px/);
 assert.match(sprites, /height:68px/);
 assert.match(sprites, /width:68px;height:56px/);
 assert.match(sprites, /left:21px;right:auto;top:1px/);
 
 // Completion state remains data-driven; the old visual checkbox is presentation-only.
-assert.match(sprites, /\.pokemon-card \\.checkbox\{display:none!important\}/);
+assert.match(sprites, /\.pokemon-card \.checkbox\{display:none!important\}/);
 assert.match(sprites, /completed\.bulk-pending\{background-color:#3D1C1C!important;border-color:#6C2A2A!important\}/);
 
 // Canonical sprite presentation boundary is exposed for future engine integration/tests.
