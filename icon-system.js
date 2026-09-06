@@ -6,8 +6,9 @@
   const cache = new Map();
   const applyThemeColors = root => {
     const scope = root || document;
+    const darkDesktop = document.documentElement.dataset.theme === 'dark' && window.matchMedia('(min-width: 769px)').matches;
     scope.querySelectorAll?.('.jasper-icon[data-icon-name="info-fill"]').forEach(svg => {
-      svg.style.setProperty('--info-icon-inner-fill', document.documentElement.dataset.theme === 'dark' ? '#343a46' : 'white');
+      svg.style.setProperty('--info-icon-inner-fill', darkDesktop ? '#343a46' : 'white');
     });
   };
 
