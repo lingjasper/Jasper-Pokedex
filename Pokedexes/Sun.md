@@ -134,8 +134,8 @@ Castform's weather forms are battle-only and revert outside of battle, so only i
 | #101 | Carbink |
 | #102 | Sableye |
 | #103 | Rockruff |
-| #104 | Lycanroc (Midday Form) |
-| #104 | Lycanroc (Midnight Form) |
+| #104 | Lycanroc (Midday) |
+| #104 | Lycanroc (Midnight) |
 | #105 | Spinda |
 | #106 | Tentacool |
 | #107 | Tentacruel |
