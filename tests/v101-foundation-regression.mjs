@@ -74,9 +74,13 @@ assert.match(tabs, /registry\.games/);
 assert.match(tabs, /button\.dataset\.game = game\.id/);
 assert.match(tabs, /button\.disabled = game\.enabled !== true/);
 assert.match(tabs, /container\.replaceChildren/);
+assert.match(tabs, /finally\(reveal\)/);
 
 const launcher = fs.readFileSync('beta071.js', 'utf8');
 assert.match(launcher, /game-tabs\.js/);
+assert.match(launcher, /MAIN_POKEDEX_ROOT/);
+assert.match(launcher, /Pokedexes\/\$\{dataset\}/);
+assert.match(launcher, /v101GameTabsBootStyle/);
 
 const sync = fs.readFileSync('github-sync.js', 'utf8');
 assert.match(sync, /saves\/\$\{g\}\.json/);
