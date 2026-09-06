@@ -40,12 +40,12 @@
 
   const css = `
     .grid-wrapper .grid { container-type:inline-size; container-name:pokemon-grid; }
-    .cell.pokemon-card { position:relative; box-sizing:border-box; display:flex; width:100%; min-width:180px; height:78px; padding:12px; align-items:flex-start; gap:10px; border-radius:6px; overflow:hidden; }
-    .pokemon-card .pokemon-card-text { display:flex; flex-direction:column; justify-content:space-between; align-items:flex-start; flex:1 0 0; align-self:stretch; min-width:0; position:relative; z-index:2; }
+    .cell.pokemon-card { position:relative; box-sizing:border-box; display:flex; width:100%; min-width:180px; height:78px; padding:12px; align-items:flex-start; gap:10px; border-radius:6px; overflow:hidden; opacity:1!important; }
+    .pokemon-card .pokemon-card-text { display:flex; flex-direction:column; justify-content:space-between; align-items:flex-start; flex:1 0 0; align-self:stretch; min-width:0; position:relative; z-index:4; opacity:1; }
     .pokemon-card .pokemon-name-frame { display:flex; flex-direction:column; align-items:flex-start; min-width:0; max-width:100%; }
     .pokemon-card .pokemon-name,.pokemon-card .pokemon-form,.pokemon-card .pokemon-dex-num { margin:0; }
     .pokemon-card .pokemon-name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .pokemon-card .pokemon-sprite { width:136px; height:112px; position:absolute; right:-17px; top:-41px; object-fit:contain; image-rendering:pixelated; pointer-events:none; user-select:none; z-index:1; }
+    .pokemon-card .pokemon-sprite { width:136px; height:112px; position:absolute; right:-17px; top:-41px; object-fit:contain; image-rendering:pixelated; pointer-events:none; user-select:none; z-index:3; opacity:1!important; }
     .pokemon-card .checkbox { display:none!important; }
     @container pokemon-grid (max-width:1109px) {
       .cell.pokemon-card { width:100%; min-width:110px; max-width:179px; height:80px; min-height:80px; padding:6px 12px; align-items:center; gap:10px; }
