@@ -1,7 +1,7 @@
 {
   "version": 1,
   "gameId": "pokemon-white-2",
-  "updatedAt": "2026-09-06T23:57:19.410Z",
+  "updatedAt": "2026-09-06T23:57:21.436Z",
   "pokemon": {
     "102-darumaka": true,
     "103-darmanitan": true,
@@ -188,7 +188,7 @@
     "027-ampharos": true,
     "026-flaaffy": true,
     "021-sunflora": true,
-    "017-sewaddle": false,
+    "017-sewaddle": true,
     "048-magnemite": true,
     "036-audino": true,
     "030-azurill": true,
