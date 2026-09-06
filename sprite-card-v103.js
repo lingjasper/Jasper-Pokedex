@@ -51,16 +51,18 @@
     .pokemon-card .pokemon-name-frame { display:flex; flex-direction:column; align-items:flex-start; min-width:0; max-width:100%; }
     .pokemon-card .pokemon-name,.pokemon-card .pokemon-form,.pokemon-card .pokemon-dex-num { margin:0; }
     .pokemon-card .pokemon-name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .pokemon-card .pokemon-sprite { width:136px; height:112px; position:absolute; right:-17px; top:-41px; object-fit:contain; pointer-events:none; user-select:none; z-index:1; }
+    .pokemon-card .pokemon-sprite { width:136px; height:112px; position:absolute; right:-17px; top:-41px; object-fit:contain; image-rendering:pixelated; pointer-events:none; user-select:none; z-index:1; }
     .pokemon-card .checkbox { display:none!important; }
     .cell.pokemon-card.completed.bulk-pending { background-color:#3D1C1C!important; border-color:#6C2A2A!important; }
     @container pokemon-grid (max-width:1109px) {
-      .cell.pokemon-card { width:110px; min-width:110px; max-width:110px; height:68px; min-height:68px; padding:6px 12px; align-items:center; gap:10px; }
+      .cell.pokemon-card { width:110px; min-width:110px; max-width:none; height:80px; min-height:80px; padding:6px 12px; align-items:center; gap:10px; }
       .pokemon-card .pokemon-card-text { align-items:center; text-align:center; }
       .pokemon-card .pokemon-name-frame { align-items:center; }
       .pokemon-card .pokemon-dex-num { align-self:flex-start; }
       .pokemon-card .pokemon-form { align-self:flex-end; }
-      .pokemon-card .pokemon-sprite { width:68px; height:56px; left:21px; right:auto; top:1px; }
+      .pokemon-card .pokemon-sprite { width:68px; height:56px; left:21px; right:auto; top:1px; image-rendering:pixelated; }
+      .pokemon-card .pokemon-card-text:has(.pokemon-form) .pokemon-dex-num { align-self:flex-start; }
+      .pokemon-card .pokemon-card-text:not(:has(.pokemon-form)) .pokemon-dex-num { align-self:center; }
     }
   `;
   const style = document.createElement('style'); style.id='jasperV103SpriteCardStyles'; style.textContent=css; document.head.appendChild(style);
