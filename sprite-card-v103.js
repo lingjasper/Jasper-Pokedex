@@ -2,16 +2,10 @@
   'use strict';
 
   const aliases = new Map([
-    ['basculin|red', 'basculin'],
-    ['basculin|blue', 'basculin-blue-striped'],
-    ['basculin|red-striped', 'basculin'],
-    ['basculin|blue-striped', 'basculin-blue-striped'],
-    ['diglett|alolan', 'diglett-alola'], ['dugtrio|alolan', 'dugtrio-alola'],
-    ['geodude|alolan', 'geodude-alola'], ['graveler|alolan', 'graveler-alola'], ['golem|alolan', 'golem-alola'],
-    ['meowth|alolan', 'meowth-alola'], ['persian|alolan', 'persian-alola'],
-    ['rattata|alolan', 'rattata-alola'], ['raticate|alolan', 'raticate-alola'],
-    ['raichu|alolan', 'raichu-alola'], ['sandshrew|alolan', 'sandshrew-alola'], ['sandslash|alolan', 'sandslash-alola'],
-    ['vulpix|alolan', 'vulpix-alola'], ['ninetales|alolan', 'ninetales-alola'], ['marowak|alolan', 'marowak-alola'],
+    ['basculin|red', 'basculin'], ['basculin|blue', 'basculin-blue-striped'], ['basculin|red-striped', 'basculin'], ['basculin|blue-striped', 'basculin-blue-striped'],
+    ['diglett|alolan', 'diglett-alola'], ['dugtrio|alolan', 'dugtrio-alola'], ['geodude|alolan', 'geodude-alola'], ['graveler|alolan', 'graveler-alola'], ['golem|alolan', 'golem-alola'],
+    ['meowth|alolan', 'meowth-alola'], ['persian|alolan', 'persian-alola'], ['rattata|alolan', 'rattata-alola'], ['raticate|alolan', 'raticate-alola'],
+    ['raichu|alolan', 'raichu-alola'], ['sandshrew|alolan', 'sandshrew-alola'], ['sandslash|alolan', 'sandslash-alola'], ['vulpix|alolan', 'vulpix-alola'], ['ninetales|alolan', 'ninetales-alola'], ['marowak|alolan', 'marowak-alola'],
     ['exeggutor|alolan', 'exeggutor-alola'], ['grimer|alolan', 'grimer-alola'], ['muk|alolan', 'muk-alola']
   ]);
   const norm = v => String(v || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
@@ -60,7 +54,7 @@
       .pokemon-card .pokemon-name-frame { align-items:center; }
       .pokemon-card .pokemon-dex-num { position:absolute; left:0; bottom:0; }
       .pokemon-card .pokemon-form { position:absolute; right:0; bottom:0; }
-      .pokemon-card .pokemon-sprite { width:68px; height:56px; left:-15px; right:auto; top:-21px; image-rendering:pixelated; }
+      .pokemon-card .pokemon-sprite { width:68px; height:56px; left:21px; right:auto; top:1px; image-rendering:pixelated; }
       .pokemon-card.no-form .pokemon-dex-num { left:50%; right:auto; transform:translateX(-50%); }
     }
   `;
