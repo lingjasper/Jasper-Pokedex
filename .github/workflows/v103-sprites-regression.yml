@@ -1,0 +1,23 @@
+name: v1.0.3 Sprite Regression
+
+on:
+  push:
+    branches:
+      - v1.0.3-pokemon-sprites
+  pull_request:
+    branches:
+      - main
+      - v1.0.3-pokemon-sprites
+
+jobs:
+  sprite-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run v1.0.3 sprite regression
+        run: node tests/v103-sprites-regression.mjs
