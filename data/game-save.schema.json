@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "jasper-pokedex/game-save.schema.json",
+  "title": "Jasper's Pokédex Game Save",
+  "type": "object",
+  "required": ["version", "gameId", "updatedAt", "pokemon"],
+  "properties": {
+    "version": { "type": "integer", "const": 1 },
+    "gameId": { "type": "string", "minLength": 1 },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "pokemon": {
+      "type": "object",
+      "additionalProperties": { "type": "boolean" }
+    }
+  },
+  "additionalProperties": false
+}
