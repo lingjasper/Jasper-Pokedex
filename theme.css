@@ -173,6 +173,7 @@
   html[data-theme="dark"] .github-sync-chevron { border-color: currentColor !important; }
   html[data-theme="dark"] #githubSyncWrap,
   html[data-theme="dark"] #githubSyncMenu { color: var(--color-text-primary) !important; }
+  html[data-theme="dark"] #githubSyncPill[data-state="busy"] .github-sync-icon { color: #5b9cff !important; }
 }
 
 /* Keep the established Light appearance on Mobile, even if a dark preference exists. */
