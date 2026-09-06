@@ -26,7 +26,7 @@
       const size = target.dataset.iconSize;
       if (size) { svg.style.width = `${size}px`; svg.style.height = `${size}px`; }
       if (target.dataset.iconClass) target.dataset.iconClass.split(/\s+/).filter(Boolean).forEach(c => svg.classList.add(c));
-      target.replaceWith(svg);
+      if (target.isConnected) target.replaceWith(svg);
     } catch (error) {
       target.dataset.iconError = 'true';
       console.warn(error);
@@ -45,15 +45,27 @@
       const holder = document.createElement('span');
       holder.dataset.icon = name;
       target.replaceWith(holder);
-      target = holder;
-    } else {
-      target.dataset.icon = name;
-      delete target.dataset.iconMounted;
+      return;
     }
+    target.dataset.icon = name;
+    delete target.dataset.iconMounted;
     await mount(target);
   };
 
+  const observer = new MutationObserver(mutations => {
+    for (const mutation of mutations) {
+      if (mutation.type === 'childList') mutation.addedNodes.forEach(node => {
+        if (node.nodeType === 1) hydrate(node);
+      });
+    }
+  });
+
+  const boot = () => {
+    hydrate(document);
+    if (document.body) observer.observe(document.body, { childList: true, subtree: true });
+  };
+
   window.JASPER_ICONS = { load, mount, hydrate, set };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => hydrate(document), { once: true });
-  else hydrate(document);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
+  else boot();
 })();
