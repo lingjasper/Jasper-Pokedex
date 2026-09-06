@@ -13,7 +13,7 @@
     {
       "id": "pokemon-alpha-sapphire",
       "name": "Pokémon Alpha Sapphire",
-      "enabled": false,
+      "enabled": true,
       "dataset": "AlphaSapphire",
       "dex": "AlphaSapphire",
       "save": "saves/pokemon-alpha-sapphire.json"
