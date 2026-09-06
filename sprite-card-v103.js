@@ -55,15 +55,13 @@
     .pokemon-card .checkbox { display:none!important; }
     .cell.pokemon-card.completed.bulk-pending { background-color:#3D1C1C!important; border-color:#6C2A2A!important; }
     @container pokemon-grid (max-width:1109px) {
-      .cell.pokemon-card { width:100%; min-width:110px; max-width:179px; height:80px; min-height:80px; padding:6px 12px; align-items:center; gap:10px; border-radius:4px; }
-      .pokemon-card .pokemon-card-text { display:flex; flex-direction:column; justify-content:space-between; align-items:center; flex:1 0 0; align-self:stretch; text-align:center; }
+      .cell.pokemon-card { width:100%; min-width:110px; max-width:179px; height:80px; min-height:80px; padding:6px 12px; align-items:center; gap:10px; }
+      .pokemon-card .pokemon-card-text { align-items:center; text-align:center; }
       .pokemon-card .pokemon-name-frame { align-items:center; }
-      .pokemon-card .pokemon-sprite-frame { display:flex; width:38px; height:38px; padding:10px; flex-direction:column; align-items:flex-start; gap:10px; position:relative; flex-shrink:0; z-index:1; }
-      .pokemon-card .pokemon-sprite { width:68px; height:56px; position:absolute; left:-15px; top:-21px; right:auto; object-fit:contain; image-rendering:pixelated; }
-      .pokemon-card .pokemon-card-meta { display:flex; justify-content:space-between; align-items:flex-start; align-self:stretch; position:relative; z-index:2; }
-      .pokemon-card .pokemon-card-meta .pokemon-dex-num { margin:0; }
-      .pokemon-card .pokemon-card-meta .pokemon-form { margin:0; }
-      .pokemon-card.no-form .pokemon-card-meta { justify-content:center; }
+      .pokemon-card .pokemon-dex-num { position:absolute; left:0; bottom:0; }
+      .pokemon-card .pokemon-form { position:absolute; right:0; bottom:0; }
+      .pokemon-card .pokemon-sprite { width:68px; height:56px; left:-15px; right:auto; top:-21px; image-rendering:pixelated; }
+      .pokemon-card.no-form .pokemon-dex-num { left:50%; right:auto; transform:translateX(-50%); }
     }
   `;
   const style = document.createElement('style'); style.id='jasperV103SpriteCardStyles'; style.textContent=css; document.head.appendChild(style);
@@ -74,7 +72,7 @@
     const parsed=parseName(card.dataset.name); if(!parsed.name)return;
     const dex=card.dataset.num || card.querySelector('.dex-num')?.textContent?.trim() || '';
     card.classList.add('pokemon-card', parsed.form ? 'has-form' : 'no-form');
-    card.innerHTML=`<span class="pokemon-card-text"><span class="pokemon-name-frame"><span class="name pokemon-name">${esc(parsed.name)}</span>${parsed.form?`<span class="form pokemon-form">(${esc(parsed.form)})</span>`:''}</span><span class="pokemon-sprite-frame"><img class="pokemon-sprite" alt="" aria-hidden="true" decoding="async" draggable="false"></span><span class="pokemon-card-meta"><span class="dex-num pokemon-dex-num">${esc(dex)}</span>${parsed.form?`<span class="form pokemon-form">(${esc(parsed.form)})</span>`:''}</span></span>`;
+    card.innerHTML=`<span class="pokemon-card-text"><span class="pokemon-name-frame"><span class="name pokemon-name">${esc(parsed.name)}</span>${parsed.form?`<span class="form pokemon-form">(${esc(parsed.form)})</span>`:''}</span><span class="dex-num pokemon-dex-num">${esc(dex)}</span></span><img class="pokemon-sprite" alt="" aria-hidden="true" decoding="async" draggable="false">`;
     await applySprite(card.querySelector('.pokemon-sprite'), parsed.name, parsed.form);
   };
   const upgrade=root=>root.querySelectorAll?.('.cell[data-id]:not(.empty):not(.pokemon-card)').forEach(renderCard);
