@@ -54,7 +54,7 @@
     .pokemon-card .pokemon-sprite { width:136px; height:112px; position:absolute; right:-17px; top:-41px; object-fit:contain; pointer-events:none; user-select:none; z-index:1; }
     .pokemon-card .checkbox { display:none!important; }
     .cell.pokemon-card.completed.bulk-pending { background-color:#3D1C1C!important; border-color:#6C2A2A!important; }
-    @container pokemon-grid (max-width:1115px) {
+    @container pokemon-grid (max-width:1109px) {
       .cell.pokemon-card { width:110px; min-width:110px; max-width:110px; height:68px; min-height:68px; padding:6px 12px; align-items:center; gap:10px; }
       .pokemon-card .pokemon-card-text { align-items:center; text-align:center; }
       .pokemon-card .pokemon-name-frame { align-items:center; }
@@ -64,7 +64,7 @@
     }
   `;
   const style = document.createElement('style'); style.id='jasperV103SpriteCardStyles'; style.textContent=css; document.head.appendChild(style);
-  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc = v => String(v ?? '').replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
   const parseName = v => { const m=String(v||'').trim().match(/^(.*?)\s*\(([^)]+)\)\s*$/); return {name:m?m[1].trim():String(v||'').trim(),form:m?m[2].trim():''}; };
   const renderCard = async card => {
     if (card.classList.contains('empty') || card.classList.contains('pokemon-card')) return;
