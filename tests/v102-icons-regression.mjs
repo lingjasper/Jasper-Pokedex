@@ -7,6 +7,7 @@ const theme = read('theme-toggle.js');
 const mobile = read('mobile-overhaul-v133.js');
 const sync = read('github-sync.js');
 const boot = read('beta071.js');
+const base = read('beta071-base.js');
 const icons = read('icon-system.js');
 
 for (const file of [
@@ -42,6 +43,9 @@ assert.match(theme, /moon-fill/);
 assert.match(theme, /sun-fill/);
 assert.doesNotMatch(theme, /theme === 'dark' \? '☀'/);
 assert.doesNotMatch(theme, /theme === 'dark' \? '☾'/);
+assert.match(theme, /\.checkbox\s*,\.checkbox \*\s*,\.checkbox svg\{background-color:transparent!important/);
+assert.match(theme, /\.bulk-pending \.checkbox.*background:transparent!important/);
+assert.match(theme, /html\[data-theme="dark"\] #dexProgressBanner \.dex-progress-icon\{background:transparent!important;color:#475569!important/);
 
 assert.match(mobile, /data-icon="moon-fill"/);
 assert.match(mobile, /data-icon="info-fill"/);
@@ -51,8 +55,13 @@ assert.doesNotMatch(mobile, /mobile-progress-icon">i</);
 assert.match(sync, /sync-token-needed/);
 assert.match(sync, /sync-inprogress-fill/);
 assert.match(sync, /sync-warn-fill/);
+assert.match(sync, /id='githubSyncPill'/);
+assert.match(sync, /window\.dispatchEvent\(new CustomEvent\('jasper:sync-ui-ready'\)\)/);
+assert.match(sync, /#githubSyncWrap\{.*display:block!important;visibility:visible!important/);
 assert.doesNotMatch(sync, /i\.textContent=type==='ok'\?'✓'/);
 assert.doesNotMatch(sync, /i\.textContent=type==='busy'\?'↻'/);
+assert.match(base, /jasper:sync-ui-ready/);
+assert.match(base, /placeSync\(\)/);
 
 assert.match(read('Icons/check-fill.svg'), /fill="currentColor"/);
 assert.match(read('Icons/empty-circle.svg'), /fill="currentColor"/);
