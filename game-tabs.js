@@ -42,7 +42,11 @@
     }
   };
 
-  const boot = () => renderGameTabs();
+  const reveal = () => document.querySelectorAll('.tabs-container').forEach(container => {
+    container.style.visibility = 'visible';
+  });
+
+  const boot = () => renderGameTabs().finally(reveal);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
   else boot();
 })();
