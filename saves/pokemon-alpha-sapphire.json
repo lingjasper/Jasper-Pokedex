@@ -1,7 +1,7 @@
 {
   "version": 1,
   "gameId": "pokemon-alpha-sapphire",
-  "updatedAt": "2026-09-06T01:44:08.409Z",
+  "updatedAt": "2026-09-06T01:44:27.390Z",
   "pokemon": {
     "193-horsea": false,
     "194-seadra": false,
@@ -21,7 +21,7 @@
     "203-regice": false,
     "202-regirock": false,
     "208-groudon": false,
-    "001-treecko": true,
+    "001-treecko": false,
     "002-grovyle": false
   }
 }
