@@ -1,7 +1,7 @@
 {
   "version": 1,
   "gameId": "pokemon-white-2",
-  "updatedAt": "2026-09-06T07:41:05.654Z",
+  "updatedAt": "2026-09-06T21:15:44.429Z",
   "pokemon": {
     "102-darumaka": true,
     "103-darmanitan": true,
@@ -157,7 +157,7 @@
     "054-magmar": true,
     "056-elekid": true,
     "051-growlithe": true,
-    "034-lucario": false,
+    "034-lucario": true,
     "005-pignite": true,
     "053-magby": true,
     "060-raticate": true,
