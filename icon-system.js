@@ -21,6 +21,7 @@
       const source = await load(name);
       const svg = document.importNode(source, true);
       svg.dataset.iconMounted = 'true';
+      svg.dataset.iconName = name;
       svg.classList.add('jasper-icon');
       svg.setAttribute('aria-hidden', target.getAttribute('aria-hidden') || 'true');
       const size = target.dataset.iconSize;
