@@ -8,7 +8,6 @@
    * Storage boxes/list remain outside the sticky header and scroll normally.
    */
   if (window.__JASPER_MOBILE_OVERHAUL_133__) return;
-  window.__JASPER_MOBILE_OVERHAUL_133__ = true;
 
   const isMobile = () => window.matchMedia('(max-width: 640px)').matches;
   const stateKey = game => `jasper_pokedex_state_${game || 'White2'}`;
@@ -27,7 +26,6 @@
         html { max-width:100%; overflow-x:clip; }
         body { max-width:100%; padding:0 8px!important; margin:0!important; }
 
-        /* Full-bleed sticky surface; every child remains on the 8px grid. */
         #mobileHeader {
           position:sticky!important;
           top:0!important;
@@ -70,6 +68,8 @@
 
         #mobileProgressBanner { display:flex; align-items:center; gap:10px; width:100%; box-sizing:border-box; margin:0 0 14px; padding:11px 12px; background:#fff; border:1px solid #cbd5e1; border-radius:10px; box-shadow:0 2px 5px rgba(15,23,42,.05); color:#475569; font-size:.78rem; font-weight:600; }
         #mobileProgressBanner .mobile-progress-icon { width:20px; height:20px; flex:0 0 20px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:#e2e8f0; color:#475569; font-size:.75rem; font-weight:800; }
+        #mobileProgressBanner .mobile-progress-icon .jasper-icon { width:20px!important; height:20px!important; display:block; color:#475569!important; }
+        #mobileProgressBanner .mobile-progress-icon .jasper-icon { --info-icon-inner-fill: white; }
         #mobileProgressText { min-width:0; }
 
         .controls-container { width:100%!important; max-width:none!important; margin:0 0 16px!important; flex-direction:row!important; align-items:center!important; gap:8px!important; box-sizing:border-box; }
@@ -150,7 +150,7 @@
     if (!isMobile() || document.getElementById('mobileProgressBanner')) return;
     const banner = document.createElement('div');
     banner.id = 'mobileProgressBanner';
-    banner.innerHTML = '<span class="mobile-progress-icon" data-icon="info-fill" data-icon-size="20"></span><span id="mobileProgressText"></span>';
+    banner.innerHTML = '<span class="mobile-progress-icon"><span data-icon="info-fill" data-icon-size="20"></span></span><span id="mobileProgressText"></span>';
     const header = document.getElementById('mobileHeader');
     if (header) header.appendChild(banner);
     updateProgress();
