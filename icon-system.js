@@ -10,6 +10,9 @@
     scope.querySelectorAll?.('.jasper-icon[data-icon-name="info-fill"]').forEach(svg => {
       svg.style.setProperty('--info-icon-inner-fill', darkDesktop ? '#343a46' : 'white');
     });
+    scope.querySelectorAll?.('.jasper-icon[data-icon-name="clear-fill"]').forEach(svg => {
+      svg.style.setProperty('--clear-icon-inner-fill', darkDesktop ? '#343a46' : 'white');
+    });
   };
 
   const load = name => {
@@ -36,7 +39,7 @@
       if (size) { svg.style.width = `${size}px`; svg.style.height = `${size}px`; }
       if (target.dataset.iconClass) target.dataset.iconClass.split(/\s+/).filter(Boolean).forEach(c => svg.classList.add(c));
       if (target.isConnected) target.replaceWith(svg);
-      if (name === 'info-fill') applyThemeColors(svg.parentElement || document);
+      if (name === 'info-fill' || name === 'clear-fill') applyThemeColors(svg.parentElement || document);
     } catch (error) {
       target.dataset.iconError = 'true';
       console.warn(error);
