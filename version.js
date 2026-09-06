@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   // SINGLE SOURCE OF TRUTH for the website release moniker.
-  window.JASPER_POKEDEX_VERSION = 'Release v1.0.3';
+  window.JASPER_POKEDEX_VERSION = 'Release v1.1.0';
   // Load v1.0.3 sprite presentation after the core release bootstrap has been defined.
   const load = () => {
     if (document.getElementById('jasperV103SpriteCard')) return;
