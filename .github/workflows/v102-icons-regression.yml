@@ -1,0 +1,32 @@
+name: v1.0.2 Icons Regression
+
+on:
+  push:
+    branches: ["v1.0.2-icons-and-sprites"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Syntax check runtime modules
+        run: |
+          node --check icon-system.js
+          node --check pokedex-engine.js
+          node --check github-sync.js
+          node --check beta071.js
+          node --check theme-toggle.js
+          node --check mobile-overhaul-v133.js
+          node --check beta071-base.js
+          node --check beta1353-bugfix.js
+
+      - name: Run v1.0.2 icon regression
+        run: node tests/v102-icons-regression.mjs
