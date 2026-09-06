@@ -114,7 +114,7 @@
           <div id="mobileHeaderMoniker"></div>
         </div>
         <div id="mobileHeaderActions">
-          <button id="mobileDarkModePlaceholder" type="button" disabled aria-disabled="true" aria-label="Dark mode unavailable on Mobile" title="Dark mode is currently available on Desktop only">☾</button>
+          <button id="mobileDarkModePlaceholder" type="button" disabled aria-disabled="true" aria-label="Dark mode unavailable on Mobile" title="Dark mode is currently available on Desktop only"><span data-icon="moon-fill" data-icon-size="18"></span></button>
         </div>
       </div>`;
     document.body.insertBefore(header, document.body.firstChild);
@@ -150,7 +150,7 @@
     if (!isMobile() || document.getElementById('mobileProgressBanner')) return;
     const banner = document.createElement('div');
     banner.id = 'mobileProgressBanner';
-    banner.innerHTML = '<span class="mobile-progress-icon">i</span><span id="mobileProgressText"></span>';
+    banner.innerHTML = '<span class="mobile-progress-icon" data-icon="info-fill" data-icon-size="20"></span><span id="mobileProgressText"></span>';
     const header = document.getElementById('mobileHeader');
     if (header) header.appendChild(banner);
     updateProgress();
