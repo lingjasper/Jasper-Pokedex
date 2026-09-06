@@ -46,6 +46,18 @@ assert.equal(new Set(alphaRows.map(r => r.num)).size, 211, 'Alpha Sapphire must 
 assert.equal(alphaRows[0].num, '001');
 assert.equal(alphaRows.at(-1).num, '211');
 
+const sun = registry.games.find(g => g.id === 'pokemon-sun');
+assert.ok(sun?.enabled, 'Pokémon Sun must be enabled for v1.0.1 integration testing');
+assert.equal(sun.dataset, 'Sun');
+assert.equal(sun.dex, 'Sun.md');
+assert.equal(sun.save, 'saves/pokemon-sun.json');
+const sunRows = readRows('Pokedexes/Sun.md');
+assert.equal(sunRows.length, 314, 'Pokémon Sun dataset must contain 314 storage entries');
+assert.equal(new Set(sunRows.map(r => `${r.num}|${r.name}`)).size, sunRows.length, 'Pokémon Sun dataset contains duplicate entries');
+assert.equal(new Set(sunRows.map(r => r.num)).size, 302, 'Pokémon Sun must retain 302 numbered Dex slots');
+assert.equal(sunRows[0].num, '001');
+assert.equal(sunRows.at(-1).num, '302');
+
 const engine = fs.readFileSync('pokedex-engine.js', 'utf8');
 assert.match(engine, /jasper_pokedex_state_/);
 assert.match(engine, /pokemon-white-2/);
