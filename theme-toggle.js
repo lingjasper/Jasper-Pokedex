@@ -13,10 +13,11 @@
   const style = document.createElement('style'); style.textContent = `
     .checkbox{width:20px!important;height:20px!important;border:0!important;border-radius:0!important;background:transparent!important;padding:0!important;box-shadow:none!important}
     .checkbox::after{display:none!important;content:none!important}
-    .checkbox .jasper-icon{display:block;width:20px;height:20px}
+    .checkbox .jasper-icon{display:block;width:20px;height:20px;background:transparent!important}
     .checkbox{color:#cbd5e1}
-    .completed .checkbox{color:#10b981}
-    .bulk-pending .checkbox,.completed.bulk-pending .checkbox{color:#3b82f6}
+    .completed .checkbox{color:#10b981;background:transparent!important}
+    .bulk-pending .checkbox,.completed.bulk-pending .checkbox{color:#3b82f6;background:transparent!important}
+    .checkbox .jasper-icon,.checkbox .jasper-icon *{background:transparent!important}
     #jasperThemeToggle{display:none}
     #jasperThemeToggle .jasper-icon,#mobileDarkModePlaceholder .jasper-icon{display:block;width:18px;height:18px}
     @media (min-width:769px){#jasperThemeToggle{display:inline-flex;position:static;flex:0 0 34px;width:34px;height:34px;align-items:center;justify-content:center;padding:0;border:1px solid var(--color-border);border-radius:999px;background:var(--color-surface-elevated);color:var(--color-text-primary);box-shadow:0 2px 8px var(--color-shadow);line-height:1;cursor:pointer}#jasperThemeToggle:hover{border-color:var(--color-border-strong);background:var(--color-dropdown)}#jasperThemeToggle:focus-visible{outline:2px solid var(--color-focus);outline-offset:2px}#desktopWorkspaceTop{gap:14px!important}#desktopWorkspaceTitle{height:34px!important;line-height:1.5!important;display:flex!important;align-items:center!important;box-sizing:border-box!important}}
