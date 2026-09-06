@@ -53,7 +53,7 @@
       .pokemon-card .pokemon-name-frame { align-items:center; }
       .pokemon-card .pokemon-dex-num { position:absolute; left:0; bottom:0; }
       .pokemon-card .pokemon-form { position:absolute; right:0; bottom:0; }
-      .pokemon-card .pokemon-sprite { width:68px; height:56px; left:21px; right:auto; top:1px; image-rendering:pixelated; }
+      .pokemon-card .pokemon-sprite { width:68px; height:56px; left:50%; right:auto; top:1px; transform:translateX(-50%); image-rendering:pixelated; }
       .pokemon-card.no-form .pokemon-dex-num { left:50%; right:auto; transform:translateX(-50%); }
     }
   `;
