@@ -4,6 +4,13 @@
   window.__JASPER_ICON_SYSTEM__ = true;
 
   const cache = new Map();
+  const applyThemeColors = root => {
+    const scope = root || document;
+    scope.querySelectorAll?.('.jasper-icon[data-icon-name="info-fill"]').forEach(svg => {
+      svg.style.setProperty('--info-icon-inner-fill', document.documentElement.dataset.theme === 'dark' ? '#343a46' : 'white');
+    });
+  };
+
   const load = name => {
     if (!cache.has(name)) {
       cache.set(name, fetch(`Icons/${encodeURIComponent(name)}.svg`, { cache: 'no-store' })
@@ -28,6 +35,7 @@
       if (size) { svg.style.width = `${size}px`; svg.style.height = `${size}px`; }
       if (target.dataset.iconClass) target.dataset.iconClass.split(/\s+/).filter(Boolean).forEach(c => svg.classList.add(c));
       if (target.isConnected) target.replaceWith(svg);
+      if (name === 'info-fill') applyThemeColors(svg.parentElement || document);
     } catch (error) {
       target.dataset.iconError = 'true';
       console.warn(error);
@@ -38,6 +46,7 @@
     const scope = root || document;
     if (scope.nodeType === 1 && scope.matches('[data-icon]:not([data-icon-mounted])')) mount(scope);
     scope.querySelectorAll('[data-icon]:not([data-icon-mounted])').forEach(mount);
+    applyThemeColors(scope);
   };
 
   const set = async (target, name) => {
@@ -61,9 +70,13 @@
     }
   });
 
+  const themeObserver = new MutationObserver(() => applyThemeColors(document));
+
   const boot = () => {
     hydrate(document);
     if (document.body) observer.observe(document.body, { childList: true, subtree: true });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    applyThemeColors(document);
   };
 
   window.JASPER_ICONS = { load, mount, hydrate, set };
