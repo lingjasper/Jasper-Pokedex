@@ -25,10 +25,12 @@ for (const file of [
 
 assert.match(boot, /load\('icon-system\.js'/);
 assert.match(icons, /window\.JASPER_ICONS/);
+assert.match(icons, /if \(target\.isConnected\) target\.replaceWith\(svg\)/);
+assert.match(icons, /target\.replaceWith\(holder\);\s*return;/);
 assert.match(engine, /data-icon="box-fill"/);
 assert.match(engine, /data-icon="list-fill"/);
-assert.match(engine, /data-icon="check-fill"/);
-assert.match(engine, /data-icon="empty-circle"/);
+assert.match(engine, /data-icon="\$\{completed\?'check-fill':'empty-circle'\}"/);
+assert.match(engine, /const checkbox=\(completed=false\)/);
 assert.match(engine, /data-icon="clear-fill"/);
 assert.match(engine, /data-icon="info-fill"/);
 assert.doesNotMatch(engine, /b\.innerHTML='<svg/);
