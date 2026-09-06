@@ -65,7 +65,7 @@
     const parsed=parseName(card.dataset.name); if(!parsed.name)return;
     const dex=card.dataset.num || card.querySelector('.dex-num')?.textContent?.trim() || '';
     card.classList.add('pokemon-card', parsed.form ? 'has-form' : 'no-form');
-    card.innerHTML=`<span class="pokemon-card-text"><span class="pokemon-name-frame"><span class="name pokemon-name">${esc(parsed.name)}</span>${parsed.form?`<span class="form pokemon-form">(${esc(parsed.form)})</span>`:''}</span><span class="dex-num pokemon-dex-num">${esc(dex)}</span></span><img class="pokemon-sprite" alt="" aria-hidden="true" decoding="async" draggable="false">`;
+    card.innerHTML=`<span class="pokemon-card-text"><span class="pokemon-name-frame"><span class="name pokemon-name">${esc(parsed.name)}</span>${parsed.form?`<span class="form pokemon-form">${esc(parsed.form)}</span>`:''}</span><span class="dex-num pokemon-dex-num">${esc(dex)}</span></span><img class="pokemon-sprite" alt="" aria-hidden="true" decoding="async" draggable="false">`;
     await applySprite(card.querySelector('.pokemon-sprite'), parsed.name, parsed.form);
   };
   const upgrade=root=>root.querySelectorAll?.('.cell[data-id]:not(.empty):not(.pokemon-card)').forEach(renderCard);
