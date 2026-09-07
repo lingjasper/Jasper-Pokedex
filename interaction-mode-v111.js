@@ -32,10 +32,7 @@
   const rememberSyncState = () => {
     const pill = document.getElementById('githubSyncPill');
     if (!pill) return;
-    savedSyncState = {
-      label: pill.querySelector('.github-sync-label')?.textContent || 'Token Sync',
-      type: pill.dataset.state || 'normal'
-    };
+    savedSyncState = { label: pill.querySelector('.github-sync-label')?.textContent || 'Token Sync', type: pill.dataset.state || 'normal' };
   };
 
   const installMobilePokedexSheet = () => {
@@ -119,6 +116,16 @@
         .mobile-pokedex-sheet-content .jasper-api-card ul { margin:5px 0 0; padding-left:17px; font-size:12px; line-height:1.5; }
         .mobile-pokedex-sheet-content .jasper-api-card li+li { margin-top:4px; }
         .mobile-pokedex-sheet-content .jasper-api-list-label { margin-top:9px; font-size:12px; font-weight:700; }
+
+        /* Mobile Pokédex Sheet Dark SOT mirrors the Desktop Right Sidebar theme. */
+        html[data-theme="dark"] #mobilePokedexBackdrop { background:rgba(0,0,0,.52); }
+        html[data-theme="dark"] #mobilePokedexSheet { background:#181a20; color:#f5f7fa; border-color:#454c59; box-shadow:0 -8px 28px rgba(0,0,0,.32); }
+        html[data-theme="dark"] .mobile-pokedex-sheet-header { border-bottom-color:#303640; }
+        html[data-theme="dark"] .mobile-pokedex-sheet-handle { background:#454c59; }
+        html[data-theme="dark"] .mobile-pokedex-sheet-close { border-color:#454c59; background:#242831; color:#c5cad3; }
+        html[data-theme="dark"] .mobile-pokedex-sheet-close:hover { background:#203b63; color:#f5f7fa; }
+        html[data-theme="dark"] .mobile-pokedex-sheet-content .jasper-api-card { border-color:rgba(100,116,139,.28); background:rgba(148,163,184,.04); }
+        html[data-theme="dark"] .mobile-pokedex-sheet-content .jasper-api-row+.jasper-api-row { border-top-color:rgba(100,116,139,.16); }
       }
       @media (prefers-reduced-motion: reduce) { body.jasper-bulk-mode .pokemon-card .pokemon-sprite { animation:none!important; } }
     `;
