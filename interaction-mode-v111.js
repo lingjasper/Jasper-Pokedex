@@ -1,6 +1,5 @@
 (() => {
   'use strict';
-
   const isMobile = () => window.matchMedia('(max-width:640px)').matches;
   const isBulkMode = () => document.getElementById('bulkModeToggle')?.checked === true;
   const clearPokedexSelection = () => {
@@ -46,11 +45,12 @@
       #bulkModeSection .bulk-separator { display:none!important; }
       #bulkModeSection .bulk-toggle-row { display:flex; align-items:center; gap:8px; cursor:pointer; }
       #bulkModeSection .bulk-toggle-row > span { display:none!important; }
-      #bulkModeSection .bulk-toggle-row::before { content:'Manage PC'; display:inline-flex; align-items:center; justify-content:center; min-height:34px; padding:0 12px; border:1px solid var(--color-border,#cbd5e1); border-radius:999px; background:var(--color-surface-elevated,#fff); color:var(--color-text-primary,#475569); font:600 .75rem inherit; box-shadow:0 2px 8px var(--color-shadow,rgba(15,23,42,.08)); }
+      #bulkModeSection .bulk-toggle-row::before { content:''; display:inline-flex; align-items:center; justify-content:center; width:34px; min-width:34px; height:34px; min-height:34px; box-sizing:border-box; padding:0; border:1px solid var(--color-border,#cbd5e1); border-radius:999px; background-color:var(--color-surface-elevated,#fff); background-image:url('Icons/pokeball.svg'); background-repeat:no-repeat; background-position:center; background-size:20px 20px; color:var(--color-text-primary,#475569); box-shadow:0 2px 8px var(--color-shadow,rgba(15,23,42,.08)); }
       #bulkModeToggle { position:absolute; opacity:0; width:1px; height:1px; pointer-events:none; }
-      #bulkModeSection:has(#bulkModeToggle:checked) .bulk-toggle-row::before { border-color:var(--color-accent,#5b9cff); background:var(--color-selection,#eff6ff); color:var(--color-text-primary,#1d4ed8); }
+      #bulkModeSection:has(#bulkModeToggle:checked) .bulk-toggle-row::before { border-color:var(--color-accent,#5b9cff); background-color:var(--color-selection,#eff6ff); }
       #bulkPendingCount { display:none!important; }
       #desktopWorkspaceTop #bulkModeSection { position:relative; }
+      #bulkActions .bulk-banner-icon { content:url('Icons/pokeball.svg'); }
       @keyframes jasperBulkPokemonJumpDesktop {
         0%,100% { translate:0 0; }
         50% { translate:0 -2px; }
@@ -99,15 +99,12 @@
 
   const openFromEntry = entry => {
     if (!entry || entry.classList.contains('empty') || isBulkMode()) return;
-
     const activeCard = document.querySelector('#boxContainer .pokemon-card.pokedex-active');
     const sameCard = entry.classList.contains('pokemon-card') && entry === activeCard;
-
     if (sameCard) {
       clearPokedexSelection();
       return;
     }
-
     clearPokedexSelection();
     if (entry.classList.contains('pokemon-card')) entry.classList.add('pokedex-active');
     window.JASPER_POKEDEX_UI?.open?.(entry);
@@ -116,7 +113,6 @@
   const installInteraction = () => {
     if (document.documentElement.dataset.jasperV111InteractionBound === 'true') return;
     document.documentElement.dataset.jasperV111InteractionBound = 'true';
-
     document.addEventListener('click', event => {
       const toggle = event.target.closest('#bulkModeToggle');
       if (toggle) {
@@ -132,7 +128,6 @@
       event.stopPropagation();
       openFromEntry(entry);
     }, true);
-
     document.addEventListener('keydown', event => {
       if (event.key !== 'Enter' && event.key !== ' ') return;
       const entry = event.target.closest?.('#boxContainer .pokemon-card:not(.empty),#listContainer .list-row[data-id],#searchResults .search-result-item[data-id]');
@@ -141,7 +136,6 @@
       event.stopPropagation();
       openFromEntry(entry);
     }, true);
-
     document.addEventListener('change', event => {
       if (event.target.id === 'bulkModeToggle') {
         if (event.target.checked) rememberSyncState(), clearPokedexSelection();
@@ -161,7 +155,6 @@
   };
 
   window.JASPER_COLLECTION_MODE = { isBulk: isBulkMode, open: openFromEntry, closePokedex: clearPokedexSelection };
-
   const start = () => { installStyles(); installSyncGuard(); installInteraction(); observeUI(); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
   else start();
