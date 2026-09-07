@@ -82,6 +82,17 @@
 
   const openFromEntry = entry => {
     if (!entry || entry.classList.contains('empty') || isBulkMode()) return;
+
+    const activeCard = document.querySelector('#boxContainer .pokemon-card.pokedex-active');
+    const sameCard = entry.classList.contains('pokemon-card') && entry === activeCard;
+
+    // Clicking the already-inspected Pokémon toggles the Pokédex off.
+    if (sameCard) {
+      closePokedex();
+      return;
+    }
+
+    // Opening another Pokémon always clears the previous active state first.
     closePokedex();
     if (entry.classList.contains('pokemon-card')) entry.classList.add('pokedex-active');
     window.JASPER_POKEDEX_UI?.open?.(entry);
