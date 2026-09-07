@@ -19,6 +19,7 @@
       await loadScript('jasperPokeApi','pokeapi.js');
       await loadScript('jasperPokedexApiUi','pokedex-api-ui.js');
       await loadScript('jasperInteractionModeV111','interaction-mode-v111.js');
+      await loadScript('jasperBulkBannerV111','bulk-banner-v111.js');
     } catch (error) {
       console.error('[Jasper] Release script failed to load.',error);
     }
