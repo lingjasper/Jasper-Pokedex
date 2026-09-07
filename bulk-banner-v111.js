@@ -14,7 +14,8 @@
 
       #bulkModeBanner {
         display:flex;
-        width:100%;
+        width:1312px;
+        max-width:100%;
         height:44px;
         box-sizing:border-box;
         padding:6px 17px 6px 5px;
@@ -65,9 +66,6 @@
       #bulkModeBanner .bulk-banner-divider { opacity:.75; }
       #bulkModeBanner button:disabled { opacity:.5; cursor:not-allowed; }
 
-      @media (min-width:641px) {
-        #bulkModeBanner { width:100%; }
-      }
       @media (max-width:640px) {
         #bulkModeBanner {
           width:100%;
