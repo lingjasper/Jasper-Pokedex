@@ -19,11 +19,21 @@
     s.defer = true;
     document.head.appendChild(s);
   };
+  const loadPokeApi = () => {
+    if (document.getElementById('jasperPokeApi')) return;
+    const s = document.createElement('script');
+    s.id = 'jasperPokeApi';
+    s.src = 'pokeapi.js';
+    s.defer = true;
+    document.head.appendChild(s);
+  };
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', load, { once: true });
     document.addEventListener('DOMContentLoaded', loadPokedexOverlay, { once: true });
+    document.addEventListener('DOMContentLoaded', loadPokeApi, { once: true });
   } else {
     load();
     loadPokedexOverlay();
+    loadPokeApi();
   }
 })();
