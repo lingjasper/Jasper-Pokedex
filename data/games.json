@@ -4,7 +4,7 @@
   "games": [
     { "id": "pokemon-waves", "name": "Pokémon Waves", "generation": 10, "enabled": false, "visible": false, "icon": "Unknown.png" },
     { "id": "pokemon-winds", "name": "Pokémon Winds", "generation": 10, "enabled": false, "visible": false, "icon": "Unknown.png" },
-    { "id": "pokemon-legends-z-a", "name": "Pokémon Legends Z-A", "generation": 9, "enabled": false, "visible": true, "icon": "Unknown.png" },
+    { "id": "pokemon-legends-z-a", "name": "Pokémon Legends Z-A", "generation": 9, "enabled": false, "visible": true, "icon": "pokemon-legends-za.png" },
     { "id": "pokemon-violet", "name": "Pokémon Violet", "generation": 9, "enabled": false, "visible": false, "icon": "Unknown.png" },
     { "id": "pokemon-scarlet", "name": "Pokémon Scarlet", "generation": 9, "enabled": false, "visible": false, "icon": "Unknown.png" },
     { "id": "pokemon-legends-arceus", "name": "Pokémon Legends Arceus", "generation": 8, "enabled": false, "visible": false, "icon": "Unknown.png" },
