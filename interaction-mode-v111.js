@@ -32,10 +32,7 @@
   const rememberSyncState = () => {
     const pill = document.getElementById('githubSyncPill');
     if (!pill) return;
-    savedSyncState = {
-      label: pill.querySelector('.github-sync-label')?.textContent || 'Token Sync',
-      type: pill.dataset.state || 'normal'
-    };
+    savedSyncState = { label: pill.querySelector('.github-sync-label')?.textContent || 'Token Sync', type: pill.dataset.state || 'normal' };
   };
 
   const installMobilePokedexSheet = () => {
@@ -89,21 +86,17 @@
       #bulkPendingCount { display:none!important; }
       #desktopWorkspaceTop #bulkModeSection { position:relative; }
       #bulkActions .bulk-banner-icon { content:url('Icons/pokeball.svg'); }
-      @keyframes jasperBulkPokemonJumpDesktop {
-        0%,100% { translate:0 0; }
-        50% { translate:0 -2px; }
-      }
-      @keyframes jasperBulkPokemonJumpMobile {
-        0%,100% { translate:0 0; }
-        50% { translate:0 -1px; }
-      }
+      @keyframes jasperBulkPokemonJumpDesktop { 0%,100% { translate:0 0; } 50% { translate:0 -2px; } }
+      @keyframes jasperBulkPokemonJumpMobile { 0%,100% { translate:0 0; } 50% { translate:0 -1px; } }
       body.jasper-bulk-mode .pokemon-card .pokemon-sprite { animation:jasperBulkPokemonJumpDesktop .333s steps(2,end) infinite!important; }
       @media (max-width:640px) {
         #mobileHeader #bulkModeSection { position:relative; }
         #mobileHeader #mobileHeaderActions { gap:8px; }
         body.jasper-bulk-mode .pokemon-card .pokemon-sprite { animation:jasperBulkPokemonJumpMobile .333s steps(2,end) infinite!important; }
+        html[data-theme="dark"] #mobileHeader #bulkModeSection .bulk-toggle-row::before { border-color:#343A46; background-color:#242831; box-shadow:0 2px 8px rgba(0,0,0,.32); }
+        html[data-theme="dark"] #mobileHeader #bulkModeSection:has(#bulkModeToggle:checked) .bulk-toggle-row::before { border-color:#4979B6; background-color:#1D3150; }
         #mobilePokedexBackdrop { position:fixed; inset:0; background:rgba(15,23,42,.38); z-index:12900; }
-        #mobilePokedexSheet { position:fixed; left:0; right:0; bottom:0; z-index:13000; display:flex; flex-direction:column; max-height:85vh; min-height:30vh; box-sizing:border-box; overflow:hidden; background:var(--color-surface,#fff); color:var(--color-text-primary,#0f172a); border:1px solid var(--color-border-strong,#cbd5e1); border-bottom:0; border-radius:16px 16px 0 0; box-shadow:0 -8px 28px var(--color-shadow,rgba(15,23,42,.16)); }
+        #mobilePokedexSheet { position:fixed; left:0; right:0; bottom:0; z-index:13000; display:flex; flex-direction:column; width:100%; height:820px; min-height:820px; max-height:820px; box-sizing:border-box; overflow:hidden; background:var(--color-surface,#fff); color:var(--color-text-primary,#0f172a); border:1px solid var(--color-border-strong,#cbd5e1); border-bottom:0; border-radius:16px 16px 0 0; box-shadow:0 -8px 28px var(--color-shadow,rgba(15,23,42,.16)); }
         #mobilePokedexSheet[hidden],#mobilePokedexBackdrop[hidden] { display:none!important; }
         .mobile-pokedex-sheet-header { position:relative; display:flex; align-items:center; justify-content:center; flex:0 0 42px; padding:6px 12px; box-sizing:border-box; border-bottom:1px solid var(--color-separator,#e5e7eb); }
         .mobile-pokedex-sheet-handle { width:36px; height:4px; border-radius:999px; background:var(--color-border-strong,#cbd5e1); }
@@ -123,10 +116,18 @@
         .mobile-pokedex-sheet-content .jasper-api-card ul { margin:5px 0 0; padding-left:17px; font-size:12px; line-height:1.5; }
         .mobile-pokedex-sheet-content .jasper-api-card li+li { margin-top:4px; }
         .mobile-pokedex-sheet-content .jasper-api-list-label { margin-top:9px; font-size:12px; font-weight:700; }
+
+        /* Mobile Pokédex Sheet Dark SOT mirrors the Desktop Right Sidebar theme. */
+        html[data-theme="dark"] #mobilePokedexBackdrop { background:rgba(0,0,0,.52); }
+        html[data-theme="dark"] #mobilePokedexSheet { background:#181a20; color:#f5f7fa; border-color:#454c59; box-shadow:0 -8px 28px rgba(0,0,0,.32); }
+        html[data-theme="dark"] .mobile-pokedex-sheet-header { border-bottom-color:#303640; }
+        html[data-theme="dark"] .mobile-pokedex-sheet-handle { background:#454c59; }
+        html[data-theme="dark"] .mobile-pokedex-sheet-close { border-color:#454c59; background:#242831; color:#c5cad3; }
+        html[data-theme="dark"] .mobile-pokedex-sheet-close:hover { background:#203b63; color:#f5f7fa; }
+        html[data-theme="dark"] .mobile-pokedex-sheet-content .jasper-api-card { border-color:rgba(100,116,139,.28); background:rgba(148,163,184,.04); }
+        html[data-theme="dark"] .mobile-pokedex-sheet-content .jasper-api-row+.jasper-api-row { border-top-color:rgba(100,116,139,.16); }
       }
-      @media (prefers-reduced-motion: reduce) {
-        body.jasper-bulk-mode .pokemon-card .pokemon-sprite { animation:none!important; }
-      }
+      @media (prefers-reduced-motion: reduce) { body.jasper-bulk-mode .pokemon-card .pokemon-sprite { animation:none!important; } }
     `;
     document.head.appendChild(style);
   };
@@ -134,17 +135,13 @@
   const placeBulk = () => {
     const section = document.getElementById('bulkModeSection');
     if (!section) return false;
-    const target = isMobile()
-      ? document.querySelector('#mobileHeader #mobileHeaderActions')
-      : document.getElementById('desktopWorkspaceTop');
+    const target = isMobile() ? document.querySelector('#mobileHeader #mobileHeaderActions') : document.getElementById('desktopWorkspaceTop');
     if (!target) return false;
     const sync = document.getElementById('githubSyncWrap');
     if (section.parentElement !== target) {
       if (sync && sync.parentElement === target) target.insertBefore(section, sync);
       else target.appendChild(section);
-    } else if (sync && sync.parentElement === target && section.nextElementSibling !== sync) {
-      target.insertBefore(section, sync);
-    }
+    } else if (sync && sync.parentElement === target && section.nextElementSibling !== sync) target.insertBefore(section, sync);
     return true;
   };
 
@@ -160,10 +157,7 @@
     if (!entry || entry.classList.contains('empty') || isBulkMode()) return;
     const activeCard = document.querySelector('#boxContainer .pokemon-card.pokedex-active');
     const sameCard = entry.classList.contains('pokemon-card') && entry === activeCard;
-    if (sameCard) {
-      clearPokedexSelection();
-      return;
-    }
+    if (sameCard) { clearPokedexSelection(); return; }
     clearPokedexSelection();
     if (entry.classList.contains('pokemon-card')) entry.classList.add('pokedex-active');
     window.JASPER_POKEDEX_UI?.open?.(entry);
@@ -175,33 +169,20 @@
     document.documentElement.dataset.jasperV111InteractionBound = 'true';
     document.addEventListener('click', event => {
       const toggle = event.target.closest('#bulkModeToggle');
-      if (toggle) {
-        if (toggle.checked) rememberSyncState(), clearPokedexSelection();
-        else savedSyncState = null;
-        setTimeout(() => { applyModeState(); placeBulk(); }, 0);
-        return;
-      }
+      if (toggle) { if (toggle.checked) rememberSyncState(), clearPokedexSelection(); else savedSyncState = null; setTimeout(() => { applyModeState(); placeBulk(); }, 0); return; }
       if (event.target.closest('.search-jump')) return;
       const entry = event.target.closest('#boxContainer .pokemon-card:not(.empty),#boxContainer .cell[data-id]:not(.empty),#listContainer .list-row[data-id],#searchResults .search-result-item[data-id]');
       if (!entry || isBulkMode()) return;
-      event.preventDefault();
-      event.stopPropagation();
-      openFromEntry(entry);
+      event.preventDefault(); event.stopPropagation(); openFromEntry(entry);
     }, true);
     document.addEventListener('keydown', event => {
       if (event.key !== 'Enter' && event.key !== ' ') return;
       const entry = event.target.closest?.('#boxContainer .pokemon-card:not(.empty),#listContainer .list-row[data-id],#searchResults .search-result-item[data-id]');
       if (!entry || isBulkMode() || event.target.closest('.search-jump')) return;
-      event.preventDefault();
-      event.stopPropagation();
-      openFromEntry(entry);
+      event.preventDefault(); event.stopPropagation(); openFromEntry(entry);
     }, true);
     document.addEventListener('change', event => {
-      if (event.target.id === 'bulkModeToggle') {
-        if (event.target.checked) rememberSyncState(), clearPokedexSelection();
-        else savedSyncState = null;
-        setTimeout(() => { applyModeState(); placeBulk(); }, 0);
-      }
+      if (event.target.id === 'bulkModeToggle') { if (event.target.checked) rememberSyncState(), clearPokedexSelection(); else savedSyncState = null; setTimeout(() => { applyModeState(); placeBulk(); }, 0); }
     }, true);
   };
 
