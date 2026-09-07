@@ -138,7 +138,7 @@
     border-radius: 6px !important;
   }
   html[data-theme="dark"] .desktop-title-tabs .game-nav-button:hover:not(:disabled):not(.active) {
-    background: #242831 !important;
+    background: #1D3150 !important;
     color: #f8fafc !important;
     border-color: #4979B6 !important;
   }
