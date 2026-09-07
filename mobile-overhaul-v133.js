@@ -119,11 +119,12 @@
       </div>`;
     document.body.insertBefore(header, document.body.firstChild);
 
-    const sync = document.getElementById('githubSyncWrap');
-    if (sync) header.querySelector('#mobileHeaderActions').appendChild(sync);
-
+    const actions = header.querySelector('#mobileHeaderActions');
     const tabs = document.querySelector('.tabs-container');
-    if (tabs) header.querySelector('#mobileHeaderActions').appendChild(tabs);
+    if (tabs) actions.appendChild(tabs);
+
+    const sync = document.getElementById('githubSyncWrap');
+    if (sync) actions.appendChild(sync);
 
     updateMoniker();
   };
