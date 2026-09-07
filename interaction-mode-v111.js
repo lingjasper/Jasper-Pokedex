@@ -46,7 +46,7 @@
       #bulkModeSection .bulk-separator { display:none!important; }
       #bulkModeSection .bulk-toggle-row { display:flex; align-items:center; gap:8px; cursor:pointer; }
       #bulkModeSection .bulk-toggle-row > span { display:none!important; }
-      #bulkModeSection .bulk-toggle-row::before { content:'Manage PC'; display:inline-flex; align-items:center; justify-content:center; min-height:34px; padding:0 12px; border:1px solid var(--color-border,#cbd5e1); border-radius:999px; background:var(--color-surface-elevated,#fff); color:var(--color-text-primary,#475569); font:600 .82rem inherit; box-shadow:0 2px 8px var(--color-shadow,rgba(15,23,42,.08)); }
+      #bulkModeSection .bulk-toggle-row::before { content:'Manage PC'; display:inline-flex; align-items:center; justify-content:center; min-height:34px; padding:0 12px; border:1px solid var(--color-border,#cbd5e1); border-radius:999px; background:var(--color-surface-elevated,#fff); color:var(--color-text-primary,#475569); font:600 .75rem inherit; box-shadow:0 2px 8px var(--color-shadow,rgba(15,23,42,.08)); }
       #bulkModeToggle { position:absolute; opacity:0; width:1px; height:1px; pointer-events:none; }
       #bulkModeSection:has(#bulkModeToggle:checked) .bulk-toggle-row::before { border-color:var(--color-accent,#5b9cff); background:var(--color-selection,#eff6ff); color:var(--color-text-primary,#1d4ed8); }
       #bulkPendingCount { display:none!important; }
