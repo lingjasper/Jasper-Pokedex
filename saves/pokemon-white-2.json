@@ -1,7 +1,7 @@
 {
   "version": 1,
   "gameId": "pokemon-white-2",
-  "updatedAt": "2026-09-07T05:22:37.906Z",
+  "updatedAt": "2026-09-07T05:41:26.184Z",
   "pokemon": {
     "102-darumaka": true,
     "103-darmanitan": true,
@@ -130,7 +130,7 @@
     "008-dewott": true,
     "014-pidove": true,
     "009-samurott": true,
-    "007-oshawott": true,
+    "007-oshawott": false,
     "015-tranquill": true,
     "000-victini": false,
     "091-eevee": true,
