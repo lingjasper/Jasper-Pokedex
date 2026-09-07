@@ -51,9 +51,22 @@
       #bulkModeSection:has(#bulkModeToggle:checked) .bulk-toggle-row::before { border-color:var(--color-accent,#5b9cff); background:var(--color-selection,#eff6ff); color:var(--color-text-primary,#1d4ed8); }
       #bulkPendingCount { display:none!important; }
       #desktopWorkspaceTop #bulkModeSection { position:relative; }
+      @keyframes jasperBulkPokemonJumpDesktop {
+        0%,100% { translate:0 0; }
+        50% { translate:0 -2px; }
+      }
+      @keyframes jasperBulkPokemonJumpMobile {
+        0%,100% { translate:0 0; }
+        50% { translate:0 -1px; }
+      }
+      body.jasper-bulk-mode .pokemon-card .pokemon-sprite { animation:jasperBulkPokemonJumpDesktop .333s steps(2,end) infinite!important; }
       @media (max-width:640px) {
         #mobileHeader #bulkModeSection { position:relative; }
         #mobileHeader #mobileHeaderActions { gap:8px; }
+        body.jasper-bulk-mode .pokemon-card .pokemon-sprite { animation:jasperBulkPokemonJumpMobile .333s steps(2,end) infinite!important; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        body.jasper-bulk-mode .pokemon-card .pokemon-sprite { animation:none!important; }
       }
     `;
     document.head.appendChild(style);
