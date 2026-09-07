@@ -16,9 +16,9 @@
   const start = async () => {
     try {
       await loadScript('jasperV103SpriteCard','sprite-card-v103.js');
-      await loadScript('jasperPokedexButtonOverlay','pokedex-button-overlay.js');
       await loadScript('jasperPokeApi','pokeapi.js');
       await loadScript('jasperPokedexApiUi','pokedex-api-ui.js');
+      await loadScript('jasperInteractionModeV111','interaction-mode-v111.js');
     } catch (error) {
       console.error('[Jasper] Release script failed to load.',error);
     }
