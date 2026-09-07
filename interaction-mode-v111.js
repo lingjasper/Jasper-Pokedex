@@ -83,6 +83,7 @@
   const openFromEntry = entry => {
     if (!entry || entry.classList.contains('empty') || isBulkMode()) return;
     closePokedex();
+    if (entry.classList.contains('pokemon-card')) entry.classList.add('pokedex-active');
     window.JASPER_POKEDEX_UI?.open?.(entry);
   };
 
