@@ -183,7 +183,7 @@
       }
       html[data-theme="dark"] .desktop-title-tabs .game-nav-button:hover:not(:disabled):not(.active) {
         border-color:#4979B6;
-        background:#242831;
+        background:#1D3150;
       }
       html[data-theme="dark"] .desktop-title-tabs .game-nav-button.active,
       html[data-theme="dark"] .desktop-title-tabs .game-nav-button.active:hover {
