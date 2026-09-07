@@ -220,6 +220,7 @@
     }))).observe(target,{childList:true,subtree:true});
     upgrade(document);
     bindPokedex();
+    window.addEventListener('jasper:pokedex-game-changed',closePokedex);
   };
 
   window.JASPER_SPRITES={resolve,apply:applySprite};
