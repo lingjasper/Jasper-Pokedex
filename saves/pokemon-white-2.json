@@ -1,7 +1,7 @@
 {
   "version": 1,
   "gameId": "pokemon-white-2",
-  "updatedAt": "2026-09-06T23:57:21.436Z",
+  "updatedAt": "2026-09-07T05:22:37.906Z",
   "pokemon": {
     "102-darumaka": true,
     "103-darmanitan": true,
@@ -141,7 +141,7 @@
     "012-purrloin": true,
     "013-liepard": true,
     "020-sunkern": true,
-    "022-lillipup": true,
+    "022-lillipup": false,
     "023-herdier": true,
     "025-mareep": true,
     "029-golduck": true,
