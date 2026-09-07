@@ -27,13 +27,23 @@
     s.defer = true;
     document.head.appendChild(s);
   };
+  const loadPokedexApiUi = () => {
+    if (document.getElementById('jasperPokedexApiUi')) return;
+    const s = document.createElement('script');
+    s.id = 'jasperPokedexApiUi';
+    s.src = 'pokedex-api-ui.js';
+    s.defer = true;
+    document.head.appendChild(s);
+  };
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', load, { once: true });
     document.addEventListener('DOMContentLoaded', loadPokedexOverlay, { once: true });
     document.addEventListener('DOMContentLoaded', loadPokeApi, { once: true });
+    document.addEventListener('DOMContentLoaded', loadPokedexApiUi, { once: true });
   } else {
     load();
     loadPokedexOverlay();
     loadPokeApi();
+    loadPokedexApiUi();
   }
 })();
