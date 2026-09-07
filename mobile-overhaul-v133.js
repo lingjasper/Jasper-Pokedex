@@ -50,6 +50,14 @@
         #mobileDarkModePlaceholder { width:34px; height:34px; flex:0 0 34px; display:inline-flex; align-items:center; justify-content:center; padding:0; border:1px solid #cbd5e1; border-radius:999px; background:#f8fafc; color:#94a3b8; font-size:17px; line-height:1; cursor:not-allowed; opacity:.58; }
         #mobileHeader #githubSyncWrap { position:relative!important; top:auto!important; right:auto!important; flex:0 0 auto; }
         #mobileHeader #githubSyncPill { white-space:nowrap; }
+        #mobileCartridgeWrap { position:relative; flex:0 0 auto; z-index:13000; }
+        #mobileCartridgeButton { width:34px; height:34px; flex:0 0 34px; display:inline-flex; align-items:center; justify-content:center; padding:0; border:1px solid #cbd5e1; border-radius:999px; background:#fff; color:#475569; box-shadow:0 1px 3px rgba(15,23,42,.08); cursor:pointer; }
+        #mobileCartridgeButton img { width:20px; height:20px; display:block; object-fit:contain; }
+        #mobileCartridgeButton[aria-expanded="true"] { border-color:#60A5FA; background:#EFF6FF; }
+        #mobileCartridgeMenu { display:none; position:fixed; top:58px; left:8px; right:8px; width:auto; max-width:none; box-sizing:border-box; padding:12px; background:#fff; color:#0f172a; border:1px solid #cbd5e1; border-radius:12px; box-shadow:0 16px 36px rgba(15,23,42,.2); z-index:13000; }
+        #mobileCartridgeWrap.open #mobileCartridgeMenu { display:block; }
+        #mobileCartridgeMenu .tabs-container { width:100%!important; display:flex!important; flex-direction:column!important; align-items:stretch!important; flex-wrap:nowrap!important; overflow:visible!important; padding:0!important; margin:0!important; gap:8px!important; }
+        #mobileCartridgeMenu .tabs-container .tab-btn { width:100%!important; min-width:0!important; flex:0 0 auto!important; }
 
         .tabs-container {
           width:100%!important;
@@ -66,7 +74,7 @@
         }
         .tabs-container .tab-btn { flex:0 0 auto!important; white-space:nowrap!important; }
 
-        #mobileProgressBanner { display:flex; align-items:center; gap:10px; width:100%; box-sizing:border-box; margin:0 0 14px; padding:11px 12px; background:#fff; border:1px solid #cbd5e1; border-radius:10px; box-shadow:0 2px 5px rgba(15,23,42,.05); color:#475569; font-size:.78rem; font-weight:600; }
+        #mobileProgressBanner { display:flex; align-items:center; gap:10px; width:100%; box-sizing:border-box; margin:14px 0 14px; padding:11px 12px; background:#fff; border:1px solid #cbd5e1; border-radius:10px; box-shadow:0 2px 5px rgba(15,23,42,.05); color:#475569; font-size:.78rem; font-weight:600; }
         #mobileProgressBanner .mobile-progress-icon { width:20px; height:20px; flex:0 0 20px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:#e2e8f0; color:#475569; font-size:.75rem; font-weight:800; }
         #mobileProgressBanner .mobile-progress-icon .jasper-icon { width:20px!important; height:20px!important; display:block; color:#475569!important; }
         #mobileProgressBanner .mobile-progress-icon .jasper-icon { --info-icon-inner-fill: white; }
@@ -99,6 +107,25 @@
         #boxContainer .cell .name .form { display:block!important; }
         #boxContainer .cell { gap:0!important; }
       }
+
+      @media (max-width:640px) {
+        html[data-theme="dark"] #mobileCartridgeButton,
+        html[data-theme="dark"] #mobileDarkModePlaceholder {
+          border-color:#343A46;
+          background:#242831;
+          color:#f5f7fa;
+        }
+        html[data-theme="dark"] #mobileCartridgeButton[aria-expanded="true"] {
+          border-color:#4979B6;
+          background:#1D3150;
+        }
+        html[data-theme="dark"] #mobileCartridgeMenu {
+          background:#242831;
+          color:#f5f7fa;
+          border-color:#454C59;
+          box-shadow:0 16px 36px rgba(0,0,0,.32);
+        }
+      }
     `;
     document.head.appendChild(style);
   };
@@ -120,11 +147,29 @@
     document.body.insertBefore(header, document.body.firstChild);
 
     const actions = header.querySelector('#mobileHeaderActions');
+    const cartridge = document.createElement('div');
+    cartridge.id = 'mobileCartridgeWrap';
+    cartridge.innerHTML = '<button id="mobileCartridgeButton" type="button" aria-expanded="false" aria-controls="mobileCartridgeMenu" aria-label="Choose game"><img src="Icons/Cartridge.svg" alt=""></button><div id="mobileCartridgeMenu" role="menu"></div>';
+    actions.appendChild(cartridge);
+
     const tabs = document.querySelector('.tabs-container');
-    if (tabs) actions.appendChild(tabs);
+    if (tabs) cartridge.querySelector('#mobileCartridgeMenu').appendChild(tabs);
 
     const sync = document.getElementById('githubSyncWrap');
     if (sync) actions.appendChild(sync);
+
+    const button = cartridge.querySelector('#mobileCartridgeButton');
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      const open = cartridge.classList.toggle('open');
+      button.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('click', event => {
+      if (!cartridge.contains(event.target)) {
+        cartridge.classList.remove('open');
+        button.setAttribute('aria-expanded', 'false');
+      }
+    });
 
     updateMoniker();
   };
