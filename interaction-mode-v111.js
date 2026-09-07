@@ -103,7 +103,7 @@
         #mobileHeader #mobileHeaderActions { gap:8px; }
         body.jasper-bulk-mode .pokemon-card .pokemon-sprite { animation:jasperBulkPokemonJumpMobile .333s steps(2,end) infinite!important; }
         #mobilePokedexBackdrop { position:fixed; inset:0; background:rgba(15,23,42,.38); z-index:12900; }
-        #mobilePokedexSheet { position:fixed; left:0; right:0; bottom:0; z-index:13000; display:flex; flex-direction:column; max-height:85vh; min-height:30vh; box-sizing:border-box; overflow:hidden; background:var(--color-surface,#fff); color:var(--color-text-primary,#0f172a); border:1px solid var(--color-border-strong,#cbd5e1); border-bottom:0; border-radius:16px 16px 0 0; box-shadow:0 -8px 28px var(--color-shadow,rgba(15,23,42,.16)); }
+        #mobilePokedexSheet { position:fixed; left:0; right:0; bottom:0; z-index:13000; display:flex; flex-direction:column; width:100%; height:820px; min-height:820px; max-height:820px; box-sizing:border-box; overflow:hidden; background:var(--color-surface,#fff); color:var(--color-text-primary,#0f172a); border:1px solid var(--color-border-strong,#cbd5e1); border-bottom:0; border-radius:16px 16px 0 0; box-shadow:0 -8px 28px var(--color-shadow,rgba(15,23,42,.16)); }
         #mobilePokedexSheet[hidden],#mobilePokedexBackdrop[hidden] { display:none!important; }
         .mobile-pokedex-sheet-header { position:relative; display:flex; align-items:center; justify-content:center; flex:0 0 42px; padding:6px 12px; box-sizing:border-box; border-bottom:1px solid var(--color-separator,#e5e7eb); }
         .mobile-pokedex-sheet-handle { width:36px; height:4px; border-radius:999px; background:var(--color-border-strong,#cbd5e1); }
