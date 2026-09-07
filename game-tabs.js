@@ -31,11 +31,12 @@
       <span class="game-name">${escapeHtml(game.name || game.id)}</span>
     </button>`;
 
-  const renderDesktop = container => {
-    const games = VISIBLE_GAMES
-      .map(id => registry.games.find(game => game && game.id === id))
-      .filter(Boolean);
+  const getGames = () => VISIBLE_GAMES
+    .map(id => registry.games.find(game => game && game.id === id))
+    .filter(Boolean);
 
+  const renderDesktop = container => {
+    const games = getGames();
     container.className = 'tabs-container game-navigation';
     container.innerHTML = `
       <div class="game-navigation-scroll">
@@ -46,11 +47,32 @@
   };
 
   const renderMobile = container => {
-    const games = VISIBLE_GAMES
-      .map(id => registry.games.find(game => game && game.id === id))
-      .filter(Boolean);
-    container.className = 'tabs-container';
-    container.innerHTML = games.map(renderGame).join('');
+    const games = getGames();
+    container.className = 'tabs-container mobile-game-navigation';
+    container.innerHTML = `
+      <button class="mobile-game-selector" type="button" aria-expanded="false" aria-controls="mobileGameMenu">
+        <img class="mobile-game-selector-icon" src="Icons/Cartridge.svg" width="20" height="20" alt="">
+        <span class="mobile-game-selector-label">Games</span>
+        <span class="mobile-game-selector-chevron" aria-hidden="true">⌄</span>
+      </button>
+      <div id="mobileGameMenu" class="mobile-game-menu" hidden>
+        ${games.map(renderGame).join('')}
+      </div>`;
+
+    const selector = container.querySelector('.mobile-game-selector');
+    const menu = container.querySelector('#mobileGameMenu');
+    selector?.addEventListener('click', event => {
+      event.stopPropagation();
+      const open = selector.getAttribute('aria-expanded') === 'true';
+      selector.setAttribute('aria-expanded', open ? 'false' : 'true');
+      menu.hidden = open;
+    });
+    document.addEventListener('click', event => {
+      if (!container.contains(event.target)) {
+        selector?.setAttribute('aria-expanded', 'false');
+        if (menu) menu.hidden = true;
+      }
+    });
     syncActive();
   };
 
@@ -60,6 +82,11 @@
       const selected = button.dataset.game === active;
       button.classList.toggle('active', selected);
       button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    });
+    document.querySelectorAll('.mobile-game-navigation').forEach(container => {
+      const selected = container.querySelector('.tab-btn[data-game].active');
+      const label = container.querySelector('.mobile-game-selector-label');
+      if (label) label.textContent = selected?.querySelector('.game-name')?.textContent || 'Games';
     });
   };
 
@@ -200,13 +227,56 @@
     }
 
     @media (max-width:640px) {
-      .tabs-container {
-        gap:8px!important;
+      .tabs-container.mobile-game-navigation {
+        position:relative;
+        width:auto!important;
+        margin:0!important;
+        padding:0!important;
+        overflow:visible!important;
+        flex:0 0 34px!important;
       }
-      .tabs-container .tab-btn {
+      .mobile-game-selector {
+        width:34px;
+        height:34px;
+        min-width:34px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        position:relative;
+        padding:0;
+        border:1px solid #cbd5e1;
+        border-radius:999px;
+        background:#f8fafc;
+        color:#475569;
+        box-shadow:0 2px 8px rgba(15,23,42,.08);
+        cursor:pointer;
+      }
+      .mobile-game-selector-icon { width:20px; height:20px; display:block; }
+      .mobile-game-selector-label { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+      .mobile-game-selector-chevron { display:none; }
+      .mobile-game-selector[aria-expanded="true"] { border-color:#60A5FA; background:#EFF6FF; }
+      .mobile-game-menu {
+        position:absolute;
+        top:42px;
+        right:0;
+        z-index:12500;
+        display:flex;
+        flex-direction:column;
+        gap:8px;
+        width:229px;
+        padding:8px;
+        box-sizing:border-box;
+        border:1px solid #cbd5e1;
+        border-radius:10px;
+        background:#fff;
+        box-shadow:0 8px 24px rgba(15,23,42,.14);
+      }
+      .mobile-game-menu[hidden] { display:none!important; }
+      .mobile-game-menu .game-nav-button {
         display:flex;
         align-items:center;
         gap:8px;
+        width:100%;
         min-height:46px;
         padding:6px;
         border-radius:6px;
@@ -218,64 +288,22 @@
         font-weight:600;
         line-height:1.2;
         cursor:pointer;
+        text-align:left;
       }
-      .tabs-container .tab-btn:hover:not(:disabled):not(.active) {
-        border-color:#60A5FA;
-        background:#EFF6FF;
-      }
-      .tabs-container .tab-btn.active,
-      .tabs-container .tab-btn.active:hover {
-        border-color:#60A5FA;
-        background:linear-gradient(90deg,#2563EB 0%,#5B9CFF 100%);
-        color:#fff;
-      }
-      .tabs-container .tab-btn.disabled,
-      .tabs-container .tab-btn:disabled {
-        border-color:#CBD5E1;
-        background:#CACACA;
-        color:#64748b;
-        cursor:not-allowed;
-        opacity:1;
-      }
-      .tabs-container .game-icon {
-        width:32px;
-        height:32px;
-        flex:0 0 32px;
-        aspect-ratio:1/1;
-        object-fit:cover;
-        border-radius:4px;
-        border:2px solid #FFF;
-        background:#d3d3d3;
-        box-sizing:border-box;
-      }
-      .tabs-container .game-name {
-        min-width:0;
-        overflow:hidden;
-        text-overflow:ellipsis;
-        white-space:nowrap;
-      }
-      /* Mobile follows the established light SOT, including when data-theme="dark" is present. */
-      html[data-theme="dark"] .tabs-container .tab-btn {
-        border-color:#CBD5E1;
-        background:#F8FAFC;
-        color:#0f172a;
-      }
-      html[data-theme="dark"] .tabs-container .tab-btn:hover:not(:disabled):not(.active) {
-        border-color:#60A5FA;
-        background:#EFF6FF;
-      }
-      html[data-theme="dark"] .tabs-container .tab-btn.active,
-      html[data-theme="dark"] .tabs-container .tab-btn.active:hover {
-        border-color:#60A5FA;
-        background:linear-gradient(90deg,#2563EB 0%,#5B9CFF 100%);
-        color:#fff;
-      }
-      html[data-theme="dark"] .tabs-container .tab-btn.disabled,
-      html[data-theme="dark"] .tabs-container .tab-btn:disabled {
-        border-color:#CBD5E1;
-        background:#CACACA;
-        color:#64748b;
-      }
+      .mobile-game-menu .game-nav-button:hover:not(:disabled):not(.active) { border-color:#60A5FA; background:#EFF6FF; }
+      .mobile-game-menu .game-nav-button.active,
+      .mobile-game-menu .game-nav-button.active:hover { border-color:#60A5FA; background:linear-gradient(90deg,#2563EB 0%,#5B9CFF 100%); color:#fff; }
+      .mobile-game-menu .game-nav-button.disabled,
+      .mobile-game-menu .game-nav-button:disabled { border-color:#CBD5E1; background:#CACACA; color:#64748b; cursor:not-allowed; opacity:1; }
+      .mobile-game-menu .game-icon { width:32px; height:32px; flex:0 0 32px; aspect-ratio:1/1; object-fit:cover; border-radius:4px; border:2px solid #FFF; background:#d3d3d3; box-sizing:border-box; }
+      .mobile-game-menu .game-name { min-width:0; flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      html[data-theme="dark"] .mobile-game-menu { border-color:#cbd5e1; background:#fff; }
+      html[data-theme="dark"] .mobile-game-menu .game-nav-button { border-color:#CBD5E1; background:#F8FAFC; color:#0f172a; }
+      html[data-theme="dark"] .mobile-game-menu .game-nav-button:hover:not(:disabled):not(.active) { border-color:#60A5FA; background:#EFF6FF; }
+      html[data-theme="dark"] .mobile-game-menu .game-nav-button.active,
+      html[data-theme="dark"] .mobile-game-menu .game-nav-button.active:hover { border-color:#60A5FA; background:linear-gradient(90deg,#2563EB 0%,#5B9CFF 100%); color:#fff; }
+      html[data-theme="dark"] .mobile-game-menu .game-nav-button.disabled,
+      html[data-theme="dark"] .mobile-game-menu .game-nav-button:disabled { border-color:#CBD5E1; background:#CACACA; color:#64748b; }
     }
   `;
   document.head.appendChild(style);
