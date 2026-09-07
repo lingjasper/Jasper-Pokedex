@@ -11,6 +11,19 @@
     s.defer = true;
     document.head.appendChild(s);
   };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load, { once: true });
-  else load();
+  const loadPokedexOverlay = () => {
+    if (document.getElementById('jasperPokedexButtonOverlay')) return;
+    const s = document.createElement('script');
+    s.id = 'jasperPokedexButtonOverlay';
+    s.src = 'pokedex-button-overlay.js';
+    s.defer = true;
+    document.head.appendChild(s);
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', load, { once: true });
+    document.addEventListener('DOMContentLoaded', loadPokedexOverlay, { once: true });
+  } else {
+    load();
+    loadPokedexOverlay();
+  }
 })();
