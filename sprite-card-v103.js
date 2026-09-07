@@ -48,6 +48,11 @@
     .pokemon-card .pokemon-sprite { width:136px; height:112px; position:absolute; right:-17px; top:-41px; object-fit:contain; image-rendering:pixelated; pointer-events:none; user-select:none; z-index:3; opacity:1!important; will-change:transform; }
     .pokemon-card .checkbox { display:none!important; }
 
+    @property --jasper-pokedex-angle {
+      syntax:"<angle>";
+      inherits:false;
+      initial-value:0deg;
+    }
     @keyframes jasperPokemonExcitedDesktop {
       0%,100% { transform:translateY(0); }
       50% { transform:translateY(-2px); }
@@ -57,8 +62,8 @@
       50% { transform:translateX(-50%) translateY(-1px); }
     }
     @keyframes jasperPokedexBorderSpin {
-      from { transform:rotate(0deg); }
-      to { transform:rotate(360deg); }
+      from { --jasper-pokedex-angle:0deg; }
+      to { --jasper-pokedex-angle:360deg; }
     }
 
     @media (min-width:641px) {
@@ -72,7 +77,7 @@
         inset:0;
         padding:2px;
         border-radius:inherit;
-        background:conic-gradient(from 0deg,transparent 0deg,transparent 285deg,#60A5FA 320deg,#5B9CFF 342deg,transparent 360deg);
+        background:conic-gradient(from var(--jasper-pokedex-angle),transparent 0deg,transparent 285deg,#60A5FA 320deg,#5B9CFF 342deg,transparent 360deg);
         -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
         -webkit-mask-composite:xor;
         mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
@@ -81,6 +86,7 @@
         z-index:8;
         opacity:0;
       }
+      .pokemon-card.pokedex-active { --jasper-pokedex-angle:0deg; }
       .pokemon-card.pokedex-active::after { opacity:1; animation:jasperPokedexBorderSpin 1.8s linear infinite; }
       .pokemon-card .pokedex-button {
         position:absolute;
