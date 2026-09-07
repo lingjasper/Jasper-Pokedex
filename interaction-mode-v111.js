@@ -4,6 +4,27 @@
   const isMobile = () => window.matchMedia('(max-width:640px)').matches;
   const isBulkMode = () => document.getElementById('bulkModeToggle')?.checked === true;
   const closePokedex = () => window.JASPER_POKEDEX_UI?.close?.();
+  let savedSyncState = null;
+
+  const installSyncGuard = () => {
+    if (window.__JASPER_V111_SYNC_GUARD__) return;
+    const native = window.JASPER_SYNC_SET_PILL;
+    if (typeof native !== 'function') return;
+    window.__JASPER_V111_SYNC_GUARD__ = true;
+    window.JASPER_SYNC_SET_PILL = (label, type) => {
+      if (isBulkMode() && type === 'bulk' && savedSyncState) return native(savedSyncState.label, savedSyncState.type);
+      return native(label, type);
+    };
+  };
+
+  const rememberSyncState = () => {
+    const pill = document.getElementById('githubSyncPill');
+    if (!pill) return;
+    savedSyncState = {
+      label: pill.querySelector('.github-sync-label')?.textContent || 'Token Sync',
+      type: pill.dataset.state || 'normal'
+    };
+  };
 
   const installStyles = () => {
     if (document.getElementById('jasperV111InteractionStyles')) return;
@@ -29,9 +50,6 @@
         #mobileHeader #bulkModeSection { position:relative; }
         #mobileHeader #bulkActions { position:fixed; top:58px; right:8px; left:8px; width:auto; }
         #mobileHeader #mobileHeaderActions { gap:8px; }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .pokemon-card.pokedex-active .pokemon-sprite { animation:none!important; }
       }
     `;
     document.head.appendChild(style);
@@ -59,14 +77,11 @@
     document.documentElement.classList.toggle('jasper-bulk-mode', active);
     document.body?.classList.toggle('jasper-bulk-mode', active);
     const section = document.getElementById('bulkModeSection');
-    if (section) {
-      section.setAttribute('aria-label', active ? 'Bulk Mode active — storage editing enabled' : 'Bulk Mode — storage editing disabled');
-    }
+    if (section) section.setAttribute('aria-label', active ? 'Bulk Mode active — storage editing enabled' : 'Bulk Mode — storage editing disabled');
   };
 
   const openFromEntry = entry => {
-    if (!entry || entry.classList.contains('empty')) return;
-    if (isBulkMode()) return;
+    if (!entry || entry.classList.contains('empty') || isBulkMode()) return;
     closePokedex();
     window.JASPER_POKEDEX_UI?.open?.(entry);
   };
@@ -78,18 +93,14 @@
     document.addEventListener('click', event => {
       const toggle = event.target.closest('#bulkModeToggle');
       if (toggle) {
-        if (toggle.checked) closePokedex();
+        if (toggle.checked) rememberSyncState(), closePokedex();
+        else savedSyncState = null;
         setTimeout(() => { applyModeState(); placeBulk(); }, 0);
         return;
       }
-
-      const jump = event.target.closest('.search-jump');
-      if (jump) return;
-
+      if (event.target.closest('.search-jump')) return;
       const entry = event.target.closest('#boxContainer .pokemon-card:not(.empty),#boxContainer .cell[data-id]:not(.empty),#listContainer .list-row[data-id],#searchResults .search-result-item[data-id]');
-      if (!entry) return;
-      if (isBulkMode()) return;
-
+      if (!entry || isBulkMode()) return;
       event.preventDefault();
       event.stopPropagation();
       openFromEntry(entry);
@@ -98,8 +109,7 @@
     document.addEventListener('keydown', event => {
       if (event.key !== 'Enter' && event.key !== ' ') return;
       const entry = event.target.closest?.('#boxContainer .pokemon-card:not(.empty),#listContainer .list-row[data-id],#searchResults .search-result-item[data-id]');
-      if (!entry || isBulkMode()) return;
-      if (event.target.closest('.search-jump')) return;
+      if (!entry || isBulkMode() || event.target.closest('.search-jump')) return;
       event.preventDefault();
       event.stopPropagation();
       openFromEntry(entry);
@@ -107,7 +117,8 @@
 
     document.addEventListener('change', event => {
       if (event.target.id === 'bulkModeToggle') {
-        if (event.target.checked) closePokedex();
+        if (event.target.checked) rememberSyncState(), closePokedex();
+        else savedSyncState = null;
         setTimeout(() => { applyModeState(); placeBulk(); }, 0);
       }
     }, true);
@@ -116,25 +127,15 @@
   const observeUI = () => {
     const sync = () => { installStyles(); placeBulk(); applyModeState(); };
     sync();
-    const observer = new MutationObserver(sync);
-    observer.observe(document.body, { childList:true, subtree:true });
+    new MutationObserver(sync).observe(document.body, { childList:true, subtree:true });
     window.addEventListener('resize', sync, { passive:true });
     window.addEventListener('jasper:sync-ui-ready', sync);
     window.addEventListener('jasper:pokedex-game-changed', () => { closePokedex(); setTimeout(sync, 0); });
   };
 
-  window.JASPER_COLLECTION_MODE = {
-    isBulk: isBulkMode,
-    open: openFromEntry,
-    closePokedex
-  };
+  window.JASPER_COLLECTION_MODE = { isBulk: isBulkMode, open: openFromEntry, closePokedex };
 
-  const start = () => {
-    installStyles();
-    installInteraction();
-    observeUI();
-  };
-
+  const start = () => { installStyles(); installSyncGuard(); installInteraction(); observeUI(); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
   else start();
 })();
