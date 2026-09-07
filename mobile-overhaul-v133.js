@@ -4,7 +4,7 @@
   /*
    * RC 3 (Beta v0.13.5.8) — Mobile sticky header control region.
    * Header surface is full-bleed; internal content remains on the 8px grid.
-   * Title/actions, game tabs, banner, and search/view controls remain sticky.
+   * Title/actions, game selector, banner, and search/view controls remain sticky.
    * Storage boxes/list remain outside the sticky header and scroll normally.
    */
   if (window.__JASPER_MOBILE_OVERHAUL_133__) return;
@@ -123,7 +123,7 @@
     if (sync) header.querySelector('#mobileHeaderActions').appendChild(sync);
 
     const tabs = document.querySelector('.tabs-container');
-    if (tabs) header.appendChild(tabs);
+    if (tabs) header.querySelector('#mobileHeaderActions').appendChild(tabs);
 
     updateMoniker();
   };
