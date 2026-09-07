@@ -13,12 +13,12 @@
 
   let registry = null;
 
-  const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, char => ({
+  const escapeHtml = value => String(value ?? '').replace(/[&<>'\"]/g, char => ({
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
     "'": '&#39;',
-    '"': '&quot;'
+    '\"': '&quot;'
   }[char]));
 
   const iconPath = game => `Game Icons/${game.icon || 'Unknown.png'}`;
@@ -47,13 +47,10 @@
 
   const renderMobile = container => {
     const games = VISIBLE_GAMES
-      .map(id => registry.games.find(game => game && game.id === id && game.enabled === true))
+      .map(id => registry.games.find(game => game && game.id === id))
       .filter(Boolean);
     container.className = 'tabs-container';
-    container.innerHTML = games.map(game => `
-      <button class="tab-btn" type="button" data-game="${escapeHtml(game.id)}" aria-pressed="false">
-        ${escapeHtml(game.name || game.id)}
-      </button>`).join('');
+    container.innerHTML = games.map(renderGame).join('');
     syncActive();
   };
 
@@ -203,10 +200,81 @@
     }
 
     @media (max-width:640px) {
+      .tabs-container {
+        gap:8px!important;
+      }
       .tabs-container .tab-btn {
         display:flex;
         align-items:center;
         gap:8px;
+        min-height:46px;
+        padding:6px;
+        border-radius:6px;
+        border:2px solid #CBD5E1;
+        background:#F8FAFC;
+        color:#0f172a;
+        box-sizing:border-box;
+        font-size:14px;
+        font-weight:600;
+        line-height:1.2;
+        cursor:pointer;
+      }
+      .tabs-container .tab-btn:hover:not(:disabled):not(.active) {
+        border-color:#60A5FA;
+        background:#EFF6FF;
+      }
+      .tabs-container .tab-btn.active,
+      .tabs-container .tab-btn.active:hover {
+        border-color:#60A5FA;
+        background:linear-gradient(90deg,#2563EB 0%,#5B9CFF 100%);
+        color:#fff;
+      }
+      .tabs-container .tab-btn.disabled,
+      .tabs-container .tab-btn:disabled {
+        border-color:#CBD5E1;
+        background:#CACACA;
+        color:#64748b;
+        cursor:not-allowed;
+        opacity:1;
+      }
+      .tabs-container .game-icon {
+        width:32px;
+        height:32px;
+        flex:0 0 32px;
+        aspect-ratio:1/1;
+        object-fit:cover;
+        border-radius:4px;
+        border:2px solid #FFF;
+        background:#d3d3d3;
+        box-sizing:border-box;
+      }
+      .tabs-container .game-name {
+        min-width:0;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+      }
+      /* Mobile follows the established light SOT, including when data-theme="dark" is present. */
+      html[data-theme="dark"] .tabs-container .tab-btn {
+        border-color:#CBD5E1;
+        background:#F8FAFC;
+        color:#0f172a;
+      }
+      html[data-theme="dark"] .tabs-container .tab-btn:hover:not(:disabled):not(.active) {
+        border-color:#60A5FA;
+        background:#EFF6FF;
+      }
+      html[data-theme="dark"] .tabs-container .tab-btn.active,
+      html[data-theme="dark"] .tabs-container .tab-btn.active:hover {
+        border-color:#60A5FA;
+        background:linear-gradient(90deg,#2563EB 0%,#5B9CFF 100%);
+        color:#fff;
+      }
+      html[data-theme="dark"] .tabs-container .tab-btn.disabled,
+      html[data-theme="dark"] .tabs-container .tab-btn:disabled {
+        border-color:#CBD5E1;
+        background:#CACACA;
+        color:#64748b;
       }
     }
   `;
