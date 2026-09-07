@@ -2,15 +2,28 @@
   'use strict';
   // SINGLE SOURCE OF TRUTH for the website release moniker.
   window.JASPER_POKEDEX_VERSION = 'Release v1.1.0';
-  // Load v1.0.3 sprite presentation after the core release bootstrap has been defined.
-  const load = () => {
-    if (document.getElementById('jasperV103SpriteCard')) return;
-    const s = document.createElement('script');
-    s.id = 'jasperV103SpriteCard';
-    s.src = 'sprite-card-v103.js';
-    s.defer = true;
+
+  const loadScript = (id,src) => new Promise((resolve,reject) => {
+    if (document.getElementById(id)) return resolve();
+    const s=document.createElement('script');
+    s.id=id;
+    s.src=src;
+    s.onload=resolve;
+    s.onerror=reject;
     document.head.appendChild(s);
+  });
+
+  const start = async () => {
+    try {
+      await loadScript('jasperV103SpriteCard','sprite-card-v103.js');
+      await loadScript('jasperPokeApi','pokeapi.js');
+      await loadScript('jasperPokedexApiUi','pokedex-api-ui.js');
+      await loadScript('jasperInteractionModeV111','interaction-mode-v111.js');
+    } catch (error) {
+      console.error('[Jasper] Release script failed to load.',error);
+    }
   };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load, { once: true });
-  else load();
+
+  if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
 })();

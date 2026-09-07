@@ -4,7 +4,7 @@
   /*
    * RC 3 (Beta v0.13.5.8) — Mobile sticky header control region.
    * Header surface is full-bleed; internal content remains on the 8px grid.
-   * Title/actions, game tabs, banner, and search/view controls remain sticky.
+   * Title/actions, game selector, banner, and search/view controls remain sticky.
    * Storage boxes/list remain outside the sticky header and scroll normally.
    */
   if (window.__JASPER_MOBILE_OVERHAUL_133__) return;
@@ -51,6 +51,9 @@
         #mobileHeader #githubSyncWrap { position:relative!important; top:auto!important; right:auto!important; flex:0 0 auto; }
         #mobileHeader #githubSyncPill { white-space:nowrap; }
 
+        .tabs-container.mobile-game-navigation { width:auto!important; margin:0!important; padding:0!important; overflow:visible!important; flex:0 0 34px!important; }
+        .tabs-container.mobile-game-navigation .mobile-game-menu { position:fixed!important; top:58px!important; left:8px!important; right:8px!important; width:auto!important; max-width:none!important; box-sizing:border-box!important; padding:12px!important; }
+
         .tabs-container {
           width:100%!important;
           justify-content:flex-start!important;
@@ -66,7 +69,7 @@
         }
         .tabs-container .tab-btn { flex:0 0 auto!important; white-space:nowrap!important; }
 
-        #mobileProgressBanner { display:flex; align-items:center; gap:10px; width:100%; box-sizing:border-box; margin:0 0 14px; padding:11px 12px; background:#fff; border:1px solid #cbd5e1; border-radius:10px; box-shadow:0 2px 5px rgba(15,23,42,.05); color:#475569; font-size:.78rem; font-weight:600; }
+        #mobileProgressBanner { display:flex; align-items:center; gap:10px; width:100%; box-sizing:border-box; margin:14px 0 14px; padding:11px 12px; background:#fff; border:1px solid #cbd5e1; border-radius:10px; box-shadow:0 2px 5px rgba(15,23,42,.05); color:#475569; font-size:.78rem; font-weight:600; }
         #mobileProgressBanner .mobile-progress-icon { width:20px; height:20px; flex:0 0 20px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; background:#e2e8f0; color:#475569; font-size:.75rem; font-weight:800; }
         #mobileProgressBanner .mobile-progress-icon .jasper-icon { width:20px!important; height:20px!important; display:block; color:#475569!important; }
         #mobileProgressBanner .mobile-progress-icon .jasper-icon { --info-icon-inner-fill: white; }
@@ -119,11 +122,12 @@
       </div>`;
     document.body.insertBefore(header, document.body.firstChild);
 
-    const sync = document.getElementById('githubSyncWrap');
-    if (sync) header.querySelector('#mobileHeaderActions').appendChild(sync);
-
+    const actions = header.querySelector('#mobileHeaderActions');
     const tabs = document.querySelector('.tabs-container');
-    if (tabs) header.appendChild(tabs);
+    if (tabs) actions.appendChild(tabs);
+
+    const sync = document.getElementById('githubSyncWrap');
+    if (sync) actions.appendChild(sync);
 
     updateMoniker();
   };
