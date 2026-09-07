@@ -125,7 +125,7 @@
       .desktop-title-tabs .game-nav-button.active,.desktop-title-tabs .game-nav-button.active:hover { border-color:#60A5FA; background:linear-gradient(90deg,#2563EB 0%,#5B9CFF 100%); color:#fff; cursor:pointer; }
       .desktop-title-tabs .game-nav-button.disabled,.desktop-title-tabs .game-nav-button:disabled { border-color:#CBD5E1; background:#CACACA; color:#64748b; cursor:not-allowed; opacity:1; }
       .desktop-title-tabs .game-icon { width:32px; height:32px; flex:0 0 32px; aspect-ratio:1/1; object-fit:cover; border-radius:4px; border:2px solid #FFF; background:#d3d3d3; box-sizing:border-box; }
-      .desktop-title-tabs .game-name { min-width:0; flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:14px; font-weight:600; line-height:1.2; }
+      .desktop-title-tabs .game-name { min-width:0; flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:14px; font-weight:600; font-family:inherit; line-height:1.2; text-transform:none; letter-spacing:normal; }
       html[data-theme="dark"] .desktop-title-tabs .game-nav-button { border-color:#343A46; background:#242831; color:#f8fafc; }
       html[data-theme="dark"] .desktop-title-tabs .game-nav-button:hover:not(:disabled):not(.active) { border-color:#4979B6; background:#1D3150; }
       html[data-theme="dark"] .desktop-title-tabs .game-nav-button.active,html[data-theme="dark"] .desktop-title-tabs .game-nav-button.active:hover { border-color:#4979B6; background:linear-gradient(90deg,#2563EB 0%,#5B9CFF 100%); color:#fff; }
@@ -142,12 +142,12 @@
       .mobile-game-selector[aria-expanded="true"] { border-color:#60A5FA; background:#EFF6FF; }
       .mobile-game-menu { position:fixed; top:58px; left:8px; right:8px; z-index:12500; display:flex; flex-direction:column; gap:8px; width:auto; max-width:none; padding:12px; box-sizing:border-box; border:1px solid #cbd5e1; border-radius:12px; background:#fff; box-shadow:0 16px 36px rgba(15,23,42,.2); }
       .mobile-game-menu[hidden] { display:none!important; }
-      .mobile-game-menu .game-nav-button { display:flex; align-items:center; gap:8px; width:100%; min-height:46px; padding:6px; border-radius:6px; border:2px solid #CBD5E1; background:#F8FAFC; color:#0f172a; box-sizing:border-box; font-size:14px; font-weight:600; line-height:1.2; cursor:pointer; text-align:left; }
+      .mobile-game-menu .game-nav-button { display:flex; align-items:center; gap:8px; width:100%; min-height:46px; padding:6px; border-radius:6px; border:2px solid #CBD5E1; background:#F8FAFC; color:#0f172a; box-sizing:border-box; font-size:14px; font-weight:600; font-family:inherit; line-height:1.2; letter-spacing:normal; text-transform:none; cursor:pointer; text-align:left; }
       .mobile-game-menu .game-nav-button:hover:not(:disabled):not(.active) { border-color:#60A5FA; background:#EFF6FF; }
       .mobile-game-menu .game-nav-button.active,.mobile-game-menu .game-nav-button.active:hover { border-color:#60A5FA; background:linear-gradient(90deg,#2563EB 0%,#5B9CFF 100%); color:#fff; }
       .mobile-game-menu .game-nav-button.disabled,.mobile-game-menu .game-nav-button:disabled { border-color:#CBD5E1; background:#CACACA; color:#64748b; cursor:not-allowed; opacity:1; }
       .mobile-game-menu .game-icon { width:32px; height:32px; flex:0 0 32px; aspect-ratio:1/1; object-fit:cover; border-radius:4px; border:2px solid #FFF; background:#d3d3d3; box-sizing:border-box; }
-      .mobile-game-menu .game-name { min-width:0; flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .mobile-game-menu .game-name { min-width:0; flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:14px; font-weight:600; font-family:inherit; line-height:1.2; letter-spacing:normal; text-transform:none; }
 
       /* Mobile game-menu Dark SOT matches the established Desktop game-navigation SOT exactly. */
       html[data-theme="dark"] #mobileHeader .mobile-game-menu .game-nav-button { border-color:#343A46!important; background:#242831!important; color:#f8fafc!important; }
