@@ -54,12 +54,12 @@
       initial-value:0deg;
     }
     @keyframes jasperPokemonExcitedDesktop {
-      0%,100% { transform:translateY(0); }
-      50% { transform:translateY(-2px); }
+      0%,100% { translate:0 0; }
+      50% { translate:0 -2px; }
     }
     @keyframes jasperPokemonExcitedMobile {
-      0%,100% { transform:translateX(-50%) translateY(0); }
-      50% { transform:translateX(-50%) translateY(-1px); }
+      0%,100% { translate:0 0; }
+      50% { translate:0 -1px; }
     }
     @keyframes jasperPokedexBorderSpin {
       from { --jasper-pokedex-angle:0deg; }
@@ -118,6 +118,11 @@
       .pokemon-card .pokedex-button:hover { background:#EFF6FF; }
       html[data-theme="dark"] .pokemon-card .pokedex-button { border-color:#4979B6; background:#242831; color:#93C5FD; }
       html[data-theme="dark"] .pokemon-card .pokedex-button:hover { background:#1D3150; }
+    }
+
+    @media (max-width:640px) {
+      .pokemon-card .pokemon-sprite { animation:none; }
+      .pokemon-card.pokedex-active .pokemon-sprite { animation:jasperPokemonExcitedMobile .333s steps(2,end) infinite; }
     }
 
     #pokedexDetailPanel { display:flex; flex-direction:column; min-height:0; width:100%; height:100%; gap:16px; color:#0f172a; }
@@ -187,6 +192,15 @@
     window.JASPER_POKEDEX_DETAIL={id:card.dataset.id||'',name:parsed.name,form:parsed.form,dex};
   };
 
+  const addPokedexButton = card => {
+    if(!card || card.classList.contains('empty') || card.querySelector('.pokedex-button'))return;
+    const button=document.createElement('button');
+    button.className='pokedex-button';
+    button.type='button';
+    button.textContent='Pokedex';
+    card.appendChild(button);
+  };
+
   const bindPokedex = () => {
     const root=document.getElementById('boxContainer');
     if(!root||root.dataset.pokedexBound==='true')return;
@@ -202,7 +216,8 @@
   };
 
   const renderCard = async card => {
-    if (card.classList.contains('empty') || card.classList.contains('pokemon-card')) return;
+    if (card.classList.contains('empty')) return;
+    if (card.classList.contains('pokemon-card')) { addPokedexButton(card); return; }
     const parsed=parseName(card.dataset.name); if(!parsed.name)return;
     const dex=card.dataset.num || card.querySelector('.dex-num')?.textContent?.trim() || '';
     card.classList.add('pokemon-card', parsed.form ? 'has-form' : 'no-form');
@@ -210,7 +225,7 @@
     await applySprite(card.querySelector('.pokemon-sprite'), parsed.name, parsed.form);
   };
 
-  const upgrade=root=>root.querySelectorAll?.('.cell[data-id]:not(.empty):not(.pokemon-card)').forEach(renderCard);
+  const upgrade=root=>root.querySelectorAll?.('.cell[data-id]:not(.empty)').forEach(renderCard);
   const start=()=>{
     const target=document.getElementById('boxContainer')||document.body;
     bindPokedex();
