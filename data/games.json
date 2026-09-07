@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 1,
   "defaultGame": "pokemon-white-2",
   "games": [
     { "id": "pokemon-waves", "name": "Pokémon Waves", "generation": 10, "enabled": false, "icon": "Unknown.png" },
