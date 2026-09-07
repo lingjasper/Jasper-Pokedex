@@ -3,7 +3,15 @@
 
   const isMobile = () => window.matchMedia('(max-width:640px)').matches;
   const isBulkMode = () => document.getElementById('bulkModeToggle')?.checked === true;
-  const closePokedex = () => window.JASPER_POKEDEX_UI?.close?.();
+  const clearPokedexSelection = () => {
+    document.querySelectorAll('.pokemon-card.pokedex-active').forEach(card => card.classList.remove('pokedex-active'));
+    const side = document.getElementById('desktopRightSidebar');
+    const panel = document.getElementById('pokedexDetailPanel');
+    if (panel) panel.hidden = true;
+    if (side && !panel) side.innerHTML = '';
+    window.JASPER_POKEDEX_DETAIL = null;
+    window.JASPER_POKEDEX_UI?.close?.();
+  };
   let savedSyncState = null;
 
   const installSyncGuard = () => {
@@ -86,14 +94,12 @@
     const activeCard = document.querySelector('#boxContainer .pokemon-card.pokedex-active');
     const sameCard = entry.classList.contains('pokemon-card') && entry === activeCard;
 
-    // Clicking the already-inspected Pokémon toggles the Pokédex off.
     if (sameCard) {
-      closePokedex();
+      clearPokedexSelection();
       return;
     }
 
-    // Opening another Pokémon always clears the previous active state first.
-    closePokedex();
+    clearPokedexSelection();
     if (entry.classList.contains('pokemon-card')) entry.classList.add('pokedex-active');
     window.JASPER_POKEDEX_UI?.open?.(entry);
   };
@@ -105,7 +111,7 @@
     document.addEventListener('click', event => {
       const toggle = event.target.closest('#bulkModeToggle');
       if (toggle) {
-        if (toggle.checked) rememberSyncState(), closePokedex();
+        if (toggle.checked) rememberSyncState(), clearPokedexSelection();
         else savedSyncState = null;
         setTimeout(() => { applyModeState(); placeBulk(); }, 0);
         return;
@@ -129,7 +135,7 @@
 
     document.addEventListener('change', event => {
       if (event.target.id === 'bulkModeToggle') {
-        if (event.target.checked) rememberSyncState(), closePokedex();
+        if (event.target.checked) rememberSyncState(), clearPokedexSelection();
         else savedSyncState = null;
         setTimeout(() => { applyModeState(); placeBulk(); }, 0);
       }
@@ -142,10 +148,10 @@
     new MutationObserver(sync).observe(document.body, { childList:true, subtree:true });
     window.addEventListener('resize', sync, { passive:true });
     window.addEventListener('jasper:sync-ui-ready', sync);
-    window.addEventListener('jasper:pokedex-game-changed', () => { closePokedex(); setTimeout(sync, 0); });
+    window.addEventListener('jasper:pokedex-game-changed', () => { clearPokedexSelection(); setTimeout(sync, 0); });
   };
 
-  window.JASPER_COLLECTION_MODE = { isBulk: isBulkMode, open: openFromEntry, closePokedex };
+  window.JASPER_COLLECTION_MODE = { isBulk: isBulkMode, open: openFromEntry, closePokedex: clearPokedexSelection };
 
   const start = () => { installStyles(); installSyncGuard(); installInteraction(); observeUI(); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
