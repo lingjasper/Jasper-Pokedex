@@ -98,11 +98,12 @@
         #mobilePokedexBackdrop { position:fixed; inset:0; background:rgba(15,23,42,.38); z-index:12900; }
         #mobilePokedexSheet { position:fixed; left:0; right:0; bottom:0; z-index:13000; display:flex; flex-direction:column; width:100%; height:820px; min-height:820px; max-height:820px; box-sizing:border-box; overflow:hidden; background:var(--color-surface,#fff); color:var(--color-text-primary,#0f172a); border:1px solid var(--color-border-strong,#cbd5e1); border-bottom:0; border-radius:16px 16px 0 0; box-shadow:0 -8px 28px var(--color-shadow,rgba(15,23,42,.16)); }
         #mobilePokedexSheet[hidden],#mobilePokedexBackdrop[hidden] { display:none!important; }
+        body.mobile-pokedex-open { background:var(--color-surface,#fff); }
         .mobile-pokedex-sheet-header { position:relative; display:flex; align-items:center; justify-content:center; flex:0 0 42px; padding:6px 12px; box-sizing:border-box; border-bottom:1px solid var(--color-separator,#e5e7eb); }
         .mobile-pokedex-sheet-handle { width:36px; height:4px; border-radius:999px; background:var(--color-border-strong,#cbd5e1); }
         .mobile-pokedex-sheet-close { position:absolute; top:5px; right:8px; width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; padding:0; border:1px solid var(--color-border,#e2e8f0); border-radius:999px; background:var(--color-surface-elevated,#fff); color:var(--color-text-secondary,#475569); font:400 24px/1 sans-serif; cursor:pointer; }
         .mobile-pokedex-sheet-close:hover { background:var(--color-selection,#dbeafe); color:var(--color-text-primary,#0f172a); }
-        .mobile-pokedex-sheet-content { min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:14px 12px 24px; box-sizing:border-box; }
+        .mobile-pokedex-sheet-content { min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:14px 12px calc(24px + env(safe-area-inset-bottom,0px)); box-sizing:border-box; }
         .mobile-pokedex-sheet-content .jasper-api-pokedex { display:flex; flex-direction:column; gap:14px; min-height:0; }
         .mobile-pokedex-sheet-content .jasper-api-pokedex-title { margin:0; font-size:22px; line-height:1.2; font-weight:700; color:inherit; }
         .mobile-pokedex-sheet-content .jasper-api-pokedex-subtitle { margin:-7px 0 0; font-size:12px; opacity:.65; }
@@ -120,6 +121,7 @@
         /* Mobile Pokédex Sheet Dark SOT mirrors the Desktop Right Sidebar theme. */
         html[data-theme="dark"] #mobilePokedexBackdrop { background:rgba(0,0,0,.52); }
         html[data-theme="dark"] #mobilePokedexSheet { background:#181a20; color:#f5f7fa; border-color:#454c59; box-shadow:0 -8px 28px rgba(0,0,0,.32); }
+        html[data-theme="dark"] body.mobile-pokedex-open { background:#181a20; }
         html[data-theme="dark"] .mobile-pokedex-sheet-header { border-bottom-color:#303640; }
         html[data-theme="dark"] .mobile-pokedex-sheet-handle { background:#454c59; }
         html[data-theme="dark"] .mobile-pokedex-sheet-close { border-color:#454c59; background:#242831; color:#c5cad3; }
