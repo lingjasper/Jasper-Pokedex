@@ -1,7 +1,7 @@
 {
   "version": 1,
   "gameId": "pokemon-white-2",
-  "updatedAt": "2026-11-21T04:27:40.881Z",
+  "updatedAt": "2026-11-21T04:27:56.852Z",
   "pokemon": {
     "102-darumaka": true,
     "103-darmanitan": true,
@@ -217,6 +217,12 @@
     "045-scolipede": true,
     "038-simisage": true,
     "040-simisear": true,
-    "042-simipour": true
+    "042-simipour": true,
+    "065-muk": true,
+    "067-swoobat": true,
+    "079-delcatty": true,
+    "078-skitty": true,
+    "088-cleffa": true,
+    "087-musharna": true
   }
 }
