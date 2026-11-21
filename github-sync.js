@@ -8,7 +8,7 @@
   const getState=g=>{try{return JSON.parse(localStorage.getItem(stateKey(g))||'{}')}catch{return{}}};
   const setState=(g,s)=>localStorage.setItem(stateKey(g),JSON.stringify(s));
   const b64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=0x8000)s+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return s};
-  const encode=t=>b64(new TextEncoder().encode(t));
+  const encode=t=>btoa(b64(new TextEncoder().encode(t)));
   const decode=v=>{const b=atob(v.replace(/\n/g,''));return new TextDecoder().decode(Uint8Array.from(b,c=>c.charCodeAt(0)));};
   const request=async(url,options={})=>{const headers={Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2026-03-10',...(options.headers||{})};if(token())headers.Authorization=`Bearer ${token()}`;const r=await fetch(url,{...options,headers}),body=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(body.message||`GitHub API error ${r.status}`);e.status=r.status;throw e;}return body;};
   const syncIcon=type=>type==='ok'?'check-fill':type==='busy'?'sync-inprogress-fill':type==='bulk'?'bulk-mode-fill':type==='warning'?'sync-warn-fill':'sync-token-needed';
