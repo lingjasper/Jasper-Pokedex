@@ -1,7 +1,7 @@
 {
   "version": 1,
   "gameId": "pokemon-white-2",
-  "updatedAt": "2026-11-21T04:27:56.852Z",
+  "updatedAt": "2026-11-21T04:32:02.891Z",
   "pokemon": {
     "102-darumaka": true,
     "103-darmanitan": true,
@@ -103,7 +103,7 @@
     "257-vanilluxe": true,
     "258-swinub": true,
     "259-piloswine": true,
-    "260-mamoswine": false,
+    "260-mamoswine": true,
     "261-ditto": true,
     "263-metang": true,
     "267-throh": true,
@@ -223,6 +223,28 @@
     "079-delcatty": true,
     "078-skitty": true,
     "088-cleffa": true,
-    "087-musharna": true
+    "087-musharna": true,
+    "100-krokorok": true,
+    "113-sandshrew": true,
+    "143-vespiquen": true,
+    "135-roserade": true,
+    "133-budew": true,
+    "123-flygon": false,
+    "160-sawsbuck-summer": true,
+    "160-sawsbuck-autumn": true,
+    "159-deerling-autumn": true,
+    "159-deerling-summer": true,
+    "109-rufflet": true,
+    "137-gothorita": true,
+    "164-nosepass": true,
+    "165-probopass": true,
+    "180-frillish-female": true,
+    "181-jellicent-male": true,
+    "234-mantine": true,
+    "235-remoraid": true,
+    "247-altaria": true,
+    "254-delibird": true,
+    "255-vanillite": true,
+    "281-igglybuff": true
   }
 }
