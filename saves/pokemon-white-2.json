@@ -1,7 +1,7 @@
 {
   "version": 1,
   "gameId": "pokemon-white-2",
-  "updatedAt": "2026-11-21T04:21:22.184Z",
+  "updatedAt": "2026-11-21T04:27:40.881Z",
   "pokemon": {
     "102-darumaka": true,
     "103-darmanitan": true,
@@ -157,7 +157,7 @@
     "054-magmar": true,
     "056-elekid": true,
     "051-growlithe": true,
-    "034-lucario": false,
+    "034-lucario": true,
     "005-pignite": true,
     "053-magby": true,
     "060-raticate": true,
@@ -212,6 +212,11 @@
     "052-arcanine": true,
     "057-electabuzz": true,
     "047-weezing": true,
-    "090-clefable": true
+    "090-clefable": true,
+    "050-magnezone": true,
+    "045-scolipede": true,
+    "038-simisage": true,
+    "040-simisear": true,
+    "042-simipour": true
   }
 }
