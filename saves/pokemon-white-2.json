@@ -1,7 +1,7 @@
 {
   "version": 1,
   "gameId": "pokemon-white-2",
-  "updatedAt": "2026-11-21T04:32:02.891Z",
+  "updatedAt": "2026-11-22T07:24:48.003Z",
   "pokemon": {
     "102-darumaka": true,
     "103-darmanitan": true,
@@ -18,7 +18,7 @@
     "117-scraggy": true,
     "118-scrafty": true,
     "119-maractus": true,
-    "120-sigilyph": false,
+    "120-sigilyph": true,
     "121-trapinch": true,
     "122-vibrava": true,
     "124-yamask": true,
@@ -245,6 +245,7 @@
     "247-altaria": true,
     "254-delibird": true,
     "255-vanillite": true,
-    "281-igglybuff": true
+    "281-igglybuff": true,
+    "145-heracross": true
   }
 }
