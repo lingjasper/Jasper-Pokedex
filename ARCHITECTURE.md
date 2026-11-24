@@ -1,3 +1,5 @@
+> Historical note: this audit describes the Beta v0.9.1 codebase. The compatibility layers it lists were consolidated into `index.html`, `app.css` and `js/`. See "Project Structure" in README.md for the current layout.
+
 # Beta v0.9.1 — Architecture Audit
 
 This document records the Stage A architecture baseline for Jasper's Pokédex. It intentionally does not change Pokémon progress, GitHub authentication, or user-facing behavior.
