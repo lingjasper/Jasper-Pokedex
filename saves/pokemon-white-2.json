@@ -1,7 +1,7 @@
 {
   "version": 1,
   "gameId": "pokemon-white-2",
-  "updatedAt": "2026-11-24T06:04:17.488Z",
+  "updatedAt": "2026-11-24T06:05:19.891Z",
   "pokemon": {
     "102-darumaka": true,
     "103-darmanitan": true,
@@ -259,6 +259,8 @@
     "188-elgyem": true,
     "182-alomomola": true,
     "191-lampent": true,
-    "192-chandelure": true
+    "192-chandelure": true,
+    "243-spheal": true,
+    "232-shuckle": true
   }
 }
