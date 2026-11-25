@@ -1,7 +1,7 @@
 {
   "version": 1,
   "gameId": "pokemon-white-2",
-  "updatedAt": "2026-11-24T06:05:19.891Z",
+  "updatedAt": "2026-11-25T07:44:30.765Z",
   "pokemon": {
     "102-darumaka": true,
     "103-darmanitan": true,
@@ -83,7 +83,7 @@
     "217-tangela": true,
     "219-mienfoo": true,
     "220-mienshao": true,
-    "221-gligar": false,
+    "221-gligar": true,
     "222-gliscor": true,
     "230-seismitoad": true,
     "231-stunfisk": true,
@@ -261,6 +261,19 @@
     "191-lampent": true,
     "192-chandelure": true,
     "243-spheal": true,
-    "232-shuckle": true
+    "232-shuckle": true,
+    "055-magmortar": true,
+    "058-electivire": true,
+    "080-buneary": true,
+    "081-lopunny": true,
+    "101-krookodile": true,
+    "131-klang": true,
+    "138-gothitelle": true,
+    "170-claydol": true,
+    "212-wingull": true,
+    "225-cobalion": true,
+    "229-palpitoad": true,
+    "251-bronzong": true,
+    "262-beldum": true
   }
 }
